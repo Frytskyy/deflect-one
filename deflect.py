@@ -1425,8 +1425,8 @@ DEFLECT_DIR = Path(__file__).parent
 
 # ── App identity (change version in ONE place only) ───────────────────────────
 APP_VERSION = "0.75"
-APP_SITE    = "vladonai.com/deflect"
-APP_GITHUB  = "github.com/WhitemanV/deflect"
+APP_SITE    = "vladonai.com/deflect-one"
+APP_GITHUB  = "github.com/WhitemanV/deflect-one"
 APP_SPONSOR = "vladonai.com/sponsor"
 APP_UPD_URL = "https://www.vladonai.com/api"
 
