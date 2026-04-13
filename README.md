@@ -113,6 +113,14 @@ Cron & systemd timer management, network reconnaissance, script runner, config e
 
 ---
 
+### Some fun
+But why not?
+
+![Deflect key](deflect-key.jpg)
+deflect-key.jpg
+
+---
+
 ## Installation
 
 ```bash
