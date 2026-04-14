@@ -7,7 +7,7 @@ No agents to install on servers. No cloud. No SaaS. Just SSH access - and Deflec
 
 From server health monitoring to active attack detection, from deployment orchestration to natural-language command execution via built-in AI - Deflect One combines DevOps observability, cybersecurity response, and LLM-powered decision support into a single, self-contained Python file.
 
-> ⚠️ **Beta** - actively developed. Core features are stable, new screens added regularly.
+> **Beta** - actively developed.
 
 ---
 
@@ -19,7 +19,7 @@ From server health monitoring to active attack detection, from deployment orches
 
 ## Features
 
-### 📈 Real-Time Infrastructure Monitoring
+### Real-Time Infrastructure Monitoring
 CPU, RAM, disk, network I/O, Docker containers, MySQL/PostgreSQL/Redis - across unlimited servers simultaneously. Async-native coroutine pool, near-zero overhead.
 
 ![Cross-Host Process Monitor](screenshot-deflect-cross-host-process-monitor.png)
@@ -28,7 +28,7 @@ CPU, RAM, disk, network I/O, Docker containers, MySQL/PostgreSQL/Redis - across 
 
 ---
 
-### 🛡 Active Attack Detection & Defense
+### Active Attack Detection & Defense
 Live attack radar: malicious IPs, geo-location, timeline. Manages UFW/iptables rules. Defense mode executes bans, restarts, and rate limits autonomously within your policy.
 
 ![Firewall Manager](screenshot-deflect-host-firewall-manager.png)
@@ -37,7 +37,7 @@ Live attack radar: malicious IPs, geo-location, timeline. Manages UFW/iptables r
 
 ---
 
-### 📦 Package & System Management
+### Package & System Management
 Full apt integration: view available updates, security patches, and install packages - across all hosts from one screen.
 
 ![APT Update Manager](screenshot-deflect-apt-upd-manager.png)
@@ -45,7 +45,7 @@ Full apt integration: view available updates, security patches, and install pack
 
 ---
 
-### 🐳 Docker & Services
+### Docker & Services
 Manage containers, images, and systemd services without leaving the terminal.
 
 ![Docker Manager](screenshot-deflect-docker-mgr.png)
@@ -53,14 +53,14 @@ Manage containers, images, and systemd services without leaving the terminal.
 
 ---
 
-### 📁 File Manager
-Dual-panel SFTP file manager - browse, upload, download, edit, copy between hosts. Midnight Commander style.
+### File Manager
+Dual-panel SFTP/SSH file manager - browse, upload, download, edit, copy files between hosts. Midnight Commander style.
 
 ![File Manager](screenshot-deflect-file-manager.png)
 
 ---
 
-### 📋 Log Aggregation & Journal Viewer
+### Log Aggregation & Journal Viewer
 Cross-host regex log search and live journalctl tailing with 8 preset tabs.
 
 ![Cross-Host Log Filtering](screenshot-deflect-cross-hosts-logs-filtering.png)
@@ -68,7 +68,7 @@ Cross-host regex log search and live journalctl tailing with 8 preset tabs.
 
 ---
 
-### ✉️ Email Monitor
+### Email Monitor
 MTA queue monitoring, account overview, error rates - across all hosts.
 
 ![Email Monitor](screenshot-deflect-email-monitor.png)
@@ -76,7 +76,7 @@ MTA queue monitoring, account overview, error rates - across all hosts.
 
 ---
 
-### ⚙️ Fleet & Bulk Operations
+### Fleet & Bulk Operations
 Manage your entire server fleet: bulk DevOps commands, SSH key rotation, host management.
 
 ![Host Fleet Manager](screenshot-deflect-host-fleet-mgr.png)
@@ -97,8 +97,8 @@ Cron & systemd timer management, network reconnaissance, script runner, config e
 
 ---
 
-### 🤖 AI-Enhanced Autonomous Operations
-Unified AI engine: Claude, GPT-4, Gemini, Mistral, Groq, LM Studio. Per-host LLM instructions enable background governance loops - *"restart MySQL if slow-query rate exceeds 10/min"* - running 24/7 without you watching.
+### AI-Enhanced Autonomous Operations (experimental, optional)
+Unified AI engine: Claude, GPT-4, Gemini, Mistral, Groq, LM Studio. Per-host LLM instructions enable background governance loops - *"restart /home/bot1/BotService if /home/bot1/tests.log file is older than one day"* - running 24/7 without you watching.
 
 ![AI-Driven Operations](screenshot-deflect-ai-driven2.png)
 ![AI SSH Session](screenshot-deflect-ssh-ai-driven.png)
@@ -167,12 +167,12 @@ python deflect.py           # real mode, reads deflect.json next to the script
 ## Compatibility
 
 **Runs on (your machine):**  
-✅ Linux · ✅ macOS (Intel + Apple Silicon) · ✅ Windows (Windows Terminal) · ✅ WSL2  
+Linux · macOS (Intel + Apple Silicon) · Windows (Windows Terminal and Cmd) · WSL2  
 *Any OS that runs Python 3.10+*
 
 **Manages (remote servers):**  
-✅ Debian 10+ · ✅ Ubuntu 20.04+ - primary targets, fully tested  
-🟨 Fedora · CentOS · Arch · Alpine - works via SSH, not all features tested yet
+Debian · Ubuntu - primary targets, fully tested  
+Fedora · CentOS · Arch · Alpine - works via SSH, not all features tested yet
 
 ---
 
@@ -180,7 +180,7 @@ python deflect.py           # real mode, reads deflect.json next to the script
 
 - **Python 3.10+** · **Textual 8.x** (TUI) · **asyncio** · **paramiko** (SSH)
 - **cryptography** - Fernet + PBKDF2 for HardwareVault
-- **AI backends:** `anthropic` · `openai` · `google-generativeai` · `mistralai` *(all optional)*
+- **AI backends:** `anthropic` · `openai` · `google-generativeai` · `mistralai` *(all optional, experimental)*
 
 ---
 
