@@ -1,13 +1,13 @@
 # Deflect One
 
-**Agentless DevOps command center for your entire Linux infrastructure — from one terminal.
-No agents. No cloud. No SaaS. Just SSH access — and Deflect One turns that into a complete operations platform: server monitoring, active attack detection, file management, deployments, and more. AI support is available as an optional add-on.**
+**Agentless DevOps command center for your entire Linux infrastructure - from one terminal.
+No agents. No cloud. No SaaS. Just SSH access - and Deflect One turns that into a complete operations platform: server monitoring, active attack detection, file management, deployments, and more. AI support is available as an optional add-on.**
 
-No agents to install on servers. No cloud. No SaaS. Just SSH access — and Deflect One turns that into a complete operations platform.
+No agents to install on servers. No cloud. No SaaS. Just SSH access - and Deflect One turns that into a complete operations platform.
 
-From server health monitoring to active attack detection, from deployment orchestration to natural-language command execution via built-in AI — Deflect One combines DevOps observability, cybersecurity response, and LLM-powered decision support into a single, self-contained Python file.
+From server health monitoring to active attack detection, from deployment orchestration to natural-language command execution via built-in AI - Deflect One combines DevOps observability, cybersecurity response, and LLM-powered decision support into a single, self-contained Python file.
 
-> ⚠️ **Beta** — actively developed. Core features are stable, new screens added regularly.
+> ⚠️ **Beta** - actively developed. Core features are stable, new screens added regularly.
 
 ---
 
@@ -20,7 +20,7 @@ From server health monitoring to active attack detection, from deployment orches
 ## Features
 
 ### 📈 Real-Time Infrastructure Monitoring
-CPU, RAM, disk, network I/O, Docker containers, MySQL/PostgreSQL/Redis — across unlimited servers simultaneously. Async-native coroutine pool, near-zero overhead.
+CPU, RAM, disk, network I/O, Docker containers, MySQL/PostgreSQL/Redis - across unlimited servers simultaneously. Async-native coroutine pool, near-zero overhead.
 
 ![Cross-Host Process Monitor](screenshot-deflect-cross-host-process-monitor.png)
 ![DB Monitor](screenshot-deflect-db-monitor.png)
@@ -32,13 +32,13 @@ CPU, RAM, disk, network I/O, Docker containers, MySQL/PostgreSQL/Redis — acros
 Live attack radar: malicious IPs, geo-location, timeline. Manages UFW/iptables rules. Defense mode executes bans, restarts, and rate limits autonomously within your policy.
 
 ![Firewall Manager](screenshot-deflect-host-firewall-manager.png)
-![Firewall Manager — Rules](screenshot-deflect-host-firewall-manager2.png)
+![Firewall Manager - Rules](screenshot-deflect-host-firewall-manager2.png)
 ![Ban IP](screenshot-deflect-ban-ip.png)
 
 ---
 
 ### 📦 Package & System Management
-Full apt integration: view available updates, security patches, and install packages — across all hosts from one screen.
+Full apt integration: view available updates, security patches, and install packages - across all hosts from one screen.
 
 ![APT Update Manager](screenshot-deflect-apt-upd-manager.png)
 ![APT Package Installer](screenshot-deflect-apt-package-installer.png)
@@ -54,7 +54,7 @@ Manage containers, images, and systemd services without leaving the terminal.
 ---
 
 ### 📁 File Manager
-Dual-panel SFTP file manager — browse, upload, download, edit, copy between hosts. Midnight Commander style.
+Dual-panel SFTP file manager - browse, upload, download, edit, copy between hosts. Midnight Commander style.
 
 ![File Manager](screenshot-deflect-file-manager.png)
 
@@ -69,7 +69,7 @@ Cross-host regex log search and live journalctl tailing with 8 preset tabs.
 ---
 
 ### ✉️ Email Monitor
-MTA queue monitoring, account overview, error rates — across all hosts.
+MTA queue monitoring, account overview, error rates - across all hosts.
 
 ![Email Monitor](screenshot-deflect-email-monitor.png)
 ![Email Queue Manager](screenshot-deflect-email-maanger-queue.png)
@@ -80,8 +80,8 @@ MTA queue monitoring, account overview, error rates — across all hosts.
 Manage your entire server fleet: bulk DevOps commands, SSH key rotation, host management.
 
 ![Host Fleet Manager](screenshot-deflect-host-fleet-mgr.png)
-![Bulk Commands — Select](screenshot-deflect-bulk-devops-commands-select.png)
-![Bulk Commands — Result](screenshot-deflect-bulk-devops-commands-result.png)
+![Bulk Commands - Select](screenshot-deflect-bulk-devops-commands-select.png)
+![Bulk Commands - Result](screenshot-deflect-bulk-devops-commands-result.png)
 ![Batch Rotate Keys](screenshot-deflect-batch-rotate-keys.png)
 
 ---
@@ -98,7 +98,7 @@ Cron & systemd timer management, network reconnaissance, script runner, config e
 ---
 
 ### 🤖 AI-Enhanced Autonomous Operations
-Unified AI engine: Claude, GPT-4, Gemini, Mistral, Groq, LM Studio. Per-host LLM instructions enable background governance loops — *"restart MySQL if slow-query rate exceeds 10/min"* — running 24/7 without you watching.
+Unified AI engine: Claude, GPT-4, Gemini, Mistral, Groq, LM Studio. Per-host LLM instructions enable background governance loops - *"restart MySQL if slow-query rate exceeds 10/min"* - running 24/7 without you watching.
 
 ![AI-Driven Operations](screenshot-deflect-ai-driven2.png)
 ![AI SSH Session](screenshot-deflect-ssh-ai-driven.png)
@@ -171,15 +171,15 @@ python deflect.py           # real mode, reads deflect.json next to the script
 *Any OS that runs Python 3.10+*
 
 **Manages (remote servers):**  
-✅ Debian 10+ · ✅ Ubuntu 20.04+ — primary targets, fully tested  
-🟨 Fedora · CentOS · Arch · Alpine — works via SSH, not all features tested yet
+✅ Debian 10+ · ✅ Ubuntu 20.04+ - primary targets, fully tested  
+🟨 Fedora · CentOS · Arch · Alpine - works via SSH, not all features tested yet
 
 ---
 
 ## Tech Stack
 
 - **Python 3.10+** · **Textual 8.x** (TUI) · **asyncio** · **paramiko** (SSH)
-- **cryptography** — Fernet + PBKDF2 for HardwareVault
+- **cryptography** - Fernet + PBKDF2 for HardwareVault
 - **AI backends:** `anthropic` · `openai` · `google-generativeai` · `mistralai` *(all optional)*
 
 ---
