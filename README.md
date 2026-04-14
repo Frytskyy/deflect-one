@@ -1,6 +1,7 @@
 # Deflect One
 
-**Agentless DevOps command center for your entire Linux infrastructure — from one terminal.**
+**Agentless DevOps command center for your entire Linux infrastructure — from one terminal.
+No agents. No cloud. No SaaS. Just SSH access — and Deflect One turns that into a complete operations platform: server monitoring, active attack detection, file management, deployments, and more. AI support is available as an optional add-on.**
 
 No agents to install on servers. No cloud. No SaaS. Just SSH access — and Deflect One turns that into a complete operations platform.
 
@@ -33,23 +34,6 @@ Live attack radar: malicious IPs, geo-location, timeline. Manages UFW/iptables r
 ![Firewall Manager](screenshot-deflect-host-firewall-manager.png)
 ![Firewall Manager — Rules](screenshot-deflect-host-firewall-manager2.png)
 ![Ban IP](screenshot-deflect-ban-ip.png)
-
----
-
-### 🤖 AI-Enhanced Autonomous Operations
-Unified AI engine: Claude, GPT-4, Gemini, Mistral, Groq, LM Studio. Per-host LLM instructions enable background governance loops — *"restart MySQL if slow-query rate exceeds 10/min"* — running 24/7 without you watching.
-
-![AI-Driven Operations](screenshot-deflect-ai-driven2.png)
-![AI SSH Session](screenshot-deflect-ssh-ai-driven.png)
-![AI SSH Sample](screenshot-deflect-ssh-ai-sample.png)
-![Host AI Settings](screenshot-deflect-host-ai-settigns.png)
-![AI Settings](screenshot-deflect-settings-ai.png)
-![AI Stats](screenshot-deflect-ai-stats.png)
-
----
-
-### 💬 Natural-Language Command Terminal
-`Ctrl+A` → describe what you want in plain English → Deflect One translates to CLI/SSH/Bash and executes it.
 
 ---
 
@@ -110,6 +94,23 @@ Cron & systemd timer management, network reconnaissance, script runner, config e
 ![Script Runner](screenshot-deflect-scripts-runner.png)
 ![Tools](screenshot-deflect-tools.png)
 ![Config Export](screenshot-deflect-config-export.png)
+
+---
+
+### 🤖 AI-Enhanced Autonomous Operations
+Unified AI engine: Claude, GPT-4, Gemini, Mistral, Groq, LM Studio. Per-host LLM instructions enable background governance loops — *"restart MySQL if slow-query rate exceeds 10/min"* — running 24/7 without you watching.
+
+![AI-Driven Operations](screenshot-deflect-ai-driven2.png)
+![AI SSH Session](screenshot-deflect-ssh-ai-driven.png)
+![AI SSH Sample](screenshot-deflect-ssh-ai-sample.png)
+![Host AI Settings](screenshot-deflect-host-ai-settigns.png)
+![AI Settings](screenshot-deflect-settings-ai.png)
+![AI Stats](screenshot-deflect-ai-stats.png)
+
+---
+
+### 💬 Natural-Language Command Terminal
+`Ctrl+A` → describe what you want in plain English → Deflect One translates to CLI/SSH/Bash and executes it.
 
 ---
 
