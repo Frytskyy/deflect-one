@@ -3,13 +3,13 @@ name: Publish to PyPI
 on:
   push:
     tags:
-      - 'v*'   # Trigger: git tag v0.76 && git push origin v0.76
+      - 'v*'
 
 jobs:
-  build-and-publish:
+  publish:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      id-token: write  # потрібно для Trusted Publisher OIDC
 
     steps:
       - uses: actions/checkout@v4
@@ -19,19 +19,10 @@ jobs:
           python-version: "3.11"
 
       - name: Install build tools
-        run: pip install build twine
+        run: pip install build
 
-      - name: Copy deflect.py into package
-        run: cp deflect.py src/deflect_one/deflect.py
-
-      - name: Build wheel + sdist
+      - name: Build package
         run: python -m build
 
-      - name: Check dist
-        run: twine check dist/*
-
-      - name: Upload to PyPI
-        run: twine upload dist/*
-        env:
-          TWINE_USERNAME: __token__
-          TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
