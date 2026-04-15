@@ -1,0 +1,85 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.backends.legacy:build"
+
+[project]
+name = "deflect-one"
+version = "0.76"
+description = "Enterprise Infrastructure Command Center — DevOps + Cybersecurity in one terminal"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [
+    { name = "Vlad (Volodymyr) Frytskyy", email = "deflect@vladonai.com" }
+]
+keywords = [
+    "devops", "ssh", "tui", "terminal", "monitoring",
+    "infrastructure", "linux", "server", "dashboard", "cybersecurity"
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Information Technology",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Operating System :: POSIX :: Linux",
+    "Operating System :: MacOS",
+    "Operating System :: Microsoft :: Windows",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Systems Administration",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Networking :: Monitoring",
+    "Topic :: System :: Systems Administration :: Authentication/Directory",
+    "Topic :: System :: Filesystems",           # file manager with ability to copy files between Linux hosts
+    "Topic :: System :: Shells",                # SSH shell
+    "Topic :: System :: Logging",               # log tail / aggregation
+    "Topic :: System :: Installation/Setup",    # apt manager
+    "Topic :: System :: Recovery Tools",
+    "Topic :: System :: Shells"
+    "Topic :: System :: Software Distribution",
+    "Topic :: System :: Archiving :: Backup",
+    "Topic :: System :: Archiving",
+    "Topic :: System :: Distributed Computing",
+    "Topic :: Security",
+    "Topic :: Terminals",
+    "Topic :: Terminals :: Terminal Emulators/X Terminals",  # SSH shell
+    "Topic :: Internet :: Log Analysis",        # attack radar / log agg
+]
+requires-python = ">=3.10"
+
+dependencies = [
+    "textual>=0.80.0",
+    "paramiko>=3.0.0",
+    "cryptography>=41.0.0",
+    "pyyaml>=6.0",
+]
+
+[project.optional-dependencies]
+ai = [
+    "anthropic>=0.25.0",
+    "openai>=1.0.0",
+]
+all = [
+    "anthropic>=0.25.0",
+    "openai>=1.0.0",
+]
+
+[project.urls]
+Homepage    = "https://www.vladonai.com/deflect-one"
+Repository  = "https://github.com/Frytskyy/deflect-one"
+"Bug Tracker" = "https://github.com/Frytskyy/deflect-one/issues"
+Sponsor     = "https://www.vladonai.com/sponsor"
+
+[project.scripts]
+deflect     = "deflect_one.cli:main"
+deflect-one = "deflect_one.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"deflect_one" = ["py.typed"]
