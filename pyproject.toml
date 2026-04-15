@@ -74,11 +74,14 @@ Repository  = "https://github.com/Frytskyy/deflect-one"
 Sponsor     = "https://www.vladonai.com/sponsor"
 
 [project.scripts]
-deflect     = "deflect_one.cli:main"
-deflect-one = "deflect_one.cli:main"
+deflect     = "deflect:main"
+deflect-one = "deflect:main"
 
 [tool.setuptools.packages.find]
-where = ["src"]
+where = ["."]
 
 [tool.setuptools.package-data]
 "deflect_one" = ["py.typed"]
+
+[tool.setuptools]
+py-modules = ["deflect"] #list of files to setup
