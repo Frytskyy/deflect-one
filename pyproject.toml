@@ -39,7 +39,6 @@ classifiers = [
     "Topic :: System :: Logging",               # log tail / aggregation
     "Topic :: System :: Installation/Setup",    # apt manager
     "Topic :: System :: Recovery Tools",
-    "Topic :: System :: Shells"
     "Topic :: System :: Software Distribution",
     "Topic :: System :: Archiving :: Backup",
     "Topic :: System :: Archiving",
