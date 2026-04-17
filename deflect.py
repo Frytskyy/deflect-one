@@ -31,7 +31,7 @@ engineer or small team, Deflect One is your infrastructure dashboard, firewall c
 and AI assistant (optional) — all in one file, all from one terminal.
 
 Created by: Volodymyr Frytskyy (WhitemanV)
-Website:    https://www.vladonai.com/about-resume
+Website:    https://www.vladonai.com/deflect-one
 GitHub:     https://github.com/Frytskyy/deflect-one
 Sponsor:    https://www.vladonai.com/sponsor
 
@@ -120,7 +120,7 @@ Minimal (no AI):
     pip install textual paramiko cryptography pyyaml pyte
     python3 deflect.py --demo
 
-With AI enabled (set in F6 → 🤖 AI tab):
+With AI enabled (optional, set in F6 → 🤖 AI tab):
     1. Run: python3 deflect.py
     2. Press F6 → 🤖 AI tab
     3. Choose provider (Anthropic or OpenAI)
@@ -255,7 +255,7 @@ LICENSE
 MIT License with Attribution Requirement
 
 Copyright (c) 2010-2026 Volodymyr Frytskyy (WhitemanV)
-(https://www.vladonai.com/about-resume)
+(https://www.vladonai.com/deflect-one)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -269,7 +269,7 @@ copies or substantial portions of the Software.
 
 Attribution Requirement: Any use of this software, whether modified or
 unmodified, must include attribution to the original author and a link to
-https://www.vladonai.com/about-resume
+https://www.vladonai.com/deflect-one
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -1417,6 +1417,42 @@ from textual.widgets    import Input, Button, ListView, ListItem
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# SECTION: colour palette  (GitHub Dark — change here, not scattered across the file like a Sith)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Semantic status colours ────────────────────────────────────────────────────
+CLR_SUCCESS   = "#3fb950"   # green  — server lives. the Force is strong today
+CLR_ERROR     = "#f85149"   # red    — it's a trap. again. at 3am.
+CLR_WARNING   = "#d29922"   # amber  — I have a bad feeling about this
+CLR_ACCENT    = "#58a6ff"   # blue   — GitHub blue cosplay, very professional
+CLR_INFO      = "#0178d4"   # blue   — "helpful" info nobody reads. it's there. trust me.
+
+# ── Interactive state colours ──────────────────────────────────────────────────
+CLR_CURSOR    = "#df8000"   # orange — YOU ARE HERE. hello there.
+CLR_TAB_ACTIVE = "#ffa62b"  # amber  — the tab you opened and will never close
+CLR_TAB_PLUGIN = "#4EBF71"  # green  — plugins get their own special green, they earned it
+
+# ── Text / label hierarchy ─────────────────────────────────────────────────────
+CLR_TEXT      = "#c9d1d9"   # primary text — not white, eyes aren't made of durasteel
+CLR_TEXT_DIM  = "#8b949e"   # muted — these aren't the droids you're looking for
+CLR_LABEL     = "#888780"   # labels — one in ten users actually reads these
+CLR_METRIC    = "#666666"   # CPU RAM Disk — grey like a Monday, grey like the Death Star walls
+CLR_IDLE      = "#484f58"   # waiting — the colour of existential dread
+
+# ── Host list colours ──────────────────────────────────────────────────────────
+CLR_HOST      = "#58a6ff"   # host IP — blue because IPs are important, okay?
+CLR_HOST_SEL  = "#c0c0ff"   # selected host — almost purple, almost stylish
+CLR_HOST_LBL  = "#8888cc"   # host label — supporting character, not the hero
+
+# ── Stats / metric value colours ──────────────────────────────────────────────
+CLR_STAT_HI   = "#a07020"   # highlighted value — gold for the chosen one
+CLR_STAT_LO   = "#888800"   # normal value — just exists, bothers no one
+
+# ── Background colours ─────────────────────────────────────────────────────────
+CLR_BG_FIREWALL = "#0d2b0d" # dark green — Matrix aesthetic. very serious. do not touch.
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # SECTION: ContentSwitcher widget (custom implementation for Textual 8.x)
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -1447,7 +1483,7 @@ class ContentSwitcher(Container):
 DEFLECT_DIR = Path(__file__).parent
 
 # ── App identity (change version in ONE place only) ───────────────────────────
-APP_VERSION = "0.75"
+APP_VERSION = "0.76"
 APP_SITE    = "vladonai.com/deflect-one"
 APP_GITHUB  = "github.com/WhitemanV/deflect-one"
 APP_SPONSOR = "vladonai.com/sponsor"
@@ -6630,7 +6666,7 @@ class ServerCard(Panel):
         tag    = f" [{'+'.join(state.config.tags[:2])}]" if state.config.tags else ""
         maint  = " 🔧" if state.config.maintenance else ""
         ai_ctl = " 🤖" if state.config.ai_controlled else ""
-        t.append(cursor, style="bold #df8000" if focused else "grey50")
+        t.append(cursor, style=f"bold {CLR_CURSOR}" if focused else "grey50")
         t.append(f"{dot} ", style=col)
         t.append(f"{self._label}{tag}{maint}{ai_ctl}\n", style="bold white")
         t.append(f"   {self._addr}  {fmt_uptime(metrics.uptime_s)}\n", style="grey50")
@@ -6642,20 +6678,20 @@ class ServerCard(Panel):
             t.append(f"   {metrics.error}\n", style="yellow")
             self.update(t); return
 
-        t.append(" CPU ", style="#666666")
+        t.append(" CPU ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.cpu_pct, bar))
         t.append(f" {metrics.cpu_pct:4.1f}%  L{metrics.load1:.2f}\n",
                  style=pct_color(metrics.cpu_pct))
 
-        t.append(" RAM ", style="#666666")
+        t.append(" RAM ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.ram_pct, bar))
         t.append(f" {metrics.ram_pct:4.1f}%\n", style=pct_color(metrics.ram_pct))
 
-        t.append("Disk ", style="#666666")
+        t.append("Disk ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.disk_pct, bar))
         t.append(f" {metrics.disk_pct:4.1f}%\n", style=pct_color(metrics.disk_pct))
 
-        t.append(" net ", style="#666666")
+        t.append(" net ", style=CLR_METRIC)
         t.append_text(braille_sparkline(metrics.net_rx_hist, bar // 2))
         t.append(f" ↑{fmt_kb(metrics.net_tx_kb)} ↓{fmt_kb(metrics.net_rx_kb)}\n",
                  style="grey50")
@@ -6663,7 +6699,7 @@ class ServerCard(Panel):
         # Mail queue (exim4 / postfix) - throughput in msgs/min
         if metrics.mail_mta_type:
             mta_name = "📧" if metrics.mail_mta_type == "exim4" else "📮"
-            t.append(" mta ", style="#666666")
+            t.append(" mta ", style=CLR_METRIC)
             t.append_text(braille_sparkline(metrics.mail_queue_hist, bar // 2))
             # Dynamic coloring: red if > 8 msgs/min (~500/h), yellow if trending up
             if metrics.mail_throughput_mpm > 8:
@@ -6676,7 +6712,7 @@ class ServerCard(Panel):
                      style=status_color)
 
         if services:
-            t.append(" svc ", style="#666666")
+            t.append(" svc ", style=CLR_METRIC)
             for svc in sorted(services, key=_svc_sort_key)[:8]:
                 t.append(f"{svc.status_char}{svc.name[:10]} ", style=svc.status_color)
             if len(services) > 8:
@@ -6684,7 +6720,7 @@ class ServerCard(Panel):
             t.append("\n")
 
         if metrics.ssl_certs:
-            t.append(" ssl ", style="#666666")
+            t.append(" ssl ", style=CLR_METRIC)
             for domain, days in list(metrics.ssl_certs.items())[:3]:
                 short = domain[:12] if len(domain) > 12 else domain
                 if days < 0:
@@ -6702,7 +6738,7 @@ class ServerCard(Panel):
         if metrics.apt_info:
             ai = metrics.apt_info
             os_short = ai.os_version[:20] if len(ai.os_version) > 20 else ai.os_version
-            t.append("  os ", style="#666666")
+            t.append("  os ", style=CLR_METRIC)
             t.append(f"{os_short}  ", style="grey70")
             if ai.security_count:
                 t.append(f"🔒{ai.security_count} ", style="bold red")
@@ -6715,7 +6751,7 @@ class ServerCard(Panel):
         if metrics.docker_containers:
             running = [c for c in metrics.docker_containers if "Up" in c.status]
             total   = len(metrics.docker_containers)
-            t.append(" dkr ", style="#666666")
+            t.append(" dkr ", style=CLR_METRIC)
             t.append(f"[D] {len(running)}/{total} ", style="cyan" if running else "grey50")
             for c in running[:3]:
                 short_name = c.name[:10]
@@ -7127,17 +7163,17 @@ class AttackRadarPanel(Panel):
                 # Pad or truncate
                 host_lbl = f"{host_lbl:<{host_max}}"
                 if sel:
-                    t.append("▶ ", style="bold #df8000")
+                    t.append("▶ ", style=f"bold {CLR_CURSOR}")
                 elif live_flag:
                     t.append(" 🔴", style="red")
                 else:
                     t.append(f" {camp}",
                              style=("red" if info['campaign'] else "grey50"))
                 t.append(f"{info['cc']:>2} ", style="bold grey70" if sel else "grey50")
-                t.append(f"{ip:<15}", style="bold #58a6ff" if sel else "#58a6ff")
+                t.append(f"{ip:<15}", style=f"bold {CLR_ACCENT}" if sel else CLR_ACCENT)
                 t.append(f"{info['kind'][:5]:<6}", style=kc)
                 t.append(f"{cnt:>3}×  ", style="bold white" if sel else "grey85")
-                t.append(host_lbl + " ", style="bold #c0c0ff" if sel else "#8888cc")
+                t.append(host_lbl + " ", style=f"bold {CLR_HOST_SEL}" if sel else CLR_HOST_LBL)
                 t.append(f"{ts}\n", style="grey50")
 
         if self._port_warnings:
@@ -7440,22 +7476,22 @@ class ServicesPanel(Panel):
                 label = self._host_labels.get(host, host)
                 if col_i > 0:
                     t.append(" │ ", style="grey23")
-                t.append("▶ " if sel else "  ", style="bold #df8000" if sel else "")
+                t.append("▶ " if sel else "  ", style=f"bold {CLR_CURSOR}" if sel else "")
                 t.append(f"{dot} ", style=dot_col)
-                t.append(f"{name[:10]:<10}", style="bold white" if sel else "#cccccc")
+                t.append(f"{name[:10]:<10}", style="bold white" if sel else CLR_TEXT)
                 if is_last_col:
                     # Right-align last column label to fill remaining space
                     t.append(f" {label[:last_label_w]:>{last_label_w}}",
-                              style="bold #a07020" if sel else "#888800")
+                              style=f"bold {CLR_STAT_HI}" if sel else CLR_STAT_LO)
                 else:
                     t.append(f" {label[:label_w]:<{label_w}}",
-                              style="bold #a07020" if sel else "#888800")
+                              style=f"bold {CLR_STAT_HI}" if sel else CLR_STAT_LO)
             t.append("\n")
 
         total     = len(self._rows)
         shown_end = min(self._scroll_offset + svcs_per_page, total)
         if total > svcs_per_page:
-            t.append(f"  {self._scroll_offset + 1}-{shown_end}/{total}\n", style="#666666")
+            t.append(f"  {self._scroll_offset + 1}-{shown_end}/{total}\n", style=CLR_METRIC)
         self.update(t)
 
 
@@ -12029,8 +12065,8 @@ class PortForwardsScreen(ModalScreen):
         for i, entry in enumerate(self._tunnels, 1):
             f   = entry.fwd
             en  = "☑" if f.get("enabled") else "☐"
-            st  = (Text("● active", style="bold #3fb950") if entry.active
-                   else (Text(f"✗ {entry.error[:20]}", style="#f85149")
+            st  = (Text("● active", style=f"bold {CLR_SUCCESS}") if entry.active
+                   else (Text(f"✗ {entry.error[:20]}", style=CLR_ERROR)
                          if entry.error else Text("-", style="dim")))
             tbl.add_row(
                 str(i),
@@ -12045,7 +12081,7 @@ class PortForwardsScreen(ModalScreen):
         n_active = sum(1 for t in self._tunnels if t.active)
         try:
             self.query_one("#pf-footer", Static).update(
-                f"[bold #58a6ff]{n_active} active[/] of {len(self._tunnels)} rules")
+                f"[bold {CLR_ACCENT}]{n_active} active[/] of {len(self._tunnels)} rules")
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
@@ -12402,7 +12438,7 @@ class DockerScreen(ModalScreen):
                 _log.warning("Exception: %s: %s", type(e).__name__, e)  # TODO: improve log quality
                 label = h
             if i == self._host_idx % len(self._host_ids):
-                tabs.append(f" [{label}] ", style="bold white on #0178d4")
+                tabs.append(f" [{label}] ", style=f"bold white on {CLR_INFO}")
             else:
                 tabs.append(f"  {label}  ", style="grey50")
         try:
@@ -12443,7 +12479,7 @@ class DockerScreen(ModalScreen):
         if docker_installed is False:
             t.append("\n  🐳  Docker is not installed on this host.\n\n", style="bold yellow")
             t.append("  Press  ", style="grey70")
-            t.append(" i ", style="bold white on #0178d4")
+            t.append(" i ", style=f"bold white on {CLR_INFO}")
             t.append("  to open the APT package manager and install Docker.\n\n", style="grey70")
             t.append("  You can also open an SSH shell (F2) and run:\n", style="grey50")
             t.append("    curl -fsSL https://get.docker.com | sh\n", style="cyan")
@@ -12484,7 +12520,7 @@ class DockerScreen(ModalScreen):
                     status_style = "yellow"
 
                 row_style = "bold white" if selected else "grey85"
-                t.append(cursor, style="bold #df8000" if selected else "grey50")
+                t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
                 t.append(f"{name:<22} ", style=row_style)
                 t.append(f"{image:<28} ", style="grey70")
                 t.append(f"{status:<18} ", style=status_style)
@@ -13398,7 +13434,7 @@ class NetworkReconScreen(ModalScreen):
         t = Text()
         for i, (label, desc, _) in enumerate(_RECON_PRESETS):
             if i == self._preset_idx:
-                t.append(f" [{i}]{label} ", style="bold white on #ffa62b")
+                t.append(f" [{i}]{label} ", style=f"bold white on {CLR_TAB_ACTIVE}")
             else:
                 t.append(f"  {label}  ", style="grey50")
             if i < len(_RECON_PRESETS) - 1:
@@ -13703,8 +13739,8 @@ class FleetManagerScreen(ModalScreen):
             chk  = "☑" if self._checked.get(hid) else "☐"
             conn = hs.state if hs else ConnState.ERROR
             status_sym = (
-                Text("● UP",   style="bold #3fb950") if conn == ConnState.CONNECTED else
-                Text("✗ DOWN", style="bold #f85149")
+                Text("● UP",   style=f"bold {CLR_SUCCESS}") if conn == ConnState.CONNECTED else
+                Text("✗ DOWN", style=f"bold {CLR_ERROR}")
             )
             m      = self._pool.metrics_view().get(hid)
             cpu_s  = f"{m.cpu_pct:5.1f}%" if m and m.cpu_pct > 0 else "  -  "
@@ -13726,7 +13762,7 @@ class FleetManagerScreen(ModalScreen):
     def _update_footer(self):
         n_checked = sum(1 for v in self._checked.values() if v)
         total     = len(self._pool.host_ids())
-        msg = f"[bold #58a6ff]▣ {n_checked} selected[/] of {total}"
+        msg = f"[bold {CLR_ACCENT}]▣ {n_checked} selected[/] of {total}"
         try:
             self.query_one("#fleet-footer", Static).update(msg)
         except Exception as e:
@@ -14248,7 +14284,7 @@ class BulkOpsScreen(ModalScreen):
         with Container(id="bulk-box"):
             with Horizontal(id="bulk-layout"):
                 with Vertical(id="bulk-hosts-col"):
-                    yield Static("[bold #58a6ff]Target hosts[/]",
+                    yield Static(f"[bold {CLR_ACCENT}]Target hosts[/]",
                                  classes="bulk-section-title")
                     for hid in self._host_ids:
                         try:
@@ -14429,12 +14465,12 @@ class BulkOpsScreen(ModalScreen):
     def _update_host_widget(self, hid: str):
         icons = {"waiting": "◌", "running": "⟳", "done": "✓", "error": "✗"}
         colors = {
-            "waiting": "#484f58", "running": "#d29922",
-            "done": "#3fb950",    "error":   "#f85149",
+            "waiting": CLR_IDLE, "running": CLR_WARNING,
+            "done": CLR_SUCCESS,    "error":   CLR_ERROR,
         }
         st    = self._status.get(hid, "waiting")
         icon  = icons.get(st, "?") 
-        color = colors.get(st, "#c9d1d9")
+        color = colors.get(st, CLR_TEXT)
         try:
             label = self._pool.state(hid).config.label
         except Exception as e:
@@ -14445,7 +14481,7 @@ class BulkOpsScreen(ModalScreen):
         txt.append(f"{icon} ", style=f"bold {color}")
         txt.append(label[:16], style=color)
         if out_snip:
-            txt.append(f"\n  {out_snip}", style="dim #8b949e")
+            txt.append(f"\n  {out_snip}", style=f"dim {CLR_TEXT_DIM}")
         try:
             self.query_one(f"#{self._host_widget_id(hid)}", Static).update(txt)
         except Exception as e:
@@ -14607,7 +14643,7 @@ class RotateKeyScreen(ModalScreen):
         with Container(id="rk-box"):
             with Container(id="rk-options"):
                 yield Static(
-                    "[bold #d29922]What this does:[/]\n"
+                    f"[bold {CLR_WARNING}]What this does:[/]\n"
                     "  1. Generate new ed25519 keypair locally\n"
                     "  2. Push new pubkey to remote authorized_keys\n"
                     "  3. Verify new key works (test connect)\n"
@@ -14637,7 +14673,7 @@ class RotateKeyScreen(ModalScreen):
                         if s in _ROTATE_BASE_STEPS
                     )
                     yield Static(
-                        f"[bold #58a6ff][{label}][/]\n{pending_lines}",
+                        f"[bold {CLR_ACCENT}][{label}][/]\n{pending_lines}",
                         id=self._prog_id(hid))
             with Horizontal(id="rk-btn-row"):
                 yield Button("▶ Start Rotation", id="btn-start",
@@ -14751,16 +14787,16 @@ class RotateKeyScreen(ModalScreen):
                 continue
             o, d = pr[s]
             if o is None:
-                sym = Text("⟳ ", style="bold #d29922")
+                sym = Text("⟳ ", style=f"bold {CLR_WARNING}")
             elif o:
-                sym = Text("✓ ", style="bold #3fb950")
+                sym = Text("✓ ", style=f"bold {CLR_SUCCESS}")
             else:
-                sym = Text("✗ ", style="bold #f85149")
+                sym = Text("✗ ", style=f"bold {CLR_ERROR}")
             line = Text()
             line.append_text(sym)
-            line.append(f"{lbl}", style="dim" if o is True else "#c9d1d9")
+            line.append(f"{lbl}", style="dim" if o is True else CLR_TEXT)
             if not o and d:
-                line.append(f"\n  {d[:55]}", style="#f85149")
+                line.append(f"\n  {d[:55]}", style=CLR_ERROR)
             parts.append(line)
 
         try:
@@ -14769,7 +14805,7 @@ class RotateKeyScreen(ModalScreen):
             _log.warning("Exception: %s: %s", type(e).__name__, e)  # TODO: improve log quality
             label = hid
 
-        out = Text(f"[{label}]\n", style="bold #58a6ff")
+        out = Text(f"[{label}]\n", style=f"bold {CLR_ACCENT}")
         for p in parts:
             out.append_text(p)
             out.append("\n")
@@ -14981,7 +15017,7 @@ class AptUpgradeScreen(ModalScreen):
         # tab switcher bar
         tab_t = Text()
         for key, lbl, tid in [("1", "Upgrades", "upgrades"), ("2", "Quick Install", "quickinstall")]:
-            style = "bold white on #ffa62b" if self._apt_tab == tid else "grey50"
+            style = f"bold white on {CLR_TAB_ACTIVE}" if self._apt_tab == tid else "grey50"
             tab_t.append(f" {key}:{lbl} ", style=style)
         try:
             self.query_one("#apt-tab-bar", Static).update(tab_t)
@@ -15005,7 +15041,7 @@ class AptUpgradeScreen(ModalScreen):
             elif ai and ai.total_count:
                 badge = f" ⬆{ai.total_count}"
             if i == self._host_idx % len(self._host_ids):
-                host_tabs.append(f" [{label}{badge}] ", style="bold white on #ffa62b")
+                host_tabs.append(f" [{label}{badge}] ", style=f"bold white on {CLR_TAB_ACTIVE}")
             else:
                 host_tabs.append(f"  {label}{badge}  ", style="grey50")
         try:
@@ -15065,7 +15101,7 @@ class AptUpgradeScreen(ModalScreen):
                 ptype  = "🔒 security" if is_sec else "  update"
                 row_style  = "bold white" if selected else ("bold yellow" if is_sec else "grey85")
                 type_style = "bold red" if is_sec else "grey50"
-                t.append(cursor, style="bold #df8000" if selected else "grey50")
+                t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
                 t.append(f"{name:<30} ", style=row_style)
                 t.append(f"{cur:<22} ", style="grey50")
                 t.append(f"{new_v:<22} ", style="green")
@@ -15160,7 +15196,7 @@ class AptUpgradeScreen(ModalScreen):
             else:
                 status_txt = Text("? unknown",       style="grey50")
             row_style = "bold white" if selected else "grey85"
-            t.append(cursor, style="bold #df8000" if selected else "grey50")
+            t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
             t.append(f"{pkg:<26} ", style=row_style)
             t.append(f"{desc:<44} ", style="grey70" if not selected else "grey85")
             t.append_text(status_txt)
@@ -15527,7 +15563,7 @@ class VaultScreen(ModalScreen):
         t = Text()
         for i, name in enumerate(self._TABS):
             if i == self._tab_idx:
-                t.append(f" [{name}] ", style="bold white on #4EBF71")
+                t.append(f" [{name}] ", style=f"bold white on {CLR_TAB_PLUGIN}")
             else:
                 t.append(f"  {name}  ", style="grey50")
             if i < len(self._TABS) - 1:
@@ -15562,7 +15598,7 @@ class VaultScreen(ModalScreen):
                     val_str = "- not set -"
                     val_style = "grey35"
                 row_style = "bold white" if selected else "grey85"
-                t.append(cursor, style="bold #df8000" if selected else "grey50")
+                t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
                 t.append(f"{scope:<28} ", style=row_style)
                 t.append(f"{label:<30} ", style="grey70")
                 t.append(f"{val_str}\n", style=val_style)
@@ -16436,7 +16472,7 @@ class ScriptScreen(ModalScreen):
                 # ── Left: file list
                 with Vertical(id="scr-file-col"):
                     yield Static(
-                        "[bold #d29922]Scripts[/]  "
+                        f"[bold {CLR_WARNING}]Scripts[/]  "
                         f"[dim]{len(self._files)} files[/]",
                         classes="scr-opt-label",
                         markup=True)
@@ -16445,9 +16481,9 @@ class ScriptScreen(ModalScreen):
                             sz   = self._fmt_size(p)
                             icon = self._file_icon(p)
                             txt  = Text()
-                            txt.append(f"{icon} ", style="#d29922")
+                            txt.append(f"{icon} ", style=CLR_WARNING)
                             txt.append(p.name[:22], style="bold" if i == 0 else "")
-                            txt.append(f"  {sz}", style="dim #8b949e")
+                            txt.append(f"  {sz}", style=f"dim {CLR_TEXT_DIM}")
                             yield Static(
                                 txt,
                                 id=f"scr-file-{i}",
@@ -16897,7 +16933,7 @@ class ScriptScreen(ModalScreen):
     def _update_output(self):
         txt = Text()
         for line in self._output_lines[-20:]:
-            color = "#3fb950" if line.startswith("✓") else "#f85149"
+            color = CLR_SUCCESS if line.startswith("✓") else CLR_ERROR
             txt.append(line + "\n", style=color)
         try:
             self.query_one("#scr-output", Static).update(txt)
