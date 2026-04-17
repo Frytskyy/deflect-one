@@ -13,7 +13,7 @@ From server health monitoring to active attack detection, from deployment orches
 
 ## Main Dashboard
 
-![Main Dashboard](screenshot-deflect-main.png)
+![Main Dashboard](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-main.png)
 
 ---
 
@@ -22,90 +22,90 @@ From server health monitoring to active attack detection, from deployment orches
 ### Real-Time Infrastructure Monitoring
 CPU, RAM, disk, network I/O, Docker containers, MySQL/PostgreSQL/Redis - across unlimited servers simultaneously. Async-native coroutine pool, near-zero overhead.
 
-![Cross-Host Process Monitor](screenshot-deflect-cross-host-process-monitor.png)
-![DB Monitor](screenshot-deflect-db-monitor.png)
-![Connections Viewer](screenshot-deflect-connections-viewer.png)
+![Cross-Host Process Monitor](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-cross-host-process-monitor.png)
+![DB Monitor](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-db-monitor.png)
+![Connections Viewer](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-connections-viewer.png)
 
 ---
 
 ### Active Attack Detection & Defense
 Live attack radar: malicious IPs, geo-location, timeline. Manages UFW/iptables rules. Defense mode executes bans, restarts, and rate limits autonomously within your policy.
 
-![Firewall Manager](screenshot-deflect-host-firewall-manager.png)
-![Firewall Manager - Rules](screenshot-deflect-host-firewall-manager2.png)
-![Ban IP](screenshot-deflect-ban-ip.png)
+![Firewall Manager](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-host-firewall-manager.png)
+![Firewall Manager - Rules](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-host-firewall-manager2.png)
+![Ban IP](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-ban-ip.png)
 
 ---
 
 ### Package & System Management
 Full apt integration: view available updates, security patches, and install packages - across all hosts from one screen.
 
-![APT Update Manager](screenshot-deflect-apt-upd-manager.png)
-![APT Package Installer](screenshot-deflect-apt-package-installer.png)
+![APT Update Manager](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-apt-upd-manager.png)
+![APT Package Installer](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-apt-package-installer.png)
 
 ---
 
 ### Docker & Services
 Manage containers, images, and systemd services without leaving the terminal.
 
-![Docker Manager](screenshot-deflect-docker-mgr.png)
-![Services Manager](screenshot-deflect-services-manager.png)
+![Docker Manager](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-docker-mgr.png)
+![Services Manager](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-services-manager.png)
 
 ---
 
 ### File Manager
 Dual-panel SFTP/SSH file manager - browse, upload, download, edit, copy files between hosts. Midnight Commander style.
 
-![File Manager](screenshot-deflect-file-manager.png)
+![File Manager](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-file-manager.png)
 
 ---
 
 ### Log Aggregation & Journal Viewer
 Cross-host regex log search and live journalctl tailing with 8 preset tabs.
 
-![Cross-Host Log Filtering](screenshot-deflect-cross-hosts-logs-filtering.png)
-![Journal Viewer](screenshot-deflect-host-journal-viewer.png)
+![Cross-Host Log Filtering](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-cross-hosts-logs-filtering.png)
+![Journal Viewer](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-host-journal-viewer.png)
 
 ---
 
 ### Email Monitor
 MTA queue monitoring, account overview, error rates - across all hosts.
 
-![Email Monitor](screenshot-deflect-email-monitor.png)
-![Email Queue Manager](screenshot-deflect-email-maanger-queue.png)
+![Email Monitor](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-email-monitor.png)
+![Email Queue Manager](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-email-maanger-queue.png)
 
 ---
 
 ### Fleet & Bulk Operations
 Manage your entire server fleet: bulk DevOps commands, SSH key rotation, host management.
 
-![Host Fleet Manager](screenshot-deflect-host-fleet-mgr.png)
-![Bulk Commands - Select](screenshot-deflect-bulk-devops-commands-select.png)
-![Bulk Commands - Result](screenshot-deflect-bulk-devops-commands-result.png)
-![Batch Rotate Keys](screenshot-deflect-batch-rotate-keys.png)
+![Host Fleet Manager](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-host-fleet-mgr.png)
+![Bulk Commands - Select](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-bulk-devops-commands-select.png)
+![Bulk Commands - Result](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-bulk-devops-commands-result.png)
+![Batch Rotate Keys](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-batch-rotate-keys.png)
 
 ---
 
 ### 🔧 More Tools
 Cron & systemd timer management, network reconnaissance, script runner, config export.
 
-![Cron Manager](screenshot-deflect-cron-mgr.png)
-![Network Recon](screenshot-deflect-hosts-network-recon.png)
-![Script Runner](screenshot-deflect-scripts-runner.png)
-![Tools](screenshot-deflect-tools.png)
-![Config Export](screenshot-deflect-config-export.png)
+![Cron Manager](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-cron-mgr.png)
+![Network Recon](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-hosts-network-recon.png)
+![Script Runner](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-scripts-runner.png)
+![Tools](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-tools.png)
+![Config Export](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-config-export.png)
 
 ---
 
 ### AI-Enhanced Autonomous Operations (experimental, optional)
 Unified AI engine: Claude, GPT-4, Gemini, Mistral, Groq, LM Studio. Per-host LLM instructions enable background governance loops - *"restart /home/bot1/BotService if /home/bot1/tests.log file is older than one day"* - running 24/7 without you watching.
 
-![AI-Driven Operations](screenshot-deflect-ai-driven2.png)
-![AI SSH Session](screenshot-deflect-ssh-ai-driven.png)
-![AI SSH Sample](screenshot-deflect-ssh-ai-sample.png)
-![Host AI Settings](screenshot-deflect-host-ai-settigns.png)
-![AI Settings](screenshot-deflect-settings-ai.png)
-![AI Stats](screenshot-deflect-ai-stats.png)
+![AI-Driven Operations](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-ai-driven2.png)
+![AI SSH Session](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-ssh-ai-driven.png)
+![AI SSH Sample](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-ssh-ai-sample.png)
+![Host AI Settings](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-host-ai-settigns.png)
+![AI Settings](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-settings-ai.png)
+![AI Stats](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/screenshot-deflect-ai-stats.png)
 
 ---
 
@@ -117,23 +117,23 @@ Unified AI engine: Claude, GPT-4, Gemini, Mistral, Groq, LM Studio. Per-host LLM
 ### Some fun
 But why not?
 
-![Deflect key](deflect-key.jpg)
-deflect-key.jpg
+![Deflect key](https://raw.githubusercontent.com/Frytskyy/deflect-one/main/deflect-key.jpg)
 
 ---
 
 ## Installation
 
 ```bash
-# Minimal (no AI)
+# Install via pip
+pip install deflect-one
+deflect --demo    # demo mode, no SSH required
+deflect           # real mode
+```
+
+```bash
+# Or run directly without installing
 pip install textual paramiko cryptography
-
-# Full (with AI support)
-pip install textual paramiko cryptography anthropic openai
-
-# Run
-python deflect.py --demo    # demo mode, no SSH required
-python deflect.py           # real mode, reads deflect.json next to the script
+python deflect.py --demo
 ```
 
 **Configure AI:** `F6` → 🤖 AI tab → choose provider → enter API key → Test Connection
@@ -187,7 +187,7 @@ Fedora · CentOS · Arch · Alpine - works via SSH, not all features tested yet
 ## License
 
 MIT License with Attribution Requirement.  
-Free for personal and commercial use. Attribution to [vladonai.com/deflect](https://vladonai.com/deflect) required.
+Free for personal and commercial use. Attribution to [vladonai.com/deflect](https://vladonai.com/deflect-one) required.
 
 ---
 
