@@ -1288,6 +1288,57 @@ v0.75 (plan - AI Integration)
   · "AI Generate" button: natural language description → bash/python script
   · Context: target host OS + installed packages from inventory (no generic scripts)
 
+v0.76 [X] 4/17/2026
+
+  [X] PyPI publishing via GitHub Actions (Trusted Publisher / OIDC)
+  · .github/workflows/publish.yml: triggers on v* tag push
+  · Steps: checkout → setup-python 3.11 → build → pypa/gh-action-pypi-publish@release/v1
+  · No stored API tokens — OIDC id-token: write permission only
+  · pyproject.toml: name=deflect-one, entry points deflect + deflect-one → deflect:main
+  · Optional dependency groups: [ai] and [all] — anthropic, openai
+  · py-modules = ["deflect"] — single-file package, no subdirectories
+
+  [X] Centralised colour palette (new SECTION: colour_palette)
+  · All colours extracted into named constants: CLR_SUCCESS, CLR_ERROR, CLR_CURSOR,
+    CLR_METRIC, CLR_TAB_ACTIVE, CLR_TEXT_DIM, CLR_BG_FIREWALL, etc.
+  · All hardcoded hex values across the file replaced with palette references
+  · Single source of truth for the colour scheme
+
+  [X] ScrollableContainer for ServerCard grid (layout fix)
+  · #grid-hosts wrapped in ScrollableContainer (height: 1fr, overflow-y: scroll)
+  · #grid-hosts inner container: height: auto — grows to content
+  · Cards no longer get clipped when hosting many servers — list scrolls
+
+  [X] AI Managed Host — cross-cycle state persistence + restart loop prevention
+  · _ai_action_history (deque maxlen=10): last ~10 min of actions injected into every AI call
+    Format: "[HH:MM] kind target → result_snippet" — model can detect restart loops, escalate
+  · _ai_restart_cooldown (dict service→deadline): blocks restart_service for 600 s per service
+    Blocked attempt appends "COOLDOWN(Xs)" to history so model switches to send_notification
+  · EventKind.AI_NOTIFICATION added; both send_notification and escalate_to_human route through
+    NotificationManager; escalate_to_human prepends "⚠️ ACTION REQUIRED: "
+
+  [X] AI Managed Host — system/user prompt split
+  · system prompt: static fields only (label, address, os_info, ai_instructions, safe_footer)
+  · user_prompt: dynamic state (time, metrics, services, inventory, action history)
+  · Avoids re-sending ~160 tokens of dynamic data in every system prompt
+
+  [X] Attack Radar — "l" key: raw log lines for selected IP
+  · grep across auth.log / fail2ban.log / ufw.log / nginx logs / syslog, tail -50
+  · Result shown in existing AiAnalysisPopup (no new screen); Rich markup escaped
+  · border_subtitle updated to include \[l]ogs hint
+
+  [X] Host Editor — Delete button (edit mode only)
+  · _ConfirmDeleteDialog(ModalScreen): yes/no confirmation before removal
+  · Button visible only when editing an existing host
+  · On confirm: pool.remove_host() → notify → dismiss
+
+  [X] Minor fixes and polish
+  · datetime.utcnow() → datetime.now(datetime.UTC) in four places (deprecation fix)
+  · File Manager Docker: dedup by "{hid}__{cid}" key — fixes duplicate containers across hosts
+  · ServerCard: "f" as alternative to Ctrl+F for File Manager
+  · APP_SITE and license URL updated to vladonai.com/deflect-one
+  · AI instruction examples in HostEditorScreen updated to actionable history-aware patterns
+
   v0.77 (plan - DNS Manager + Email Services control)
 
   [ ] DNSMonitorScreen (Ctrl+Shift+D) - DNS service monitoring
