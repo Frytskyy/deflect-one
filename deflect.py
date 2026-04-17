@@ -10,7 +10,7 @@ One terminal. One SSH session. Infinite servers.
 
 Deflect One is a terminal Mission Control platform for DevOps and security engineers
 managing multi-server Linux infrastructure. Combine real-time monitoring, active
-threat defense, service orchestration, and AI-powered automation in a single
+threat defense, service orchestration, and AI-powered automation (optional) in a single
 agentless Python application.
 
 No agent daemons. No Prometheus scrape targets. No polling APIs. Every operation
@@ -28,17 +28,17 @@ Perfect for:
 Built because monitoring your infrastructure shouldn't require Prometheus, Grafana,
 Loki, AlertManager, a dozen YAML files, and a degree in Kubernetes. For a solo
 engineer or small team, Deflect One is your infrastructure dashboard, firewall console,
-and AI assistant — all in one file, all from one terminal.
+and AI assistant (optional) — all in one file, all from one terminal.
 
 Created by: Volodymyr Frytskyy (WhitemanV)
-Website:    https://www.vladonai.com/about-resume
+Website:    https://www.vladonai.com/deflect-one
 GitHub:     https://github.com/Frytskyy/deflect-one
 Sponsor:    https://www.vladonai.com/sponsor
 
 FEATURES
 ========
 
-✅ Real-time Infrastructure Monitoring
+[X] Real-time Infrastructure Monitoring
    • CPU, RAM, disk, network metrics with gradient-colored gauges
    • Braille Unicode sparklines for high-resolution history in a single terminal cell
    • Container inventory (Docker containers, images) with resource usage
@@ -46,7 +46,7 @@ FEATURES
    • Service lifecycle tracking (systemd unit status, restart, stop/start)
    • Cross-host process list with top-like sorting and OOM detection
 
-✅ Active Cybersecurity Defense
+[X] Active Cybersecurity Defense
    • Attack Radar: real-time visualization of attack IPs, geo-location, attack types
    • Fail2ban integration: view jails, active bans, ban/unban individual IPs
    • Firewall management (ufw / iptables): add/delete rules, audit, bulk operations
@@ -54,7 +54,7 @@ FEATURES
    • SSH key audit: which keys exist on which hosts, when they were last used
    • Automatic incident timeline: when attacks started, peak, escalation
 
-✅ Infrastructure Operations
+[X] Infrastructure Operations
    • SSH command execution across server fleets (paramiko native, not subprocess)
    • SSH port forwarding editor and tunnel management
    • Interactive shell (F2) with terminal emulation and SSH tty
@@ -70,7 +70,7 @@ FEATURES
    • Backup status tracking: restic, borg, rclone, rsnapshot integration
    • Email service monitoring (queue, accounts, error rate, logs)
 
-✅ Advanced Configuration & Secrets
+[X] Advanced Configuration & Secrets
    • Hardware-bound encrypted credential vault (Fernet + PBKDF2)
    • Portable encrypted export (master password protected)
    • Per-host configuration: SSH auth, port, polling intervals, services list
@@ -78,7 +78,7 @@ FEATURES
    • Flexible notifications: Telegram, e-mail, webhook, local sound alerts
    • Single JSON config file, no YAML, no external dependencies
 
-✅ AI-Enhanced Autonomous Operations (optional, fully configurable)
+[X] AI-Enhanced Autonomous Operations (optional, fully configurable)
    • Multi-provider AI: Claude (Anthropic), GPT-4 (OpenAI), Gemini, Mistral, Groq,
      LM Studio, or any OpenAI-compatible endpoint
    • Dual-tier model strategy: SMART tier (reasoning) + FAST tier (low-latency)
@@ -112,7 +112,7 @@ Linux (Alternative - User Install):
 
 Windows/macOS:
     python -m venv deflect-one-env
-    deflect-one-env\Scripts\activate
+    deflect-one-env\\Scripts\\activate
     pip install -r requirements.txt
     python3 deflect.py --demo
 
@@ -120,7 +120,7 @@ Minimal (no AI):
     pip install textual paramiko cryptography pyyaml pyte
     python3 deflect.py --demo
 
-With AI enabled (set in F6 → 🤖 AI tab):
+With AI enabled (optional, set in F6 → 🤖 AI tab):
     1. Run: python3 deflect.py
     2. Press F6 → 🤖 AI tab
     3. Choose provider (Anthropic or OpenAI)
@@ -194,16 +194,16 @@ PLATFORM & COMPATIBILITY
 ========================
 
 Control Plane (where you run Deflect One):
-  ✅ Linux (any distribution with Python 3.10+)
-  ✅ macOS (Intel + Apple Silicon)
-  ✅ Windows (Windows Terminal recommended; classic cmd.exe lacks 24-bit color)
+  [X] Linux (any distribution with Python 3.10+)
+  [X] macOS (Intel + Apple Silicon)
+  [X] Windows (Windows Terminal recommended; classic cmd.exe lacks 24-bit color)
   Your admin workstation is NOT locked to Linux. Manage your entire infrastructure
   from your laptop, regardless of OS.
 
 Managed Servers (hosts Deflect One connects to):
-  ✅ Debian 10+    (primary, fully tested, should work also on older versions)
-  ✅ Ubuntu 20.04+ (primary, fully tested, should work also on older versions)
-  🟨 Other distros (Fedora, CentOS, Arch, Alpine, etc.)
+  [X] Debian 10+    (primary, fully tested, should work also on older versions)
+  [X] Ubuntu 20.04+ (primary, fully tested, should work also on older versions)
+  [ ] Other distros (Fedora, CentOS, Arch, Alpine, etc.)
      These are known to work in principle (SSH + Linux CLI basics are universal),
      but have not been extensively tested. Compatibility and feature coverage yet
      (firewall rules, package manager, service names, log locations) may vary.
@@ -255,7 +255,7 @@ LICENSE
 MIT License with Attribution Requirement
 
 Copyright (c) 2010-2026 Volodymyr Frytskyy (WhitemanV)
-(https://www.vladonai.com/about-resume)
+(https://www.vladonai.com/deflect-one)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -269,7 +269,7 @@ copies or substantial portions of the Software.
 
 Attribution Requirement: Any use of this software, whether modified or
 unmodified, must include attribution to the original author and a link to
-https://www.vladonai.com/about-resume
+https://www.vladonai.com/deflect-one
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
@@ -453,8 +453,10 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   # SECTION: apt_upgrade_screen      ← AptUpgradeScreen (F8)
   # SECTION: vault_screen            ← VaultScreen (Ctrl+K) - secrets + export/import
   # SECTION: passphrase_dialog       ← PassphraseDialog (ModalScreen) - vault passphrase entry
-  # SECTION: host_editor             ← HostEditorScreen (Ctrl+N new, Ctrl+O edit)
+  # SECTION: host_editor             ← _ConfirmDeleteDialog (ModalScreen) - delete confirmation
+  #                                     HostEditorScreen (Ctrl+N new, Ctrl+O edit)
   #                                     + 🤖 AI tab: per-host AI instructions
+  #                                     + Delete button (edit mode only) with confirmation
   # SECTION: script_runner           ← ScriptScreen (Ctrl+S) - file browser, inline editor,
   #                                     run via SSH stdin, SFTP deploy, cron schedule
   #                                     + AI Generate: NL description → bash/python script
@@ -777,6 +779,7 @@ Modal screens (open on top of the main screen):
   HostEditorScreen         Ctrl+N   - add new host
                            Ctrl+O   - edit focused host (Security config + all settings)
                                       🤖 AI tab: per-host AI instructions (freeform goals)
+                                      Delete button (edit mode) - remove host with confirmation
   ScriptScreen             Ctrl+S   - script library (scripts_dir), inline editor,
                                       run via SSH stdin (bash -s), SFTP deploy,
                                       cron scheduling, env vars
@@ -801,7 +804,7 @@ Modal screens (open on top of the main screen):
                                         s - create new symlink / edit target of existing one
                                       File attributes (Ctrl+Z): chmod (octal), chown user:group,
                                         Touch (update mtime) — works local + remote (SSH)
-                                      Multi-select: Ins/Space toggle, ^A sel-all, \ desel
+                                      Multi-select: Ins/Space toggle, ^A sel-all, \\ desel
                                       F2:rename F3:view F4:edit F5:copy F6:move F7:mkdir F8:del
                                       Sort: ^1 by name, ^2 by size, ^3 by date
                                         (click column header or press twice to reverse)
@@ -872,7 +875,7 @@ Modal screens (open on top of the main screen):
                       └─ Enter: open dir / follow symlink target
                       └─ s: create/edit symlink  Ctrl+Z: attrs (chmod/chown/touch)
                       └─ ^1/2/3: sort by name/size/date  (again = reverse)
-                      └─ Ctrl+D: Favourites  \: desel all
+                      └─ Ctrl+D: Favourites  \\: desel all
   q / F10           - quit
 
   Attack Radar (when focused):
@@ -938,7 +941,7 @@ v0.2 [X]
   · PortForwardsScreen (F5) - rule editor, live SSH tunnel toggle per host
   · AppSettingsScreen (F6) - General thresholds / Telegram / email (SMTP) / webhook / sound / Security monitoring
   · SSL cert checker - _ssl_loop in HostAgent, row in ServerCard (green/yellow/red)
-  · HostEditorScreen (Ctrl+N) - TUI overlay: add/edit/clone host
+  · HostEditorScreen (Ctrl+N) - TUI overlay: add/edit/clone/delete host
   · FleetManagerScreen (F9) - host table with checkboxes, clone/edit/delete
   · BulkOpsScreen - parallel command execution on selected hosts
   · RotateKeyScreen - SSH key rotation
@@ -1236,14 +1239,34 @@ v0.75 (plan - AI Integration)
   [x] AI Managed Host - per-host instruction set
   · New "🤖 AI" tab in HostEditorScreen: freeform "AI Instructions" textarea per host
   · Stored in deflect.json under host config: "ai_instructions": "..."
-  · Example instructions:
-    "Monitor MySQL. If slow_queries > 10/min for 3 checks - restart mysqld and notify."
-    "This is a mail relay. Keep queue < 100 msgs. Flush queue if > 50 and no errors."
-    "Auto-apply security-only apt upgrades nightly at 03:00, send email report."
-    "Watch nginx error rate. If 5xx > 5% of requests - reload nginx and alert."
   · _ai_managed_loop() in HostAgent (every 60s): instruction + current state → AI decision
   · AIAction(kind, cmd, rationale, confidence) - executed per defense_mode
-  · Action kinds: run_cmd | ban_ip | restart_service | send_notification | escalate_to_human
+  · Action kinds: run_cmd | restart_service | send_notification | escalate_to_human | ban_ip
+
+  State persistence and safety (v0.76+):
+  · _ai_action_history (deque maxlen=10): last ~10 min of actions, passed into every AI call.
+    Enables: counting consecutive failures, detecting restart loops, multi-step diagnosis.
+    Format per entry: "[HH:MM] kind target → result_snippet"
+  · _ai_restart_cooldown (dict service→deadline): blocks restart_service for 600 s after
+    each restart. Prevents feedback loops where AI restarts a struggling service every minute.
+    A blocked restart records "[HH:MM] restart_service svc → COOLDOWN (Xs remaining)"
+    in history so the AI can switch to send_notification instead.
+
+  Notification routing (send_notification / escalate_to_human):
+  · Both fire AgentEvent(EventKind.AI_NOTIFICATION) via HostAgent._fire()
+  · NotificationManager._handle() routes to: Telegram → email → webhook → sound (beep)
+  · escalate_to_human prepends "⚠️ ACTION REQUIRED: " to the message text
+  · If no notification channel is configured, the beep fires if sound is enabled
+
+  Effective instructions (write these, not vague thresholds):
+    "Restart nginx if it stops. If nginx was restarted in the last 10 min (see history),
+     send_notification 'nginx keeps crashing on <label>' instead."
+    "If disk > 85%, run: find /var/log -name '*.gz' -mtime +30 -delete 2>/dev/null; df -h / | tail -1
+     Then send_notification with the df output line."
+    "If RAM > 90%, run: ps aux --sort=-%mem | head -4 | awk '{print $1,$3,$4,$11}'
+     and send_notification with the result."
+    "Every check: run 'systemctl is-active mysql 2>&1'. If failed - restart it once.
+     If history shows it was already restarted - send_notification 'mysql unstable'."
 
   [x] AI Health Audit
   · On-demand via Fleet Manager ("AI Audit All" button) or scheduled (existing CronScreen)
@@ -1264,6 +1287,57 @@ v0.75 (plan - AI Integration)
   [x] AI in ScriptScreen (Ctrl+S)
   · "AI Generate" button: natural language description → bash/python script
   · Context: target host OS + installed packages from inventory (no generic scripts)
+
+v0.76 [X] 4/17/2026
+
+  [X] PyPI publishing via GitHub Actions (Trusted Publisher / OIDC)
+  · .github/workflows/publish.yml: triggers on v* tag push
+  · Steps: checkout → setup-python 3.11 → build → pypa/gh-action-pypi-publish@release/v1
+  · No stored API tokens — OIDC id-token: write permission only
+  · pyproject.toml: name=deflect-one, entry points deflect + deflect-one → deflect:main
+  · Optional dependency groups: [ai] and [all] — anthropic, openai
+  · py-modules = ["deflect"] — single-file package, no subdirectories
+
+  [X] Centralised colour palette (new SECTION: colour_palette)
+  · All colours extracted into named constants: CLR_SUCCESS, CLR_ERROR, CLR_CURSOR,
+    CLR_METRIC, CLR_TAB_ACTIVE, CLR_TEXT_DIM, CLR_BG_FIREWALL, etc.
+  · All hardcoded hex values across the file replaced with palette references
+  · Single source of truth for the colour scheme
+
+  [X] ScrollableContainer for ServerCard grid (layout fix)
+  · #grid-hosts wrapped in ScrollableContainer (height: 1fr, overflow-y: scroll)
+  · #grid-hosts inner container: height: auto — grows to content
+  · Cards no longer get clipped when hosting many servers — list scrolls
+
+  [X] AI Managed Host — cross-cycle state persistence + restart loop prevention
+  · _ai_action_history (deque maxlen=10): last ~10 min of actions injected into every AI call
+    Format: "[HH:MM] kind target → result_snippet" — model can detect restart loops, escalate
+  · _ai_restart_cooldown (dict service→deadline): blocks restart_service for 600 s per service
+    Blocked attempt appends "COOLDOWN(Xs)" to history so model switches to send_notification
+  · EventKind.AI_NOTIFICATION added; both send_notification and escalate_to_human route through
+    NotificationManager; escalate_to_human prepends "⚠️ ACTION REQUIRED: "
+
+  [X] AI Managed Host — system/user prompt split
+  · system prompt: static fields only (label, address, os_info, ai_instructions, safe_footer)
+  · user_prompt: dynamic state (time, metrics, services, inventory, action history)
+  · Avoids re-sending ~160 tokens of dynamic data in every system prompt
+
+  [X] Attack Radar — "l" key: raw log lines for selected IP
+  · grep across auth.log / fail2ban.log / ufw.log / nginx logs / syslog, tail -50
+  · Result shown in existing AiAnalysisPopup (no new screen); Rich markup escaped
+  · border_subtitle updated to include \[l]ogs hint
+
+  [X] Host Editor — Delete button (edit mode only)
+  · _ConfirmDeleteDialog(ModalScreen): yes/no confirmation before removal
+  · Button visible only when editing an existing host
+  · On confirm: pool.remove_host() → notify → dismiss
+
+  [X] Minor fixes and polish
+  · datetime.utcnow() → datetime.now(datetime.UTC) in four places (deprecation fix)
+  · File Manager Docker: dedup by "{hid}__{cid}" key — fixes duplicate containers across hosts
+  · ServerCard: "f" as alternative to Ctrl+F for File Manager
+  · APP_SITE and license URL updated to vladonai.com/deflect-one
+  · AI instruction examples in HostEditorScreen updated to actionable history-aware patterns
 
   v0.77 (plan - DNS Manager + Email Services control)
 
@@ -1394,6 +1468,42 @@ from textual.widgets    import Input, Button, ListView, ListItem
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# SECTION: colour palette  (GitHub Dark — change here, not scattered across the file like a Sith)
+# ══════════════════════════════════════════════════════════════════════════════
+
+# ── Semantic status colours ────────────────────────────────────────────────────
+CLR_SUCCESS   = "#3fb950"   # green  — server lives. the Force is strong today
+CLR_ERROR     = "#f85149"   # red    — it's a trap. again. at 3am.
+CLR_WARNING   = "#d29922"   # amber  — I have a bad feeling about this
+CLR_ACCENT    = "#58a6ff"   # blue   — GitHub blue cosplay, very professional
+CLR_INFO      = "#0178d4"   # blue   — "helpful" info nobody reads. it's there. trust me.
+
+# ── Interactive state colours ──────────────────────────────────────────────────
+CLR_CURSOR    = "#df8000"   # orange — YOU ARE HERE. hello there.
+CLR_TAB_ACTIVE = "#ffa62b"  # amber  — the tab you opened and will never close
+CLR_TAB_PLUGIN = "#4EBF71"  # green  — plugins get their own special green, they earned it
+
+# ── Text / label hierarchy ─────────────────────────────────────────────────────
+CLR_TEXT      = "#c9d1d9"   # primary text — not white, eyes aren't made of durasteel
+CLR_TEXT_DIM  = "#8b949e"   # muted — these aren't the droids you're looking for
+CLR_LABEL     = "#888780"   # labels — one in ten users actually reads these
+CLR_METRIC    = "#666666"   # CPU RAM Disk — grey like a Monday, grey like the Death Star walls
+CLR_IDLE      = "#484f58"   # waiting — the colour of existential dread
+
+# ── Host list colours ──────────────────────────────────────────────────────────
+CLR_HOST      = "#58a6ff"   # host IP — blue because IPs are important, okay?
+CLR_HOST_SEL  = "#c0c0ff"   # selected host — almost purple, almost stylish
+CLR_HOST_LBL  = "#8888cc"   # host label — supporting character, not the hero
+
+# ── Stats / metric value colours ──────────────────────────────────────────────
+CLR_STAT_HI   = "#a07020"   # highlighted value — gold for the chosen one
+CLR_STAT_LO   = "#888800"   # normal value — just exists, bothers no one
+
+# ── Background colours ─────────────────────────────────────────────────────────
+CLR_BG_FIREWALL = "#0d2b0d" # dark green — Matrix aesthetic. very serious. do not touch.
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # SECTION: ContentSwitcher widget (custom implementation for Textual 8.x)
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -1424,7 +1534,7 @@ class ContentSwitcher(Container):
 DEFLECT_DIR = Path(__file__).parent
 
 # ── App identity (change version in ONE place only) ───────────────────────────
-APP_VERSION = "0.75"
+APP_VERSION = "0.76"
 APP_SITE    = "vladonai.com/deflect-one"
 APP_GITHUB  = "github.com/WhitemanV/deflect-one"
 APP_SPONSOR = "vladonai.com/sponsor"
@@ -2958,7 +3068,7 @@ class SecurityRadar:
         """Parse auth.log timestamp 'Mar 28 14:23:45' to a UTC date (current year).
         If the date is in the future, assume it's from last year (year-wrap case)."""
         try:
-            now = datetime.datetime.utcnow()
+            now = datetime.datetime.now(datetime.UTC).replace(tzinfo=None)
             dt = datetime.datetime.strptime(f"{now.year} {ts_str.strip()}", "%Y %b %d %H:%M:%S")
             if dt > now + datetime.timedelta(days=1):
                 # Log timestamp is in the future? Must be from last year then.
@@ -3153,7 +3263,7 @@ class SecurityRadar:
                 if len(recent) >= mon.http_flood_threshold:
                     if not any(e.src_ip == ip and e.kind == "http_flood"
                                for e in list(self._state.events)[-50:]):
-                        ts = datetime.datetime.utcnow().strftime("%b %d %H:%M:%S")
+                        ts = datetime.datetime.now(datetime.UTC).strftime("%b %d %H:%M:%S")
                         ev = AttackEvent(ts=ts, host_id=host_id, src_ip=ip,
                                          username="-", method="http",
                                          kind="http_flood")
@@ -3232,7 +3342,7 @@ class SecurityRadar:
     async def _poll_connections(self, host_id: str, mon: "SecurityMonitoringConfig"):
         """Level 2 - check active TCP connections for floods."""
         new_events: list[AttackEvent] = []
-        ts = datetime.datetime.utcnow().strftime("%b %d %H:%M:%S")
+        ts = datetime.datetime.now(datetime.UTC).strftime("%b %d %H:%M:%S")
 
         if mon.conn_flood:
             res = await self._pool.run(host_id, _SS_ESTAB_CMD)
@@ -3363,7 +3473,7 @@ class SecurityRadar:
                     ip = m.group(1)
                     ip_rcpt_unknown[ip] += 1
 
-        now_ts = datetime.datetime.utcnow().strftime("%b %d %H:%M:%S")
+        now_ts = datetime.datetime.now(datetime.UTC).strftime("%b %d %H:%M:%S")
 
         # Emit email_brute events for IPs over threshold
         if mon.email_brute:
@@ -3601,6 +3711,7 @@ class EventKind(Enum):
     RAM_CRITICAL      = "ram_critical"
     DISK_WARN         = "disk_warn"
     DISK_CRITICAL     = "disk_critical"
+    AI_NOTIFICATION   = "ai_notification"   # fired by _ai_managed_loop send_notification actions
 
 
 @dataclass
@@ -3670,6 +3781,18 @@ class HostAgent:
         self._alert_cooldown: dict[EventKind, float] = {}
         # Alert recovery tracking: maps EventKind → bool (True = currently in alert state)
         self._alert_active: dict[EventKind, bool] = {}
+
+        # AI Managed — action history (10 entries ≈ 10 min at 60s/cycle).
+        # Each entry is a one-line string: "[HH:MM] kind target → result".
+        # Passed verbatim into the next AI call so the model can detect restart
+        # loops, count consecutive failures, and avoid duplicate work across cycles.
+        self._ai_action_history: deque = deque(maxlen=10)
+
+        # AI Managed — per-service restart cooldown.
+        # Maps service name → monotonic deadline before which restart is blocked.
+        # Default cooldown: 600 s (10 min) set after each successful restart.
+        # Prevents a feedback loop where AI restarts a struggling service every 60 s.
+        self._ai_restart_cooldown: dict[str, float] = {}
 
     # ── Public properties ─────────────────────────────────────────────────
 
@@ -5443,8 +5566,32 @@ class HostAgent:
         """
         Every 60 s: evaluate per-host ai_instructions against current state.
         Acts based on defense_mode: advisory logs, semi/full executes actions.
+
+        State persistence across cycles
+        ────────────────────────────────
+        _ai_action_history (deque, maxlen=10) stores one-line entries per action:
+            "[HH:MM] kind target → result_snippet"
+        The full history is injected into every AI call so the model can count
+        consecutive failures, detect restart loops, and decide to escalate instead
+        of retrying.  10 entries ≈ 10 min of context at the default 60 s interval.
+
+        Restart loop prevention
+        ────────────────────────
+        _ai_restart_cooldown maps service_name → monotonic deadline.
+        restart_service is blocked until that deadline passes (default 600 s / 10 min).
+        If blocked, a history entry "[HH:MM] restart_service <svc> → COOLDOWN" is
+        appended so the AI sees "blocked" and can choose send_notification instead.
+
+        Notification routing (send_notification / escalate_to_human)
+        ──────────────────────────────────────────────────────────────
+        Both action kinds fire AgentEvent(EventKind.AI_NOTIFICATION) via self._fire().
+        NotificationManager._handle() routes the event to whichever channels are
+        configured: Telegram → email → webhook → sound/beep (fallback).
+        escalate_to_human prepends "⚠️ ACTION REQUIRED: " to the message.
         """
-        await asyncio.sleep(90)   # initial delay
+        _RESTART_COOLDOWN_S = 600  # 10 min between restarts of the same service
+
+        await asyncio.sleep(90)   # initial delay — let metrics settle first
         while True:
             await asyncio.sleep(60)
             try:
@@ -5460,7 +5607,8 @@ class HostAgent:
                 engine = self._get_ai_engine()
                 if not engine.enabled:
                     continue
-                # Build context from local data
+
+                # ── Build current-state context ───────────────────────────
                 m       = self._collector._metrics.get(self._cfg.id)
                 inv_str = ", ".join(
                     f"{k}={v}" for k, v in list(self._inventory.items())[:12]) or "-"
@@ -5477,19 +5625,28 @@ class HostAgent:
                 services_str = "  ".join(
                     f"{'●' if s.running else '✗'} {s.name}"
                     for s in svcs[:12]) or "-"
-                system = _AI_PROMPTS["managed_host"].format(
-                    label        = self._cfg.label,
-                    address      = self._cfg.address,
-                    os_info      = os_info,
-                    metrics_str  = metrics_str,
-                    services_str = services_str,
-                    ai_instructions = self._cfg.ai_instructions,
-                    safe_footer  = _SAFE_FOOTER,
+
+                # ── Action history for cross-cycle context ────────────────
+                action_history_str = (
+                    "\n".join(self._ai_action_history)
+                    if self._ai_action_history
+                    else "(no actions taken yet)"
                 )
+
+                system = _AI_PROMPTS["managed_host"].format(
+                    label           = self._cfg.label,
+                    address         = self._cfg.address,
+                    os_info         = os_info,
+                    ai_instructions = self._cfg.ai_instructions,
+                    safe_footer     = _SAFE_FOOTER,
+                )
+                ts = time.strftime("%H:%M")
                 user_prompt = (
+                    f"Current time: {ts}\n"
                     f"Current metrics: {metrics_str}\n"
                     f"Services: {services_str}\n"
-                    f"Installed software: {inv_str}"
+                    f"Installed software: {inv_str}\n"
+                    f"Recent actions:\n{action_history_str}"
                 )
                 raw = await engine.call(user_prompt, system=system, tier="smart")
                 if raw == _AI_DISABLED or raw.startswith("✗"):
@@ -5499,7 +5656,7 @@ class HostAgent:
                     text = text.split("\n", 1)[-1].rsplit("```", 1)[0].strip()
                 try:
                     data = json.loads(text)
-                except Exception as e:
+                except Exception:
                     _log_ai.info("ai_managed %s non-json: %s", self._cfg.id, raw[:100])
                     continue
                 if not data.get("action_required"):
@@ -5508,28 +5665,56 @@ class HostAgent:
                              self._cfg.id, data.get("status_summary","")[:100])
                 if ai_cfg.defense_mode == "advisory":
                     continue
+
+                # ── Execute actions ───────────────────────────────────────
+                ts = time.strftime("%H:%M")
                 for act_dict in data.get("actions", []):
                     kind       = act_dict.get("kind",   "")
                     target     = act_dict.get("target", "")
                     confidence = float(act_dict.get("confidence", 0.0))
                     if confidence < 0.7:
                         continue
+
                     if kind == "run_cmd" and target:
                         result = await self._mini_pool.run(self._cfg.id, target)
-                        action = AIAction(
-                            kind=kind, target=target,
-                            rationale  = act_dict.get("rationale", ""),
-                            confidence = confidence,
-                            executed   = True,
-                            result     = result.stdout[:200] if result.ok else result.error,
-                        )
+                        snippet = (result.stdout[:50].replace("\n", " ").strip()
+                                   if result.ok else f"ERR:{result.error[:40]}")
+                        self._ai_action_history.append(
+                            f"{ts} run {target[:40]!r} {snippet}")
                         _log_ai.info("ai_managed exec %s on %s: %s",
-                                     target[:60], self._cfg.id, action.result[:80])
+                                     target[:60], self._cfg.id, snippet)
+
                     elif kind == "restart_service" and target:
+                        now = time.monotonic()
+                        deadline = self._ai_restart_cooldown.get(target, 0.0)
+                        if now < deadline:
+                            remaining = int(deadline - now)
+                            self._ai_action_history.append(
+                                f"{ts} restart {target} COOLDOWN({remaining}s)")
+                            _log_ai.info("ai_managed restart_service %s BLOCKED "
+                                         "by cooldown (%ds) on %s",
+                                         target, remaining, self._cfg.id)
+                            continue
                         cmd = f"systemctl restart {target} 2>&1 | head -5"
                         result = await self._mini_pool.run(self._cfg.id, cmd)
-                        _log_ai.info("ai_managed restart_service %s on %s: ok=%s",
-                                     target, self._cfg.id, result.ok)
+                        status = "ok" if result.ok else f"fail:{result.stdout[:30]}"
+                        self._ai_restart_cooldown[target] = now + _RESTART_COOLDOWN_S
+                        self._ai_action_history.append(
+                            f"{ts} restart {target} {status}")
+                        _log_ai.info("ai_managed restart_service %s on %s: %s",
+                                     target, self._cfg.id, status)
+
+                    elif kind in ("send_notification", "escalate_to_human") and target:
+                        prefix = "ACTION REQUIRED: " if kind == "escalate_to_human" else ""
+                        msg    = f"{prefix}{target}"
+                        await self._fire(AgentEvent(
+                            EventKind.AI_NOTIFICATION, self._cfg.id,
+                            {"detail": f"[{self._cfg.label}] {msg}"}))
+                        self._ai_action_history.append(
+                            f"{ts} notify {target[:50]!r}")
+                        _log_ai.info("ai_managed %s %s on %s: sent",
+                                     kind, target[:60], self._cfg.id)
+
             except Exception as e:
                 _log_ai.warning("ai_managed_loop %s: %s", self._cfg.id, e)
 
@@ -6450,7 +6635,7 @@ class ServerCard(Panel):
 
     def on_focus(self) -> None:
         super().on_focus()
-        self.border_subtitle = "\\[o]pen \\[a]i \\[m]aint  F2:SSH  Ctrl+F:Files  Enter:menu"
+        self.border_subtitle = "\\[o]pen \\[a]i \\[m]aint  \\[F2]SSH  \\[f]iles  Enter:menu"
 
     def on_blur(self) -> None:
         self.border_subtitle = ""
@@ -6483,7 +6668,7 @@ class ServerCard(Panel):
         elif event.key == "f2":
             self._launch_ssh()
             event.stop()
-        elif event.key == "ctrl+f":
+        elif event.key == "ctrl+f" or event.key == "f":
             self._launch_fm()
             event.stop()
         # ←→ and other keys bubble up to Panel base handler
@@ -6532,7 +6717,7 @@ class ServerCard(Panel):
         tag    = f" [{'+'.join(state.config.tags[:2])}]" if state.config.tags else ""
         maint  = " 🔧" if state.config.maintenance else ""
         ai_ctl = " 🤖" if state.config.ai_controlled else ""
-        t.append(cursor, style="bold #df8000" if focused else "grey50")
+        t.append(cursor, style=f"bold {CLR_CURSOR}" if focused else "grey50")
         t.append(f"{dot} ", style=col)
         t.append(f"{self._label}{tag}{maint}{ai_ctl}\n", style="bold white")
         t.append(f"   {self._addr}  {fmt_uptime(metrics.uptime_s)}\n", style="grey50")
@@ -6544,20 +6729,20 @@ class ServerCard(Panel):
             t.append(f"   {metrics.error}\n", style="yellow")
             self.update(t); return
 
-        t.append(" CPU ", style="#666666")
+        t.append(" CPU ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.cpu_pct, bar))
         t.append(f" {metrics.cpu_pct:4.1f}%  L{metrics.load1:.2f}\n",
                  style=pct_color(metrics.cpu_pct))
 
-        t.append(" RAM ", style="#666666")
+        t.append(" RAM ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.ram_pct, bar))
         t.append(f" {metrics.ram_pct:4.1f}%\n", style=pct_color(metrics.ram_pct))
 
-        t.append("Disk ", style="#666666")
+        t.append("Disk ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.disk_pct, bar))
         t.append(f" {metrics.disk_pct:4.1f}%\n", style=pct_color(metrics.disk_pct))
 
-        t.append(" net ", style="#666666")
+        t.append(" net ", style=CLR_METRIC)
         t.append_text(braille_sparkline(metrics.net_rx_hist, bar // 2))
         t.append(f" ↑{fmt_kb(metrics.net_tx_kb)} ↓{fmt_kb(metrics.net_rx_kb)}\n",
                  style="grey50")
@@ -6565,7 +6750,7 @@ class ServerCard(Panel):
         # Mail queue (exim4 / postfix) - throughput in msgs/min
         if metrics.mail_mta_type:
             mta_name = "📧" if metrics.mail_mta_type == "exim4" else "📮"
-            t.append(" mta ", style="#666666")
+            t.append(" mta ", style=CLR_METRIC)
             t.append_text(braille_sparkline(metrics.mail_queue_hist, bar // 2))
             # Dynamic coloring: red if > 8 msgs/min (~500/h), yellow if trending up
             if metrics.mail_throughput_mpm > 8:
@@ -6578,7 +6763,7 @@ class ServerCard(Panel):
                      style=status_color)
 
         if services:
-            t.append(" svc ", style="#666666")
+            t.append(" svc ", style=CLR_METRIC)
             for svc in sorted(services, key=_svc_sort_key)[:8]:
                 t.append(f"{svc.status_char}{svc.name[:10]} ", style=svc.status_color)
             if len(services) > 8:
@@ -6586,7 +6771,7 @@ class ServerCard(Panel):
             t.append("\n")
 
         if metrics.ssl_certs:
-            t.append(" ssl ", style="#666666")
+            t.append(" ssl ", style=CLR_METRIC)
             for domain, days in list(metrics.ssl_certs.items())[:3]:
                 short = domain[:12] if len(domain) > 12 else domain
                 if days < 0:
@@ -6604,7 +6789,7 @@ class ServerCard(Panel):
         if metrics.apt_info:
             ai = metrics.apt_info
             os_short = ai.os_version[:20] if len(ai.os_version) > 20 else ai.os_version
-            t.append("  os ", style="#666666")
+            t.append("  os ", style=CLR_METRIC)
             t.append(f"{os_short}  ", style="grey70")
             if ai.security_count:
                 t.append(f"🔒{ai.security_count} ", style="bold red")
@@ -6617,7 +6802,7 @@ class ServerCard(Panel):
         if metrics.docker_containers:
             running = [c for c in metrics.docker_containers if "Up" in c.status]
             total   = len(metrics.docker_containers)
-            t.append(" dkr ", style="#666666")
+            t.append(" dkr ", style=CLR_METRIC)
             t.append(f"[D] {len(running)}/{total} ", style="cyan" if running else "grey50")
             for c in running[:3]:
                 short_name = c.name[:10]
@@ -6820,7 +7005,7 @@ class AttackRadarPanel(Panel):
 
     def on_focus(self) -> None:
         super().on_focus()
-        self.border_subtitle = "\\[b]an  \\[a]i  \\[1-4]mitigate"
+        self.border_subtitle = "\\[b]an  \\[a]i  \\[l]ogs  \\[1-4]mitigate"
         self._redraw()
 
     def on_blur(self) -> None:
@@ -6847,6 +7032,8 @@ class AttackRadarPanel(Panel):
             self._ban_top_subnet24(); event.stop()
         elif event.key == "a":
             asyncio.create_task(self._ai_analyze_selected()); event.stop()
+        elif event.key == "l":
+            asyncio.create_task(self._show_log_lines_selected()); event.stop()
         # ←→ bubbles to base Panel → app nav
 
     def _ban_selected(self):
@@ -6935,6 +7122,34 @@ class AttackRadarPanel(Panel):
         title = f"🤖 AI Analysis - {ip}  ({info.get('cc','?')})"
         self.app.push_screen(AiAnalysisPopup(title, raw))
 
+    async def _show_log_lines_selected(self):
+        """'l' key - show last raw log lines mentioning the selected IP."""
+        if not self._grouped:
+            return
+        visible = self._grouped[:16]
+        if not (0 <= self.selected < len(visible)):
+            return
+        ip, info = visible[self.selected]
+        host_id = info.get("host_id", "")
+        self.app.notify(f"⟳ Loading logs for {ip}…")
+        cmd = (
+            f"grep -F '{ip}' "
+            "/var/log/auth.log /var/log/fail2ban.log /var/log/ufw.log "
+            "/var/log/nginx/access.log /var/log/nginx/error.log "
+            "/var/log/syslog 2>/dev/null | tail -50"
+        )
+        try:
+            res = await self.app._pool.run(host_id, cmd)
+        except Exception as e:
+            self.app.notify(f"Log fetch failed: {e}", severity="error")
+            return
+        raw_lines = res.stdout.strip() if res.ok and res.stdout.strip() else "(no log lines found)"
+        # Escape Rich markup brackets so log lines render literally
+        body = raw_lines.replace("[", "\\[")
+        host_lbl = self._host_labels.get(host_id, host_id)
+        title = f"📋 Logs for {ip}  ({info.get('cc','?')})  [{host_lbl}]"
+        self.app.push_screen(AiAnalysisPopup(title, body))
+
     def _ban_top_subnet24(self):
         if not self._grouped:
             return
@@ -6999,17 +7214,17 @@ class AttackRadarPanel(Panel):
                 # Pad or truncate
                 host_lbl = f"{host_lbl:<{host_max}}"
                 if sel:
-                    t.append("▶ ", style="bold #df8000")
+                    t.append("▶ ", style=f"bold {CLR_CURSOR}")
                 elif live_flag:
                     t.append(" 🔴", style="red")
                 else:
                     t.append(f" {camp}",
                              style=("red" if info['campaign'] else "grey50"))
                 t.append(f"{info['cc']:>2} ", style="bold grey70" if sel else "grey50")
-                t.append(f"{ip:<15}", style="bold #58a6ff" if sel else "#58a6ff")
+                t.append(f"{ip:<15}", style=f"bold {CLR_ACCENT}" if sel else CLR_ACCENT)
                 t.append(f"{info['kind'][:5]:<6}", style=kc)
                 t.append(f"{cnt:>3}×  ", style="bold white" if sel else "grey85")
-                t.append(host_lbl + " ", style="bold #c0c0ff" if sel else "#8888cc")
+                t.append(host_lbl + " ", style=f"bold {CLR_HOST_SEL}" if sel else CLR_HOST_LBL)
                 t.append(f"{ts}\n", style="grey50")
 
         if self._port_warnings:
@@ -7312,22 +7527,22 @@ class ServicesPanel(Panel):
                 label = self._host_labels.get(host, host)
                 if col_i > 0:
                     t.append(" │ ", style="grey23")
-                t.append("▶ " if sel else "  ", style="bold #df8000" if sel else "")
+                t.append("▶ " if sel else "  ", style=f"bold {CLR_CURSOR}" if sel else "")
                 t.append(f"{dot} ", style=dot_col)
-                t.append(f"{name[:10]:<10}", style="bold white" if sel else "#cccccc")
+                t.append(f"{name[:10]:<10}", style="bold white" if sel else CLR_TEXT)
                 if is_last_col:
                     # Right-align last column label to fill remaining space
                     t.append(f" {label[:last_label_w]:>{last_label_w}}",
-                              style="bold #a07020" if sel else "#888800")
+                              style=f"bold {CLR_STAT_HI}" if sel else CLR_STAT_LO)
                 else:
                     t.append(f" {label[:label_w]:<{label_w}}",
-                              style="bold #a07020" if sel else "#888800")
+                              style=f"bold {CLR_STAT_HI}" if sel else CLR_STAT_LO)
             t.append("\n")
 
         total     = len(self._rows)
         shown_end = min(self._scroll_offset + svcs_per_page, total)
         if total > svcs_per_page:
-            t.append(f"  {self._scroll_offset + 1}-{shown_end}/{total}\n", style="#666666")
+            t.append(f"  {self._scroll_offset + 1}-{shown_end}/{total}\n", style=CLR_METRIC)
         self.update(t)
 
 
@@ -7576,15 +7791,22 @@ class DeflectApp(App):
 
     CSS = """
     Screen { background: $background; }
+    /* Outer scroll container fills the left column */
+    #grid-hosts-scroll {
+        height: 1fr; width: 2fr;
+        overflow-y: scroll; overflow-x: hidden;
+    }
+    /* Inner grid sizes itself to content so scroll container can scroll over it */
     #grid-hosts {
         layout: grid; grid-size: 2; grid-gutter: 0;
-        height: 1fr; width: 2fr;
+        height: auto; width: 1fr;
     }
-    #right-col  { width: 1fr; min-width: 40; }
-    #main-row   { layout: horizontal; height: 1fr; }
-    #bottom-row { height: 12; layout: horizontal; }
+    #grid-hosts > ServerCard { height: auto; }
+    #right-col  { width: 1fr; min-width: 28; }
+    #main-row   { layout: horizontal; height: 1fr; min-height: 10; }
+    #bottom-row { height: 8; min-height: 5; layout: horizontal; }
     #services-panel { width: 1fr; }
-    #radar-panel    { height: 1fr; }
+    #radar-panel    { height: 1fr; min-height: 5; }
     """
 
     BINDINGS = [
@@ -7617,13 +7839,14 @@ class DeflectApp(App):
     def compose(self) -> ComposeResult:
         yield StatsBar(id="stats-bar")
         with Container(id="main-row"):
-            with Container(id="grid-hosts"):
-                for hs in self._pool.all_states():
-                    card = ServerCard(hs.config.id, hs.config.label,
-                                      hs.config.address, self._cfg,
-                                      id=f"card-{hs.config.id}")
-                    self._cards[hs.config.id] = card
-                    yield card
+            with ScrollableContainer(id="grid-hosts-scroll"):
+                with Container(id="grid-hosts"):
+                    for hs in self._pool.all_states():
+                        card = ServerCard(hs.config.id, hs.config.label,
+                                          hs.config.address, self._cfg,
+                                          id=f"card-{hs.config.id}")
+                        self._cards[hs.config.id] = card
+                        yield card
             with Vertical(id="right-col"):
                 yield AttackRadarPanel(id="radar-panel")
         with Horizontal(id="bottom-row"):
@@ -7985,6 +8208,7 @@ class NotificationManager:
         "CPU_WARN", "CPU_CRITICAL",
         "RAM_WARN", "RAM_CRITICAL",
         "DISK_WARN", "DISK_CRITICAL",
+        "AI_NOTIFICATION",   # send_notification / escalate_to_human from _ai_managed_loop
     }
 
     def __init__(self, app_cfg: AppConfig):
@@ -8205,13 +8429,16 @@ _AI_PROMPTS: dict[str, str] = {
     ),
 
     # ── AI Managed Host loop - smart tier, autonomous per-host decisions ──────
+    # Static fields only (host info + instructions + schema).
+    # Metrics, services, and action history are sent per-call in user_prompt
+    # to avoid duplicating ~160 tokens of dynamic data in every system prompt.
     "managed_host": (
         "You are an autonomous DevOps agent managing a Linux server on behalf of "
         "the administrator inside Deflect.\n"
-        "Host: {label} ({address})  OS: {os_info}\n"
-        "Current state - Metrics: {metrics_str}  Services: {services_str}\n\n"
+        "Host: {label} ({address})  OS: {os_info}\n\n"
         "Administrator standing instructions:\n{ai_instructions}\n\n"
-        "Evaluate the current state against the instructions. "
+        "The user message contains the current state (time, metrics, services, "
+        "recent actions). Evaluate it against the instructions. "
         "Return ONLY valid JSON (no markdown):\n"
         '{{\n'
         '  "action_required": true,\n'
@@ -11889,8 +12116,8 @@ class PortForwardsScreen(ModalScreen):
         for i, entry in enumerate(self._tunnels, 1):
             f   = entry.fwd
             en  = "☑" if f.get("enabled") else "☐"
-            st  = (Text("● active", style="bold #3fb950") if entry.active
-                   else (Text(f"✗ {entry.error[:20]}", style="#f85149")
+            st  = (Text("● active", style=f"bold {CLR_SUCCESS}") if entry.active
+                   else (Text(f"✗ {entry.error[:20]}", style=CLR_ERROR)
                          if entry.error else Text("-", style="dim")))
             tbl.add_row(
                 str(i),
@@ -11905,7 +12132,7 @@ class PortForwardsScreen(ModalScreen):
         n_active = sum(1 for t in self._tunnels if t.active)
         try:
             self.query_one("#pf-footer", Static).update(
-                f"[bold #58a6ff]{n_active} active[/] of {len(self._tunnels)} rules")
+                f"[bold {CLR_ACCENT}]{n_active} active[/] of {len(self._tunnels)} rules")
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
@@ -12262,7 +12489,7 @@ class DockerScreen(ModalScreen):
                 _log.warning("Exception: %s: %s", type(e).__name__, e)  # TODO: improve log quality
                 label = h
             if i == self._host_idx % len(self._host_ids):
-                tabs.append(f" [{label}] ", style="bold white on #0178d4")
+                tabs.append(f" [{label}] ", style=f"bold white on {CLR_INFO}")
             else:
                 tabs.append(f"  {label}  ", style="grey50")
         try:
@@ -12303,7 +12530,7 @@ class DockerScreen(ModalScreen):
         if docker_installed is False:
             t.append("\n  🐳  Docker is not installed on this host.\n\n", style="bold yellow")
             t.append("  Press  ", style="grey70")
-            t.append(" i ", style="bold white on #0178d4")
+            t.append(" i ", style=f"bold white on {CLR_INFO}")
             t.append("  to open the APT package manager and install Docker.\n\n", style="grey70")
             t.append("  You can also open an SSH shell (F2) and run:\n", style="grey50")
             t.append("    curl -fsSL https://get.docker.com | sh\n", style="cyan")
@@ -12344,7 +12571,7 @@ class DockerScreen(ModalScreen):
                     status_style = "yellow"
 
                 row_style = "bold white" if selected else "grey85"
-                t.append(cursor, style="bold #df8000" if selected else "grey50")
+                t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
                 t.append(f"{name:<22} ", style=row_style)
                 t.append(f"{image:<28} ", style="grey70")
                 t.append(f"{status:<18} ", style=status_style)
@@ -13258,7 +13485,7 @@ class NetworkReconScreen(ModalScreen):
         t = Text()
         for i, (label, desc, _) in enumerate(_RECON_PRESETS):
             if i == self._preset_idx:
-                t.append(f" [{i}]{label} ", style="bold white on #ffa62b")
+                t.append(f" [{i}]{label} ", style=f"bold white on {CLR_TAB_ACTIVE}")
             else:
                 t.append(f"  {label}  ", style="grey50")
             if i < len(_RECON_PRESETS) - 1:
@@ -13563,8 +13790,8 @@ class FleetManagerScreen(ModalScreen):
             chk  = "☑" if self._checked.get(hid) else "☐"
             conn = hs.state if hs else ConnState.ERROR
             status_sym = (
-                Text("● UP",   style="bold #3fb950") if conn == ConnState.CONNECTED else
-                Text("✗ DOWN", style="bold #f85149")
+                Text("● UP",   style=f"bold {CLR_SUCCESS}") if conn == ConnState.CONNECTED else
+                Text("✗ DOWN", style=f"bold {CLR_ERROR}")
             )
             m      = self._pool.metrics_view().get(hid)
             cpu_s  = f"{m.cpu_pct:5.1f}%" if m and m.cpu_pct > 0 else "  -  "
@@ -13586,7 +13813,7 @@ class FleetManagerScreen(ModalScreen):
     def _update_footer(self):
         n_checked = sum(1 for v in self._checked.values() if v)
         total     = len(self._pool.host_ids())
-        msg = f"[bold #58a6ff]▣ {n_checked} selected[/] of {total}"
+        msg = f"[bold {CLR_ACCENT}]▣ {n_checked} selected[/] of {total}"
         try:
             self.query_one("#fleet-footer", Static).update(msg)
         except Exception as e:
@@ -14108,7 +14335,7 @@ class BulkOpsScreen(ModalScreen):
         with Container(id="bulk-box"):
             with Horizontal(id="bulk-layout"):
                 with Vertical(id="bulk-hosts-col"):
-                    yield Static("[bold #58a6ff]Target hosts[/]",
+                    yield Static(f"[bold {CLR_ACCENT}]Target hosts[/]",
                                  classes="bulk-section-title")
                     for hid in self._host_ids:
                         try:
@@ -14289,12 +14516,12 @@ class BulkOpsScreen(ModalScreen):
     def _update_host_widget(self, hid: str):
         icons = {"waiting": "◌", "running": "⟳", "done": "✓", "error": "✗"}
         colors = {
-            "waiting": "#484f58", "running": "#d29922",
-            "done": "#3fb950",    "error":   "#f85149",
+            "waiting": CLR_IDLE, "running": CLR_WARNING,
+            "done": CLR_SUCCESS,    "error":   CLR_ERROR,
         }
         st    = self._status.get(hid, "waiting")
         icon  = icons.get(st, "?") 
-        color = colors.get(st, "#c9d1d9")
+        color = colors.get(st, CLR_TEXT)
         try:
             label = self._pool.state(hid).config.label
         except Exception as e:
@@ -14305,7 +14532,7 @@ class BulkOpsScreen(ModalScreen):
         txt.append(f"{icon} ", style=f"bold {color}")
         txt.append(label[:16], style=color)
         if out_snip:
-            txt.append(f"\n  {out_snip}", style="dim #8b949e")
+            txt.append(f"\n  {out_snip}", style=f"dim {CLR_TEXT_DIM}")
         try:
             self.query_one(f"#{self._host_widget_id(hid)}", Static).update(txt)
         except Exception as e:
@@ -14467,7 +14694,7 @@ class RotateKeyScreen(ModalScreen):
         with Container(id="rk-box"):
             with Container(id="rk-options"):
                 yield Static(
-                    "[bold #d29922]What this does:[/]\n"
+                    f"[bold {CLR_WARNING}]What this does:[/]\n"
                     "  1. Generate new ed25519 keypair locally\n"
                     "  2. Push new pubkey to remote authorized_keys\n"
                     "  3. Verify new key works (test connect)\n"
@@ -14497,7 +14724,7 @@ class RotateKeyScreen(ModalScreen):
                         if s in _ROTATE_BASE_STEPS
                     )
                     yield Static(
-                        f"[bold #58a6ff][{label}][/]\n{pending_lines}",
+                        f"[bold {CLR_ACCENT}][{label}][/]\n{pending_lines}",
                         id=self._prog_id(hid))
             with Horizontal(id="rk-btn-row"):
                 yield Button("▶ Start Rotation", id="btn-start",
@@ -14611,16 +14838,16 @@ class RotateKeyScreen(ModalScreen):
                 continue
             o, d = pr[s]
             if o is None:
-                sym = Text("⟳ ", style="bold #d29922")
+                sym = Text("⟳ ", style=f"bold {CLR_WARNING}")
             elif o:
-                sym = Text("✓ ", style="bold #3fb950")
+                sym = Text("✓ ", style=f"bold {CLR_SUCCESS}")
             else:
-                sym = Text("✗ ", style="bold #f85149")
+                sym = Text("✗ ", style=f"bold {CLR_ERROR}")
             line = Text()
             line.append_text(sym)
-            line.append(f"{lbl}", style="dim" if o is True else "#c9d1d9")
+            line.append(f"{lbl}", style="dim" if o is True else CLR_TEXT)
             if not o and d:
-                line.append(f"\n  {d[:55]}", style="#f85149")
+                line.append(f"\n  {d[:55]}", style=CLR_ERROR)
             parts.append(line)
 
         try:
@@ -14629,7 +14856,7 @@ class RotateKeyScreen(ModalScreen):
             _log.warning("Exception: %s: %s", type(e).__name__, e)  # TODO: improve log quality
             label = hid
 
-        out = Text(f"[{label}]\n", style="bold #58a6ff")
+        out = Text(f"[{label}]\n", style=f"bold {CLR_ACCENT}")
         for p in parts:
             out.append_text(p)
             out.append("\n")
@@ -14841,7 +15068,7 @@ class AptUpgradeScreen(ModalScreen):
         # tab switcher bar
         tab_t = Text()
         for key, lbl, tid in [("1", "Upgrades", "upgrades"), ("2", "Quick Install", "quickinstall")]:
-            style = "bold white on #ffa62b" if self._apt_tab == tid else "grey50"
+            style = f"bold white on {CLR_TAB_ACTIVE}" if self._apt_tab == tid else "grey50"
             tab_t.append(f" {key}:{lbl} ", style=style)
         try:
             self.query_one("#apt-tab-bar", Static).update(tab_t)
@@ -14865,7 +15092,7 @@ class AptUpgradeScreen(ModalScreen):
             elif ai and ai.total_count:
                 badge = f" ⬆{ai.total_count}"
             if i == self._host_idx % len(self._host_ids):
-                host_tabs.append(f" [{label}{badge}] ", style="bold white on #ffa62b")
+                host_tabs.append(f" [{label}{badge}] ", style=f"bold white on {CLR_TAB_ACTIVE}")
             else:
                 host_tabs.append(f"  {label}{badge}  ", style="grey50")
         try:
@@ -14925,7 +15152,7 @@ class AptUpgradeScreen(ModalScreen):
                 ptype  = "🔒 security" if is_sec else "  update"
                 row_style  = "bold white" if selected else ("bold yellow" if is_sec else "grey85")
                 type_style = "bold red" if is_sec else "grey50"
-                t.append(cursor, style="bold #df8000" if selected else "grey50")
+                t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
                 t.append(f"{name:<30} ", style=row_style)
                 t.append(f"{cur:<22} ", style="grey50")
                 t.append(f"{new_v:<22} ", style="green")
@@ -15020,7 +15247,7 @@ class AptUpgradeScreen(ModalScreen):
             else:
                 status_txt = Text("? unknown",       style="grey50")
             row_style = "bold white" if selected else "grey85"
-            t.append(cursor, style="bold #df8000" if selected else "grey50")
+            t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
             t.append(f"{pkg:<26} ", style=row_style)
             t.append(f"{desc:<44} ", style="grey70" if not selected else "grey85")
             t.append_text(status_txt)
@@ -15387,7 +15614,7 @@ class VaultScreen(ModalScreen):
         t = Text()
         for i, name in enumerate(self._TABS):
             if i == self._tab_idx:
-                t.append(f" [{name}] ", style="bold white on #4EBF71")
+                t.append(f" [{name}] ", style=f"bold white on {CLR_TAB_PLUGIN}")
             else:
                 t.append(f"  {name}  ", style="grey50")
             if i < len(self._TABS) - 1:
@@ -15422,7 +15649,7 @@ class VaultScreen(ModalScreen):
                     val_str = "- not set -"
                     val_style = "grey35"
                 row_style = "bold white" if selected else "grey85"
-                t.append(cursor, style="bold #df8000" if selected else "grey50")
+                t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
                 t.append(f"{scope:<28} ", style=row_style)
                 t.append(f"{label:<30} ", style="grey70")
                 t.append(f"{val_str}\n", style=val_style)
@@ -15667,6 +15894,42 @@ class PassphraseDialog(ModalScreen):
 
 # ── Host Editor overlay (v0.2) ────────────────────────────────────────────────
 
+class _ConfirmDeleteDialog(ModalScreen):
+    """Simple yes/no confirmation before deleting a host."""
+
+    DEFAULT_CSS = """
+    _ConfirmDeleteDialog { align: center middle; }
+    #confirm-box {
+        width: 50; height: auto;
+        border: double $warning;
+        background: $surface;
+        padding: 1 2;
+    }
+    #confirm-title { text-style: bold; color: $warning; margin-bottom: 1; }
+    #confirm-msg   { margin-bottom: 1; }
+    #confirm-btns  { height: 3; }
+    #confirm-btns Button { min-width: 12; margin-right: 1; }
+    """
+
+    def __init__(self, label: str, **kwargs):
+        super().__init__(**kwargs)
+        self._label = label
+
+    def compose(self) -> ComposeResult:
+        with Container(id="confirm-box"):
+            yield Static("⚠  Delete Host", id="confirm-title")
+            yield Static(
+                f"Delete [bold]{self._label}[/bold]?\n"
+                "This will stop the agent and remove it from config.",
+                id="confirm-msg")
+            with Horizontal(id="confirm-btns"):
+                yield Button("Delete", variant="warning", id="confirm-yes")
+                yield Button("Cancel", variant="default",  id="confirm-no")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.dismiss(event.button.id == "confirm-yes")
+
+
 class HostEditorScreen(ModalScreen):
     """
     TUI overlay for adding or editing an SSH host.
@@ -15698,6 +15961,7 @@ class HostEditorScreen(ModalScreen):
     #ai-examples { color: #888780; margin-top: 1; height: auto; }
     #btn-row { margin-top: 2; height: 3; }
     Button { margin-right: 1; min-width: 12; }
+    #btn-row Button { min-width: 10; margin-right: 1; }
     """
 
     def __init__(self, pool: AgentPool,
@@ -15856,16 +16120,23 @@ class HostEditorScreen(ModalScreen):
                     id="ai-instructions",
                 )
                 yield Static(
-                    "[dim]Examples:[/dim]\n"
-                    "[dim]  Monitor nginx. If 5xx > 5%% for 3 checks - reload nginx and notify.[/dim]\n"
-                    "[dim]  Keep disk < 80%%. If exceeded - run du and report top 5 dirs.[/dim]\n"
-                    "[dim]  Restart mysql if it stops. Alert if restart fails twice.[/dim]",
+                    "[dim]Examples (all are actionable and work with the current engine):[/dim]\n"
+                    "[dim]  Restart nginx if it stops. If nginx was restarted in the last 10 min"
+                    " (check history) - send_notification 'nginx keeps crashing' instead.[/dim]\n"
+                    "[dim]  If disk > 85%%: run 'find /var/log -name \"*.gz\" -mtime +30"
+                    " -delete 2>/dev/null; df -h / | tail -1' and send_notification with result.[/dim]\n"
+                    "[dim]  If RAM > 90%%: run 'ps aux --sort=-%%mem | head -4'"
+                    " and send_notification with the output.[/dim]\n"
+                    "[dim]  Every check: run 'systemctl is-active mysql 2>&1'. If failed -"
+                    " restart it once. If history shows prior restart - escalate_to_human.[/dim]",
                     id="ai-examples",
                 )
 
             with Horizontal(id="btn-row"):
                 yield Button("Test",   variant="default", id="btn-test")
                 yield Button("Save",   variant="primary",  id="btn-save")
+                if self._editing:
+                    yield Button("Delete", variant="warning", id="btn-delete")
                 yield Button("Cancel", variant="error",    id="btn-cancel")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
@@ -15880,6 +16151,8 @@ class HostEditorScreen(ModalScreen):
             cfg = self._build_config()
             if cfg:
                 asyncio.create_task(self._do_test(cfg))
+        elif bid == "btn-delete":
+            asyncio.create_task(self._do_delete())
         elif bid in ("etab-general", "etab-ai"):
             self._editor_tab = bid[len("etab-"):]
             for t in ("general", "ai"):
@@ -15954,6 +16227,26 @@ class HostEditorScreen(ModalScreen):
             _log.warning("Handled exception in block: %s: %s", type(e).__name__, e)  # TODO: improve log quality
             self.app.notify(f"Invalid input: {e}", severity="error")
             return None
+
+    async def _do_delete(self):
+        if not self._editing or not self._host_id:
+            return
+        try:
+            label = self._pool.state(self._host_id).config.label
+        except Exception:
+            label = self._host_id
+        def _confirmed(confirmed: bool) -> None:
+            if confirmed:
+                asyncio.create_task(self._do_delete_confirmed(label))
+        self.app.push_screen(
+            _ConfirmDeleteDialog(label),
+            _confirmed,
+        )
+
+    async def _do_delete_confirmed(self, label: str):
+        await self._pool.remove_host(self._host_id)
+        self.app.notify(f"✓ Host '{label}' deleted", severity="information")
+        self.dismiss(None)
 
     async def _do_save(self, cfg: HostConfig):
         # When editing an existing host, stop the old agent first to avoid
@@ -16230,7 +16523,7 @@ class ScriptScreen(ModalScreen):
                 # ── Left: file list
                 with Vertical(id="scr-file-col"):
                     yield Static(
-                        "[bold #d29922]Scripts[/]  "
+                        f"[bold {CLR_WARNING}]Scripts[/]  "
                         f"[dim]{len(self._files)} files[/]",
                         classes="scr-opt-label",
                         markup=True)
@@ -16239,9 +16532,9 @@ class ScriptScreen(ModalScreen):
                             sz   = self._fmt_size(p)
                             icon = self._file_icon(p)
                             txt  = Text()
-                            txt.append(f"{icon} ", style="#d29922")
+                            txt.append(f"{icon} ", style=CLR_WARNING)
                             txt.append(p.name[:22], style="bold" if i == 0 else "")
-                            txt.append(f"  {sz}", style="dim #8b949e")
+                            txt.append(f"  {sz}", style=f"dim {CLR_TEXT_DIM}")
                             yield Static(
                                 txt,
                                 id=f"scr-file-{i}",
@@ -16691,7 +16984,7 @@ class ScriptScreen(ModalScreen):
     def _update_output(self):
         txt = Text()
         for line in self._output_lines[-20:]:
-            color = "#3fb950" if line.startswith("✓") else "#f85149"
+            color = CLR_SUCCESS if line.startswith("✓") else CLR_ERROR
             txt.append(line + "\n", style=color)
         try:
             self.query_one("#scr-output", Static).update(txt)
@@ -23299,6 +23592,7 @@ class FileManagerScreen(ModalScreen):
 
         # Collect running Docker containers from all hosts for the source bar
         dkr_entries: "list[tuple[str, str, str]]" = []  # (host_id, container_id, name)
+        seen_cids: "set[str]" = set()
         if hasattr(self._pool, "agent"):
             for hid in hids:
                 try:
@@ -23306,8 +23600,11 @@ class FileManagerScreen(ModalScreen):
                     if m and m.docker_containers:
                         for c in m.docker_containers:
                             if "Up" in c.status:
-                                self._docker_map[c.id] = (hid, c.name)
-                                dkr_entries.append((hid, c.id, c.name))
+                                key = f"{hid}__{c.id}"
+                                if key not in seen_cids:
+                                    seen_cids.add(key)
+                                    self._docker_map[key] = (hid, c.name)
+                                    dkr_entries.append((hid, c.id, c.name, key))
                 except Exception:
                     pass
 
@@ -23319,8 +23616,8 @@ class FileManagerScreen(ModalScreen):
                     for hid in hids:
                         lbl = self._host_label(hid)
                         yield Button(lbl, id=f"fm-left-{hid}", classes="fm-src-btn")
-                    for _, cid, cname in dkr_entries:
-                        yield Button(f"[D]{cname}", id=f"fm-left-dkr__{cid}",
+                    for _, cid, cname, dkey in dkr_entries:
+                        yield Button(f"[D]{cname}", id=f"fm-left-dkr__{dkey}",
                                      classes="fm-src-btn fm-src-docker")
                 with Horizontal(classes="fm-src-half"):
                     yield Static("R:", classes="fm-src-label")
@@ -23328,8 +23625,8 @@ class FileManagerScreen(ModalScreen):
                     for hid in hids:
                         lbl = self._host_label(hid)
                         yield Button(lbl, id=f"fm-right-{hid}", classes="fm-src-btn")
-                    for _, cid, cname in dkr_entries:
-                        yield Button(f"[D]{cname}", id=f"fm-right-dkr__{cid}",
+                    for _, cid, cname, dkey in dkr_entries:
+                        yield Button(f"[D]{cname}", id=f"fm-right-dkr__{dkey}",
                                      classes="fm-src-btn fm-src-docker")
             with Horizontal(id="fm-panels"):
                 yield left_panel
@@ -23431,10 +23728,12 @@ class FileManagerScreen(ModalScreen):
         panel = self._left() if side == "left" else self._right()
 
         if rest.startswith("dkr__"):
-            container_id = rest[5:]
-            dkr = self._docker_map.get(container_id)
+            dkey = rest[5:]
+            dkr = self._docker_map.get(dkey)
             if dkr:
                 host_id_dkr, cname = dkr
+                # dkey is "{hid}__{cid}"; extract just the container ID
+                container_id = dkey.split("__", 1)[1] if "__" in dkey else dkey
                 adapter = _DockerFSAdapter(host_id_dkr, container_id, self._pool,
                                            container_label=cname)
                 panel.set_adapter(adapter, "/")
@@ -23532,7 +23831,12 @@ class FileManagerScreen(ModalScreen):
         prefix = f"fm-{side}-"
         if host_id and host_id.startswith("__docker__"):
             container_id = host_id[len("__docker__"):]
-            target_id = f"fm-{side}-dkr__{container_id}"
+            # Button IDs use "{hid}__{cid}" keys; find the button whose id ends with the cid
+            target_id = None
+            for dkey in self._docker_map:
+                if dkey.endswith(f"__{container_id}"):
+                    target_id = f"fm-{side}-dkr__{dkey}"
+                    break
         elif host_id is None:
             target_id = f"fm-{side}-local"
         else:
