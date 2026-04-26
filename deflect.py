@@ -2,7 +2,7 @@
 """
 DEFLECT ONE
 ===========
-Enterprise Infrastructure Command Center — DevOps + Cybersecurity + AI
+Enterprise Infrastructure Command Center - DevOps + Cybersecurity + AI
 
 One terminal. One SSH session. Infinite servers.
 
@@ -14,7 +14,7 @@ threat defense, service orchestration, and AI-powered automation (optional) in a
 agentless Python application.
 
 No agent daemons. No Prometheus scrape targets. No polling APIs. Every operation
-runs via SSH — direct shell execution across your fleet with encrypted credential
+runs via SSH - direct shell execution across your fleet with encrypted credential
 storage and hardware-bound encryption.
 
 Perfect for:
@@ -28,7 +28,7 @@ Perfect for:
 Built because monitoring your infrastructure shouldn't require Prometheus, Grafana,
 Loki, AlertManager, a dozen YAML files, and a degree in Kubernetes. For a solo
 engineer or small team, Deflect One is your infrastructure dashboard, firewall console,
-and AI assistant (optional) — all in one file, all from one terminal.
+and AI assistant (optional) - all in one file, all from one terminal.
 
 Created by: Volodymyr Frytskyy (WhitemanV)
 Website:    https://www.vladonai.com/deflect-one
@@ -244,41 +244,6 @@ SSH & Connectivity:
   • Does NOT require: agents, daemons, or special permissions on managed hosts
     (though some features like firewall rules require root or sudo)
 
-Keyboard Shortcuts — Deflect One (main dashboard)
-================================================
-
-Infrastructure Screens:
-  Ctrl+D  Docker (containers, images, resource usage)
-  Ctrl+P  Process monitor (cross-host top, OOM)
-  Ctrl+R  Network reconnaissance (ping, traceroute, port scan presets)
-  Ctrl+W  Firewall (UFW/iptables rules, add/delete, ban/unban IPs)
-  Ctrl+T  Cron & timers (view, edit, schedule)
-  Ctrl+B  Network connections (ss -tnp, state filters)
-  Ctrl+Y  Databases (PostgreSQL, MySQL, Redis, MongoDB introspection)
-  Ctrl+G  Deployments (git pull, restart, rollback)
-  Ctrl+U  Backups (restic/borg/rclone/rsnapshot status)
-  Ctrl+L  Log aggregation (cross-host regex grep)
-  Ctrl+E  Env audit (diff .env files, SSH key audit)
-  Ctrl+F  Dual-panel file manager (Midnight Commander style, SFTP, copy between hosts)
-  Ctrl+X  Email monitor (MTA queue, accounts, errors)
-  Ctrl+S  Script runner (edit, deploy, schedule bash/Python)
-
-Security & AI:
-  Ctrl+H  Auth Sentinel (multi-protocol authentication intelligence + ContainmentDialog)
-  Ctrl+J  User & Group Administration (users, groups, SSH keys, sessions, containment)
-  Ctrl+K  Vault (secrets, export/import)
-  Ctrl+N  Host editor (add new host + AI instructions per host)
-  Ctrl+O  Edit host
-  Ctrl+A  AI Chat (natural-language conversation with full context)
-  Ctrl+I  AI stats (token usage, cost tracking by tier)
-  F2      Interactive SSH shell (with F8 hints, F9 AI command translate)
-  F3      Log tail (journalctl -f, auth.log, nginx, etc.)
-  F4      Disk usage
-  F5      SSH port forwarding
-  F6      Settings (🤖 AI configuration, thresholds, notifications)
-  F8      Apt upgrade (package manager updates)
-  F9      Fleet manager (bulk operations across multiple hosts)
-
 LICENSE
 =======
 
@@ -402,7 +367,7 @@ Deflect One operates in two fundamental modes:
 
 Uniqueness: monitoring + cybersecurity + service management + AI assistance
 in a single agentless tool (SSH only, no agents on servers). One platform,
-infinite servers — Deflect One scales from home labs to enterprise fleets.
+infinite servers - Deflect One scales from home labs to enterprise fleets.
 
 ════════════════════════════════════════════════════════════════
   Technology Stack
@@ -426,10 +391,10 @@ AI (optional, install based on chosen provider):
 Dependencies no longer needed:
   pyyaml - completely removed from runtime (config migrated to JSON)
 
-Installation (minimal — Deflect One core):
+Installation (minimal - Deflect One core):
   pip install textual paramiko cryptography
 
-Installation (with AI — Deflect One full):
+Installation (with AI - Deflect One full):
   pip install textual paramiko cryptography anthropic openai
 
 ════════════════════════════════════════════════════════════════
@@ -458,10 +423,10 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   # SECTION: host_agent              ← _SingleHostPool, EventKind, AgentEvent,
   #                                     HostAgent (10+ loops), AgentPool,
   #                                     _MetricsFacade, _RadarFacade, _WatcherFacade
-  # SECTION: ssh_config_sync (v0.78) ← SSHConfigSyncManager — keeps ~/.ssh/deflect_hosts
+  # SECTION: ssh_config_sync (v0.78) ← SSHConfigSyncManager - keeps ~/.ssh/deflect_hosts
   #                                     in sync with Deflect host list; one-time Include
   #                                     injection into ~/.ssh/config (GitHub CLI pattern)
-  #                                     + _parse_ssh_config_hosts() — lightweight parser
+  #                                     + _parse_ssh_config_hosts() - lightweight parser
   # SECTION: render / braille        ← braille_sparkline(), gradient_bar(), pct_color()
   # SECTION: notification_manager    ← NotificationManager (sound/Telegram/email/webhook)
   # SECTION: ai_engine               ← AIEngine, AIHostContext, AIAttackContext,
@@ -478,37 +443,37 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   #                                     + F8: AI Hints, F9: AI Command
   # SECTION: port_forwards_screen    ← _TunnelEntry, PortForwardsScreen (F5) - SSH tunnel editor
   # SECTION: pf_rule_editor          ← _PFRuleEditor (ModalScreen) - port forward rule editing
-  # SECTION: docker_screen           ← _DockerRenameDialog (ModalScreen) — rename container (e key)
-  #                                     DockerScreen (Ctrl+D) — e:rename  a:add-as-host (prefill, no
+  # SECTION: docker_screen           ← _DockerRenameDialog (ModalScreen) - rename container (e key)
+  #                                     DockerScreen (Ctrl+D) - e:rename  a:add-as-host (prefill, no
   #                                     spurious auto-connect); Enter/e edits users/groups in UserAdmin
   # SECTION: docker_run_wizard       ← DockerRunWizard (ModalScreen) - docker run configuration
   # SECTION: docker_port_editor      ← DockerPortEditorScreen (ModalScreen) - port mapping editor
   # SECTION: network_recon_screen    ← NetworkReconScreen (Ctrl+R), _RECON_PRESETS
-  # SECTION: fleet_manager_screen    ← RestoreHostDialog (ModalScreen) — list + restore
+  # SECTION: fleet_manager_screen    ← RestoreHostDialog (ModalScreen) - list + restore
   #                                     hosts from 7-day deleted archive (v0.78) [r]
-  #                                     FleetManagerScreen (F9) — host roster DataTable
+  #                                     FleetManagerScreen (F9) - host roster DataTable
   #                                     with add/edit/clone/delete, Source column (v0.78),
   #                                     5-second undo on delete (v0.78)
   #                                     BulkOpsScreen, BulkOpsResultScreen,
-  #                                     RotateKeyScreen — new key written to same dir as
+  #                                     RotateKeyScreen - new key written to same dir as
   #                                       original key_path (v0.78 source-aware rotation),
   #                                     _BULK_OPS
-  # SECTION: user_admin_screen (v0.78) ← UserAdminService — SSH command execution +
+  # SECTION: user_admin_screen (v0.78) ← UserAdminService - SSH command execution +
   #                                     audit log for all user/group actions; called by
   #                                     both UserAdminScreen and ContainmentDialog so
   #                                     containment logic is never duplicated
-  #                                     _UserDangerGuard — self-lockout + privileged-user
+  #                                     _UserDangerGuard - self-lockout + privileged-user
   #                                     protection (critical/dangerous/warn levels)
-  #                                     _UaConfirmDialog — multi-level confirmation modal
+  #                                     _UaConfirmDialog - multi-level confirmation modal
   #                                     (requires username typing + lockout phrase for
   #                                     critical operations on the current SSH login user)
-  #                                     UserAdminScreen (Ctrl+J) — main admin screen:
+  #                                     UserAdminScreen (Ctrl+J) - main admin screen:
   #                                     host tabs, 5 content tabs (Users/Groups/Keys/
   #                                     Sessions/Details), keyboard-first navigation
   #                                     Enter/e: edit user or group (v0.78)
-  #                                     UserEditDialog — create/edit user (name, shell, groups)
-  #                                     GroupEditDialog — create/edit group
-  #                                     SshKeysDialog — view/append/remove authorized_keys
+  #                                     UserEditDialog - create/edit user (name, shell, groups)
+  #                                     GroupEditDialog - create/edit group
+  #                                     SshKeysDialog - view/append/remove authorized_keys
   #                                     for any user; rotation delegates to RotateKeyScreen
   #                                     to avoid duplicating SshKeyManager logic
   # SECTION: apt_upgrade_screen      ← AptUpgradeScreen (F8)
@@ -518,7 +483,7 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   #                                     HostEditorScreen (Ctrl+N new, Ctrl+O edit)
   #                                     + 🤖 AI tab: per-host AI instructions
   #                                     + Delete button (edit mode only) with confirmation
-  #                                     + prefill=HostConfig mode (v0.78) — pre-fills all fields
+  #                                     + prefill=HostConfig mode (v0.78) - pre-fills all fields
   #                                       without adding stub to pool; used by DockerScreen "a"
   # SECTION: script_runner           ← ScriptScreen (Ctrl+S) - file browser, inline editor,
   #                                     run via SSH stdin, SFTP deploy, cron schedule
@@ -553,14 +518,14 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   # SECTION: ui / dashboard          ← Panel, ServerCard, AttackRadarPanel,
   #                                     ServicesPanel, StatsBar, FKeyBar,
   #                                     DeflectApp, DeflectAppV2
-  # SECTION: welcome_screen (v0.78)  ← _parse_ssh_config_hosts() — lightweight OpenSSH
+  # SECTION: welcome_screen (v0.78)  ← _parse_ssh_config_hosts() - lightweight OpenSSH
   #                                     config parser (skips wildcards)
-  #                                     _WelcomeStubPool — minimal pool stub for onboarding
-  #                                     SSHImportDialog (ModalScreen) — checklist of
+  #                                     _WelcomeStubPool - minimal pool stub for onboarding
+  #                                     SSHImportDialog (ModalScreen) - checklist of
   #                                     ~/.ssh/config hosts with toggle-select + Import
-  #                                     WelcomeScreen (ModalScreen) — 3-card first-run UI:
+  #                                     WelcomeScreen (ModalScreen) - 3-card first-run UI:
   #                                     [D] Demo / [A] Add Host / [I] Import SSH config
-  #                                     WelcomeApp — thin App wrapper that pushes WelcomeScreen
+  #                                     WelcomeApp - thin App wrapper that pushes WelcomeScreen
   #                                     _run_welcome() → "demo"|"run"|"quit"
   # SECTION: entrypoint              ← _check_deps(), _run(), _run_demo(), main()
 
@@ -899,7 +864,7 @@ Modal screens (open on top of the main screen):
                                       Symlinks: Enter follows symlink (navigates if → dir)
                                         s - create new symlink / edit target of existing one
                                       File attributes (Ctrl+Z): chmod (octal), chown user:group,
-                                        Touch (update mtime) — works local + remote (SSH)
+                                        Touch (update mtime) - works local + remote (SSH)
                                       Multi-select: Ins/Space toggle, ^A sel-all, \\ desel
                                       F2:rename F3:view F4:edit F5:copy F6:move F7:mkdir F8:del
                                       Sort: ^1 by name, ^2 by size, ^3 by date
@@ -935,14 +900,14 @@ Modal screens (open on top of the main screen):
                                       Tab 3: sshd_config Hardening Auditor (CIS Benchmark)
                                       Tab 4: Mail Abuse Monitor (queue flood / bounce spike)
                                       P0 breach detection: ≥10 failures then success → instant alert
-                                      "v": SessionActivityInspector — live SSH command stream
+                                      "v": SessionActivityInspector - live SSH command stream
   SessionActivityInspector (from AuthSentinel "v" key) - [v0.78] Live forensic session view
                                       Tab 1: SSH Command Stream (auditd EXECVE / /proc fallback)
                                       Tab 2: SQL Live Inspector (pg_stat_activity / SHOW PROCESSLIST)
                                       Tab 3: SMTP Envelope Inspector (postcat subjects + senders)
                                       Tab 4: File & Network Activity (inotifywait + ss)
   ContainmentDialog        (from AuthSentinel "c" key) - [v0.78] Ordered incident response
-                                      Step 1: Block IP (ufw insert 1 deny) — prevent reconnect
+                                      Step 1: Block IP (ufw insert 1 deny) - prevent reconnect
                                       Step 2: Kill session (loginctl terminate-session)
                                       Step 3: Disable account (usermod -L -s /sbin/nologin)
                                       Step 4: Credential rotation (random password + key revoke)
@@ -985,88 +950,104 @@ Modal screens (open on top of the main screen):
                                         critical requires typing username + lockout phrase
 
 ════════════════════════════════════════════════════════════════
-  Keyboard Shortcuts (real mode - DeflectAppV2)
+  Keyboard Shortcuts  (real mode - DeflectAppV2)
 ════════════════════════════════════════════════════════════════
 
-  Tab / Shift+Tab   - next/previous panel
-  ← →               - switch between ServerCards
-  ↑ ↓               - select row in Attack Radar or Services
-  Enter / b         - ban IP (focus on Radar)
-  r                 - restart service (focus on Services)
-  F1                - Navigation panel (function buttons + shortcuts + donate)
-  F2                - SSH shell (focused host)
-                      └─ F8: 🤖 AI Hints | F9: 🤖 AI Command (inside shell)
-                      └─ Ctrl+F: Go to File Manager for current host/location
-  F3                - Live log tail - 8 tabs (Journal/Auth/Nginx/Apache/Email/Fail2ban/UFW/Syslog)
-                      └─ Ctrl+←/→ or click tab to switch sources
-  F4                - Disk usage drill-down
-  F5                - Port forwards (focused host)
-  F6                - App settings (General / Notifications / Security / 🤖 AI)
-  F7                - ban last IP from any panel
-  F8                - APT upgrade manager
-  F9                - Fleet Manager (all hosts, bulk ops)
-  Ctrl+H            - Auth Sentinel (multi-protocol auth intelligence)  [v0.78]
-                      └─ inside: Tab 1/2/3/4 switch views
-                      └─ ↑↓: select event  v: session inspector  c: containment workflow
-                      └─ b: ban IP fleet-wide  a: AI Auth Intel analysis  l: raw logs
-                      └─ s/f: filter success/failed  r: return to Attack Radar
-  Ctrl+J            - User & Group Administration  [v0.78+]
-                      └─ u/1: Users  g/2: Groups  k/3: SSH Keys  w/4: Sessions  d/5: Details
-                      └─ ↑↓: select row  ←→: switch host
-                      └─ Users: a=add  Enter/e=edit  l=lock  K=keys  h=SSH shell  s=sudo  c=contain
-                      └─ Groups: a=add  Enter/e=edit
-                      └─ Keys: g=generate  a=append  o=rotate(full)
-                      └─ Del: delete (with confirmation)  r: refresh
-  Ctrl+A            - 🤖 AI Chat (streaming conversation for focused host)  [v0.75]
-  Ctrl+B            - Network Connections (bandwidth top)
-  Ctrl+D            - Docker panel (focused host)
-                      └─ (from ServerCard) d: select container nav  Enter: open selected  [v0.78]
-                      └─ inside File Manager: Favourite Locations (add/go/del/edit)
-  Ctrl+E            - Environment / Config diff + SSH key audit
-  Ctrl+G            - Git / Deploy manager
-  Ctrl+I            - 🤖 AI Stats (token usage by tier and day)
-  Ctrl+K            - Secrets Vault + Export/Import
-  Ctrl+L            - Log Aggregation (cross-host grep)
-  Ctrl+M            - Email Monitor  [maintenance: press 'm' on focused host card]
-  Ctrl+N            - add new SSH host
-  Ctrl+O            - edit focused host
-  Ctrl+P            - Process monitor (cross-host top + OOM)
-                      └─ (from ServerCard) p: open for focused host  [v0.78]
-  Ctrl+R            - Network Recon
-  Ctrl+S            - Script Runner (library + deploy + cron + 🤖 AI Generate)
-  Ctrl+T            - Cron / Timers manager
-  Ctrl+U            - Backup status monitor
-  Ctrl+W            - Firewall manager
-  Ctrl+Y            - Database monitor (PG/MySQL/Redis/Mongo)
-  Ctrl+F            - File Manager (dual-panel, Local + SFTP)
-                      └─ Tab: switch panel  Ctrl+U: swap panels  Alt/Meta+C: quick CD
-                      └─ Home/Left: top of list  End/Right: bottom
-                      └─ Enter: open dir / follow symlink target
-                      └─ s: create/edit symlink  Ctrl+Z: attrs (chmod/chown/touch)
-                      └─ ^1/2/3: sort by name/size/date  (again = reverse)
-                      └─ Ctrl+D: Favourites  \\: desel all
-  q / F10           - quit
+  GLOBAL NAVIGATION
+  ────────────────────────────────────────────────────────────
+  Tab / Shift+Tab     next / previous panel
+  ← →                 switch between ServerCards
+  ↑ ↓                 select row (Attack Radar or Services panel)
+  q / F10             quit
 
-  ServerCard shortcuts (when card is focused):  [v0.78]
-  Click (single)    - focus on card
-  Click (double)    - open DockerScreen (if containers) or ProcessScreen
-  [o]pen            - edit host (same as Ctrl+O)
-  [a]i              - toggle AI-controlled mode
-  [m]aint           - toggle maintenance mode
-  [p]roc            - open ProcessScreen for this host
-  [d]ocker          - enter docker container navigation mode
-                      └─ ↑↓: select container  Enter: open DockerScreen  Esc: exit nav
-  F2                - SSH shell (same as F2 globally)
-  [f] or Ctrl+F     - File Manager (same as Ctrl+F globally)
-  Ctrl+←/→/↑/↓     - move card position in grid
+  FUNCTION KEYS
+  ────────────────────────────────────────────────────────────
+  F1    Help / Navigation panel (all shortcuts, donate link)
+  F2    SSH shell (focused host)
+        └─ F8: 🤖 AI Hints   F9: 🤖 AI Command   Ctrl+F: open File Manager
+  F3    Live log tail - 8 sources: Journal · Auth · Nginx · Apache · Email · Fail2ban · UFW · Syslog
+        └─ Ctrl+←/→ or click tab to switch source
+  F4    Disk usage drill-down (top-10 dirs, ETA to full)
+  F5    SSH port-forward editor  ⚠ Windows Terminal may intercept
+  F6    App settings: General / Notifications / Security / 🤖 AI  ⚠ same caveat
+  F7    Ban last IP (from any panel)
+  F8    APT upgrade manager (upgradable packages per host)
+  F9    Fleet Manager (all hosts, checkboxes, bulk ops, 🤖 AI Audit All)
 
-  Attack Radar (when focused):
-  ↑ ↓               - select IP row
-  Enter / b         - ban selected IP
-  🤖 a              - AI analysis of selected event  [v0.75]
+  INFRASTRUCTURE SCREENS
+  ────────────────────────────────────────────────────────────
+  Ctrl+B    Network Connections - ss -tnp, state filters, anomaly summary
+  Ctrl+D    Docker - containers, images, resource usage
+            └─ DockerRunWizard · DockerPortEditorScreen · DockerRenameDialog
+  Ctrl+E    Env / Config audit - .env diff between hosts, SSH key audit
+  Ctrl+F    File Manager - dual-panel Local + SFTP (Midnight Commander style)
+            └─ Tab: switch panel   Ctrl+U: swap panels   Alt/Meta+C: quick CD
+            └─ Ins/Space: toggle select   ^A: select all   \: desel all
+            └─ F2:rename  F3:view  F4:edit  F5:copy  F6:move  F7:mkdir  F8:del
+            └─ s: symlink   Ctrl+Z: attrs (chmod/chown/touch)
+            └─ ^1/2/3: sort by name/size/date  (press again to reverse)
+            └─ Ctrl+D: Favourite Locations  (add · navigate · edit · delete)
+            └─ Transfer queue: P=pause/resume  C=cancel  Del=clear done
+  Ctrl+G    Git / Deploy - repos status, pull, restart service, rollback
+  Ctrl+L    Log Aggregation - cross-host regex grep, 5 presets
+  Ctrl+M    Email Monitor - MTA queue, bounce rate, postfix/dovecot/exim errors
+  Ctrl+P    Process monitor - cross-host top, kill PID, OOM events
+  Ctrl+R    Network Recon - nmap/dig/whois/traceroute/curl, 11 presets
+  Ctrl+S    Script Runner - library, inline editor, SFTP deploy, cron scheduling
+            └─ 🤖 AI Generate: natural-language description → bash/python script
+  Ctrl+T    Cron & Timers - crontab + systemd timers, CRUD, bulk add
+  Ctrl+U    Backup monitor - restic · borg · rclone · rsnapshot
+  Ctrl+W    Firewall - UFW/iptables rules, add/delete, toggle UFW
+            └─ 🤖 AI Firewall Audit   → SecurityWizardScreen (hardening checklist)
+  Ctrl+Y    Database monitor - PostgreSQL · MySQL · Redis · MongoDB
 
-⚠️ Windows Terminal intercepts F5 and F6 - use them only in Windows Terminal
-   with system shortcuts disabled. Safe zone: F1-F4, F7-F10, any Ctrl+.
+  SECURITY & AI SCREENS
+  ────────────────────────────────────────────────────────────
+  Ctrl+A    🤖 AI Chat - streaming conversation with full host context  [v0.75]
+  Ctrl+H    Auth Sentinel - multi-protocol authentication intelligence  [v0.78]
+            └─ Tab 1: Live Event Feed + Active Sessions + Threat Summary
+            └─ Tab 2: Fleet Auth Statistics + protocol breakdown heatmap
+            └─ Tab 3: sshd_config Hardening Auditor (CIS Benchmark)
+            └─ Tab 4: Mail Abuse Monitor (queue flood / bounce spike)
+            └─ v: SessionActivityInspector   c: ContainmentDialog   t: IncidentTimeline
+            └─ b: ban IP fleet-wide   a: 🤖 AI Auth Intel   l: raw logs
+            └─ s/f: filter success/failed   r: return to Attack Radar
+  Ctrl+I    🤖 AI Stats - token usage by tier/day, provider info, 7-day breakdown
+  Ctrl+J    User & Group Administration  [v0.78+]
+            └─ Tabs: [U]sers · [G]roups · [K]eys · [W]Sessions · [D]etails  (←→ switch host)
+            └─ Users:  a=add  e=edit  l=lock/unlock  K=SSH keys  h=shell  c=contain
+            └─ Groups: a=add  e=edit  Del=delete
+            └─ Keys:   g=generate  a=append  o=full rotation  Del=remove
+  Ctrl+K    Secrets Vault - view/edit encrypted secrets, Export/Import with password
+  Ctrl+N    Add new SSH host (+ per-host 🤖 AI instructions)
+  Ctrl+O    Edit focused host (Security config, all settings, AI instructions)
+
+  SERVER CARD SHORTCUTS  (when a card is focused)           [v0.78]
+  ────────────────────────────────────────────────────────────
+  Click            focus card
+  Double-click     open DockerScreen (if containers) or ProcessScreen
+  o                edit host  (= Ctrl+O)
+  a                toggle AI-controlled mode
+  m                toggle maintenance mode
+  p                open ProcessScreen for this host
+  d                docker container navigation  (↑↓ select · Enter open · Esc exit)
+  F2               SSH shell  (= global F2)
+  f / Ctrl+F       File Manager  (= global Ctrl+F)
+  Ctrl+←/→/↑/↓    reposition card in grid
+
+  ATTACK RADAR  (when focused)
+  ────────────────────────────────────────────────────────────
+  ↑ ↓              select IP row
+  Enter / b        ban selected IP
+  a                🤖 AI analysis of selected event  [v0.75]
+
+  SERVICES PANEL  (when focused)
+  ────────────────────────────────────────────────────────────
+  ↑ ↓              select service row
+  r                restart selected service
+
+⚠️  Windows Terminal intercepts F5 and F6 - disable system shortcuts to use them.
+    Safe zone: F1–F4, F7–F10, any Ctrl+letter.
 
 ════════════════════════════════════════════════════════════════
   Critical Technical Details
@@ -1475,10 +1456,10 @@ v0.76 [X] 4/17/2026
   [X] PyPI publishing via GitHub Actions (Trusted Publisher / OIDC)
   · .github/workflows/publish.yml: triggers on v* tag push
   · Steps: checkout → setup-python 3.11 → build → pypa/gh-action-pypi-publish@release/v1
-  · No stored API tokens — OIDC id-token: write permission only
+  · No stored API tokens - OIDC id-token: write permission only
   · pyproject.toml: name=deflect-one, entry points deflect + deflect-one → deflect:main
-  · Optional dependency groups: [ai] and [all] — anthropic, openai
-  · py-modules = ["deflect"] — single-file package, no subdirectories
+  · Optional dependency groups: [ai] and [all] - anthropic, openai
+  · py-modules = ["deflect"] - single-file package, no subdirectories
 
   [X] Centralised colour palette (new SECTION: colour_palette)
   · All colours extracted into named constants: CLR_SUCCESS, CLR_ERROR, CLR_CURSOR,
@@ -1488,84 +1469,84 @@ v0.76 [X] 4/17/2026
 
   [X] ScrollableContainer for ServerCard grid (layout fix)
   · #grid-hosts wrapped in ScrollableContainer (height: 1fr, overflow-y: scroll)
-  · #grid-hosts inner container: height: auto — grows to content
-  · Cards no longer get clipped when hosting many servers — list scrolls
+  · #grid-hosts inner container: height: auto - grows to content
+  · Cards no longer get clipped when hosting many servers - list scrolls
 
-  [X] AI Managed Host — cross-cycle state persistence + restart loop prevention
+  [X] AI Managed Host - cross-cycle state persistence + restart loop prevention
   · _ai_action_history (deque maxlen=10): last ~10 min of actions injected into every AI call
-    Format: "[HH:MM] kind target → result_snippet" — model can detect restart loops, escalate
+    Format: "[HH:MM] kind target → result_snippet" - model can detect restart loops, escalate
   · _ai_restart_cooldown (dict service→deadline): blocks restart_service for 600 s per service
     Blocked attempt appends "COOLDOWN(Xs)" to history so model switches to send_notification
   · EventKind.AI_NOTIFICATION added; both send_notification and escalate_to_human route through
     NotificationManager; escalate_to_human prepends "⚠️ ACTION REQUIRED: "
 
-  [X] AI Managed Host — system/user prompt split
+  [X] AI Managed Host - system/user prompt split
   · system prompt: static fields only (label, address, os_info, ai_instructions, safe_footer)
   · user_prompt: dynamic state (time, metrics, services, inventory, action history)
   · Avoids re-sending ~160 tokens of dynamic data in every system prompt
 
-  [X] Attack Radar — "l" key: raw log lines for selected IP
+  [X] Attack Radar - "l" key: raw log lines for selected IP
   · grep across auth.log / fail2ban.log / ufw.log / nginx logs / syslog, tail -50
   · Result shown in existing AiAnalysisPopup (no new screen); Rich markup escaped
   · border_subtitle updated to include [l]ogs hint
 
-  [X] Host Editor — Delete button (edit mode only)
+  [X] Host Editor - Delete button (edit mode only)
   · _ConfirmDeleteDialog(ModalScreen): yes/no confirmation before removal
   · Button visible only when editing an existing host
   · On confirm: pool.remove_host() → notify → dismiss
 
   [X] Minor fixes and polish
   · datetime.utcnow() → datetime.now(datetime.UTC) in four places (deprecation fix)
-  · File Manager Docker: dedup by "{hid}__{cid}" key — fixes duplicate containers across hosts
+  · File Manager Docker: dedup by "{hid}__{cid}" key - fixes duplicate containers across hosts
   · ServerCard: "f" as alternative to Ctrl+F for File Manager
   · APP_SITE and license URL updated to vladonai.com/deflect-one
   · AI instruction examples in HostEditorScreen updated to actionable history-aware patterns
 
-  v0.78 — AuthSentinel: Multi-Protocol Authentication Intelligence + First-Run Onboarding
+  v0.78 - AuthSentinel: Multi-Protocol Authentication Intelligence + First-Run Onboarding
           + Enhanced ServerCard UX (health badges, docker nav, card reordering)
 
   ── SERVERCARD ENHANCEMENTS ──────────────────────────────────────────────────
 
-  [X] Health score badge             — weighted score 0–100 in border_title
+  [X] Health score badge             - weighted score 0–100 in border_title
                                        (CPU 30% + RAM 30% + Disk 20% + services 20%)
                                        colour: green ≥80 | yellow 60–79 | red <60
-  [X] Hostname moved to border_title — frees up one content line, cleaner layout
+  [X] Hostname moved to border_title - frees up one content line, cleaner layout
                                        with tags [prod] + 🔧 maintenance + 🤖 AI-controlled
-  [X] Trend arrows for CPU/RAM       — ↑↑/↑/↓/↓↓ shows 1-step delta (Δ≥5% or Δ≥15%)
-  [X] Docker container list + nav    — all containers always visible (not just running[:3])
+  [X] Trend arrows for CPU/RAM       - ↑↑/↑/↓/↓↓ shows 1-step delta (Δ≥5% or Δ≥15%)
+  [X] Docker container list + nav    - all containers always visible (not just running[:3])
                                        status icons: ▶ (running) / ■ (stopped)
                                        docker health badge [100%] / [67%] / [0%]
                                        keyboard nav: d→select  ↑↓→navigate  Enter→open  Esc→exit
                                        selected container shows: → ▶ nginx  1.2%cpu 0.8%mem
-  [X] Hover border highlight         — subtle $accent-darken-1 on hover for visual feedback
-  [X] Click interactions             — single=focus  double=open DockerScreen (or ProcessScreen)
-  [X] Keyboard shortcuts             — p:ProcessScreen  d:docker nav  Ctrl+←→↑↓:move card
-  [X] Card reordering in grid        — Ctrl+arrows to swap position, persists during session
+  [X] Hover border highlight         - subtle $accent-darken-1 on hover for visual feedback
+  [X] Click interactions             - single=focus  double=open DockerScreen (or ProcessScreen)
+  [X] Keyboard shortcuts             - p:ProcessScreen  d:docker nav  Ctrl+←→↑↓:move card
+  [X] Card reordering in grid        - Ctrl+arrows to swap position, persists during session
                                        synced with Tab-navigation order (_panel_order)
 
   ── DEMO MODE ────────────────────────────────────────────────────────────────
 
-  [X] Demo pool stubs completed        — all_agents() · state() · ai_engine wired;
+  [X] Demo pool stubs completed        - all_agents() · state() · ai_engine wired;
                                          fixes "tick error: no attribute all_agents"
-  [X] _DEFAULT_JSON hosts: []          — fresh install now shows WelcomeScreen instead
+  [X] _DEFAULT_JSON hosts: []          - fresh install now shows WelcomeScreen instead
                                          of a fake "My VPS" stub that fails to connect
-  [X] Attack Radar in demo             — 12 seed events across all hosts (was 7, linode-01 only);
+  [X] Attack Radar in demo             - 12 seed events across all hosts (was 7, linode-01 only);
                                          timestamps spread backwards so history looks real;
                                          1–3 new events per tick from 8 countries/hosts;
                                          banned_count increments gradually
-  [X] WelcomeScreen interaction        — _WCard(can_focus=True) + on_click + on_mount focus;
+  [X] WelcomeScreen interaction        - _WCard(can_focus=True) + on_click + on_mount focus;
                                          Tab/↑↓ navigate · Enter activates · click works
 
   ── FIRST-RUN ONBOARDING ─────────────────────────────────────────────────────
 
-  [X] WelcomeScreen(ModalScreen)      — 3-card TUI on cold launch (no hosts configured):
+  [X] WelcomeScreen(ModalScreen)      - 3-card TUI on cold launch (no hosts configured):
                                         [D] Demo · [A] Add Host · [I] Import ~/.ssh/config
-  [X] _run_welcome(cfg_manager)       — WelcomeApp wrapper; main() calls it instead of sys.exit(0)
-  [X] SSHConfigSyncManager            — owns ~/.ssh/deflect_hosts; rewrites on every host
+  [X] _run_welcome(cfg_manager)       - WelcomeApp wrapper; main() calls it instead of sys.exit(0)
+  [X] SSHConfigSyncManager            - owns ~/.ssh/deflect_hosts; rewrites on every host
                                         change; prepends Include to ~/.ssh/config once (with
                                         backup); opt-out via "ssh_config_sync": false
-  [X] SSHImportDialog(ModalScreen)    — toggle-select checklist of ~/.ssh/config hosts
-  [X] _parse_ssh_config_hosts()       — lightweight OpenSSH config parser, skips wildcards
+  [X] SSHImportDialog(ModalScreen)    - toggle-select checklist of ~/.ssh/config hosts
+  [X] _parse_ssh_config_hosts()       - lightweight OpenSSH config parser, skips wildcards
   [X] HostConfig.import_source / import_source_path / import_source_alias
 
   Credential write-back rules (on key/password rotation):
@@ -1573,105 +1554,105 @@ v0.76 [X] 4/17/2026
     B. ~/.ssh/config         → diff-view confirmation if import_source == "ssh_config"
     C. PuTTY registry        → confirmation dialog if import_source == "putty" (Windows)
 
-  [ ] EmptyStatePanel(Widget)         — inline empty state when all hosts deleted in-app
-  [ ] SSHConfigPatcher                — surgical per-field edit in ~/.ssh/config
-  [ ] PasswordRotationScreen          — remote chpasswd + vault update + write-back UI
+  [ ] EmptyStatePanel(Widget)         - inline empty state when all hosts deleted in-app
+  [ ] SSHConfigPatcher                - surgical per-field edit in ~/.ssh/config
+  [ ] PasswordRotationScreen          - remote chpasswd + vault update + write-back UI
                                         (secrets.token_urlsafe(24) or custom; rollback on fail)
-  [ ] CredentialWriteBackDialog       — diff-view confirmation modal, "never ask" checkbox
-  [ ] PuTtyImporter (Windows only)    — winreg reader → HostConfig list
-  [ ] RegistryPatcher (Windows only)  — winreg write for PuTTY session fields
+  [ ] CredentialWriteBackDialog       - diff-view confirmation modal, "never ask" checkbox
+  [ ] PuTtyImporter (Windows only)    - winreg reader → HostConfig list
+  [ ] RegistryPatcher (Windows only)  - winreg write for PuTTY session fields
 
   ── HOST MANAGEMENT UX ───────────────────────────────────────────────────────
 
-  [X] FleetManagerScreen (F9)          — Source column; 5s undo on delete; [r] restore
-  [X] RestoreHostDialog(ModalScreen)   — list + restore from 7-day deleted archive [r]
-  [X] ConfigManager.delete_host        — archives host to deleted_hosts before removal
+  [X] FleetManagerScreen (F9)          - Source column; 5s undo on delete; [r] restore
+  [X] RestoreHostDialog(ModalScreen)   - list + restore from 7-day deleted archive [r]
+  [X] ConfigManager.delete_host        - archives host to deleted_hosts before removal
   [X] ConfigManager.restore_deleted_host / get_deleted_hosts / _prune_deleted_hosts (7d TTL)
-  [X] ConfigManager._build_host_config — extracted helper dict→HostConfig
+  [X] ConfigManager._build_host_config - extracted helper dict→HostConfig
 
-  [ ] AddHostWizard(ModalScreen)       — 3-step wizard: ① Basics → ② Auth → ③ Options
+  [ ] AddHostWizard(ModalScreen)       - 3-step wizard: ① Basics → ② Auth → ③ Options
                                          (ContentSwitcher; Test Connection in step 2)
-  [ ] _test_connection(host) → result  — async SSH probe, returns latency or error
-  [ ] ArchiveAction                    — disabled=True flag, filter in FleetManagerScreen
-  [ ] ContextMenu(Widget)              — '.' key popup: edit · clone · archive · delete
-  [ ] FirstTimeHintBanner(Widget)      — dismissable one-shot hint (tracked in app_stats)
+  [ ] _test_connection(host) → result  - async SSH probe, returns latency or error
+  [ ] ArchiveAction                    - disabled=True flag, filter in FleetManagerScreen
+  [ ] ContextMenu(Widget)              - '.' key popup: edit · clone · archive · delete
+  [ ] FirstTimeHintBanner(Widget)      - dismissable one-shot hint (tracked in app_stats)
 
   ── AUTH SENTINEL ────────────────────────────────────────────────────────────
 
-  Unified auth surveillance across all hosts — SSH, sudo, mail, DB, FTP, web panels.
+  Unified auth surveillance across all hosts - SSH, sudo, mail, DB, FTP, web panels.
   Attack Radar watches the perimeter; AuthSentinel watches what gets THROUGH.
 
-  [X] AuthSentinelScreen (Ctrl+H)     — 3-panel dashboard: AuthEventFeed (live stream,
+  [X] AuthSentinelScreen (Ctrl+H)     - 3-panel dashboard: AuthEventFeed (live stream,
                                         color-coded) · ActiveSessionsPanel (who/where/how)
                                         · ThreatSummaryPanel (top IPs, campaigns, breaches)
                                         Keys: l=raw logs · s/f=filter · b=ban · a=AI Intel
                                               k=kill session · v=SessionActivityInspector
-  [X] AuthEventParser                 — 30+ regex patterns; auto-detects auth.log vs secure;
+  [X] AuthEventParser                 - 30+ regex patterns; auto-detects auth.log vs secure;
                                         SSH/SFTP/sudo/su/PAM/Dovecot/Postfix SASL/MySQL/
                                         PostgreSQL/vsftpd/Redis/MongoDB/Webmin
-  [X] AnomalyDetector                 — 11 detection rules:
+  [X] AnomalyDetector                 - 11 detection rules:
                                         BRUTE_FORCE · PASSWORD_SPRAY · CREDENTIAL_STUFFING
-                                        SUCCESSFUL_AFTER_FAILURES (P0, evidence of breach —
+                                        SUCCESSFUL_AFTER_FAILURES (P0, evidence of breach -
                                           T+0s evidence snapshot, T+1s AI Intel + session spy,
                                           T+2s Radar P0 marker + notification, T+3s Containment)
                                         IMPOSSIBLE_TRAVEL · ROOT_SSH_LOGIN · HONEYPOT_ACCOUNT
                                         PRIVILEGE_ESCALATION_CHAIN · NEW_IP_FOR_USER
                                         AUTH_METHOD_DOWNGRADE · CONCURRENT_SESSIONS
-  [X] AuthHeatmapWidget               — 24h×7d braille density grid per protocol;
+  [X] AuthHeatmapWidget               - 24h×7d braille density grid per protocol;
                                         off-baseline cells highlighted (bright border)
-  [X] AbuseIPDB enrichment            — async /check on new IPs, 24h cache, auto-ban ≥75%
-  [X] IncidentTimelineView            — sequential attack narrative with ∆t; P1-P4 rating;
+  [X] AbuseIPDB enrichment            - async /check on new IPs, 24h cache, auto-ban ≥75%
+  [X] IncidentTimelineView            - sequential attack narrative with ∆t; P1-P4 rating;
                                         "copy as report" → markdown
-  [X] AI Auth Intel                   — AuthIntelAgent; cross-host correlation; 6 AI actions
+  [X] AI Auth Intel                   - AuthIntelAgent; cross-host correlation; 6 AI actions
                                         (ban_ip · kill_session · lock_account ·
                                         send_notification · generate_incident_report ·
                                         escalate_to_human); 600s cooldown per action
-  [X] Fleet Auth Statistics (Tab 2)   — per-host sparklines; protocol breakdown;
+  [X] Fleet Auth Statistics (Tab 2)   - per-host sparklines; protocol breakdown;
                                         top 10 usernames+ASNs; Auth Health Score 0-100
-  [X] sshd_config Hardening Auditor   — CIS L1 checklist (10 items); auto-fix with backup;
+  [X] sshd_config Hardening Auditor   - CIS L1 checklist (10 items); auto-fix with backup;
     (Tab 3)                             sshd -t validation; systemctl reload sshd
-  [X] EmailAbuseDetector (Tab 4)      — 6 MAIL_FLOOD patterns (Postfix/Exim); SMTP envelope
+  [X] EmailAbuseDetector (Tab 4)      - 6 MAIL_FLOOD patterns (Postfix/Exim); SMTP envelope
                                         inspection via postcat; MailAbusePanel with sparklines
-  [X] SessionActivityInspector ("v")  — 4-tab live forensics:
+  [X] SessionActivityInspector ("v")  - 4-tab live forensics:
                                         ① SSH commands (auditd/proc fallback, dangerous-cmd highlight)
                                         ② SQL live (pg_stat_activity / SHOW PROCESSLIST / REDIS MONITOR)
                                         ③ SMTP envelope (postcat headers, phishing signatures)
                                         ④ File+network (inotifywait + ss + pstree)
-  [X] Attack Radar integration        — auth anomalies as ◆ markers; drill-down to AuthSentinel
+  [X] Attack Radar integration        - auth anomalies as ◆ markers; drill-down to AuthSentinel
                                         from radar and back ("r"); ambient anomaly badge
-  [X] ContainmentWorkflow             — 5-step stepper: ① block IP → ② kill session →
+  [X] ContainmentWorkflow             - 5-step stepper: ① block IP → ② kill session →
     (ContainmentDialog)                 ③ disable account (4 options) → ④ rotate credentials →
                                         ⑤ preserve evidence; "One-click P1 Response"
-  [X] Notification integration        — auth templates; per-host severity threshold;
+  [X] Notification integration        - auth templates; per-host severity threshold;
                                         digest mode; "incident declared" bundling
 
   AuthSentinelScreen UX overhaul:
-  [X] Flickering fix                  — batch_update() + change detection before repaint
-  [X] ListView panels                 — replaced monolithic Static in all 3 main panels;
+  [X] Flickering fix                  - batch_update() + change detection before repaint
+  [X] ListView panels                 - replaced monolithic Static in all 3 main panels;
                                         _lv_show_lines() helper; native scroll + click
-  [X] Tab buttons                     — Button widgets (id="sentinel-tab-N"), hover CSS
-  [X] Braille sparklines              — _braille_spark / _braille_bar across all panels
+  [X] Tab buttons                     - Button widgets (id="sentinel-tab-N"), hover CSS
+  [X] Braille sparklines              - _braille_spark / _braille_bar across all panels
                                         (feed/threats/statistics/heatmap/title bar)
-  [X] Host indicator + navigation     — "h" cycles agents; initial_host drill-down param
-  [X] Key conflict resolved           — "a"=AI Intel, "x"=clear filter
-  [X] AI Auth Intel opt-in            — SecurityMonitoringConfig.auth_intel_ai: bool = False
-  [X] Breach CSS classes              — breach-row · flagged-session · p0-threat
-  [X] Dynamic titles + footer         — tab-context-sensitive footer; event/breach counts
+  [X] Host indicator + navigation     - "h" cycles agents; initial_host drill-down param
+  [X] Key conflict resolved           - "a"=AI Intel, "x"=clear filter
+  [X] AI Auth Intel opt-in            - SecurityMonitoringConfig.auth_intel_ai: bool = False
+  [X] Breach CSS classes              - breach-row · flagged-session · p0-threat
+  [X] Dynamic titles + footer         - tab-context-sensitive footer; event/breach counts
 
   ── USER & GROUP ADMINISTRATION (Ctrl+J) ─────────────────────────────────────
 
-  [X] UserAdminService                — command execution + audit log for all user/group
+  [X] UserAdminService                - command execution + audit log for all user/group
                                         operations; supports both host and docker-exec paths;
                                         called by UserAdminScreen AND ContainmentDialog so
                                         containment logic is never duplicated
-  [X] _UserDangerGuard                — 4-level safety gate (ok / warn / dangerous / critical)
+  [X] _UserDangerGuard                - 4-level safety gate (ok / warn / dangerous / critical)
                                         detects current SSH login user; blocks or requires
                                         multi-step confirmation before any action that could
                                         cause self-lockout; warns for root/privileged targets
-  [X] _UaConfirmDialog                — confirmation modal with 3 levels:
+  [X] _UaConfirmDialog                - confirmation modal with 3 levels:
                                         warn: Yes/No  · dangerous: type username  ·
                                         critical: type username + "I UNDERSTAND THIS MAY LOCK ME OUT"
-  [X] UserAdminScreen (Ctrl+J)        — main Linux user & group administration screen:
+  [X] UserAdminScreen (Ctrl+J)        - main Linux user & group administration screen:
                                         host tabs (←→); 5 content tabs:
                                           Users: UID/shell/status/groups; system users dimmed;
                                             current SSH user marked ★; privileged groups in red;
@@ -1684,59 +1665,59 @@ v0.76 [X] 4/17/2026
                                           Sessions: who/w active sessions viewer
                                           Details: id/chage/lastlog/ps/du/quota/sudo rights
                                         All mutations logged to admin.log + security.log
-  [X] UserEditDialog                  — create/edit user: name, shell, add-to-groups
-  [X] GroupEditDialog                 — create/rename group
-  [X] SshKeysDialog                   — authorized_keys viewer/editor for any user:
+  [X] UserEditDialog                  - create/edit user: name, shell, add-to-groups
+  [X] GroupEditDialog                 - create/rename group
+  [X] SshKeysDialog                   - authorized_keys viewer/editor for any user:
                                         append key, remove selected key (with last-key warning),
                                         backup before every mutation; full rotation delegates
                                         to RotateKeyScreen (avoids duplicating SshKeyManager)
-  [X] ContainmentDialog integration   — additive "User Admin" button (enabled after step 3);
+  [X] ContainmentDialog integration   - additive "User Admin" button (enabled after step 3);
                                         opens UserAdminScreen focused on the contained user
                                         for further actions (revoke keys, remove from sudo)
-  [X] Admin audit log                 — admin.log (separate from deflect.log) for SIEM use;
+  [X] Admin audit log                 - admin.log (separate from deflect.log) for SIEM use;
                                         every mutation records timestamp/host/operator/cmd/result
 
   ── DOCKER SCREEN & HOST EDITOR ─────────────────────────────────────────────
 
-  [X] DockerScreen — container rename  — "e" key opens _DockerRenameDialog; runs
+  [X] DockerScreen - container rename  - "e" key opens _DockerRenameDialog; runs
                                           docker rename <old> <new> via SSH;
                                           fix: on_input_submitted() replaces on_key(enter)
-                                          — Input widget consumes Enter and fires
+                                          - Input widget consumes Enter and fires
                                           Input.Submitted, so on_key never received it
                                           (rename silently never ran);
                                           fix: _fetch_docker() called on success so
                                           DockerScreen and ServerCard dkr-row both
                                           reflect the new name immediately without
                                           waiting for the 15-second poll cycle
-  [X] DockerScreen — "add as host" fix — removed spurious pool.add_host() before
+  [X] DockerScreen - "add as host" fix - removed spurious pool.add_host() before
                                           HostEditorScreen opens (was triggering
                                           auto-connect popup "port 22 not accessible"
                                           and saving an orphaned stub to deflect.json
                                           if the user pressed Escape in the editor);
                                           now passes prefill=stub directly to editor;
-                                          fix: orphaned stub cleanup — if a stub with
+                                          fix: orphaned stub cleanup - if a stub with
                                           the same ID already exists in the pool (left
                                           by the old code), it is removed via
                                           remove_host() before the editor opens
-  [X] HostEditorScreen — prefill mode  — new prefill=HostConfig parameter fills all
+  [X] HostEditorScreen - prefill mode  - new prefill=HostConfig parameter fills all
                                           fields (label, address, port, user, auth,
                                           key_path, tags) without clearing address
                                           (clone_from always cleared address); used
                                           by DockerScreen "add as host" so the IP is
                                           pre-filled and the new host ID is stable
-  [X] UserAdminScreen — Enter to edit  — Enter key is now an alias for "e" in Users
+  [X] UserAdminScreen - Enter to edit  - Enter key is now an alias for "e" in Users
                                           and Groups tabs; hint bar updated
                                           to show "Enter/e:edit"
-  [X] Docker SSH directory fix         — SshShellScreen now auto-detects Docker containers
+  [X] Docker SSH directory fix         - SshShellScreen now auto-detects Docker containers
                                           by "docker" tag and adds "cd /" to ensure correct
                                           root directory; fixes "Permission denied" errors
                                           when SSH'ing to containers from parent host;
                                           all 12 push_screen(SshShellScreen) calls updated
                                           to use _get_ssh_init_cmd() helper
 
-  ── SSH KEY ROTATION — SOURCE-AWARE WRITE-BACK ───────────────────────────────
+  ── SSH KEY ROTATION - SOURCE-AWARE WRITE-BACK ───────────────────────────────
 
-  [X] SshKeyManager.rotate_key        — new key is now written to the same directory
+  [X] SshKeyManager.rotate_key        - new key is now written to the same directory
                                           as the original key_path (e.g. ~/.ssh/work/
                                           if the original was ~/.ssh/work/id_ed25519)
                                           instead of always writing to ~/.ssh/;
@@ -1875,39 +1856,39 @@ from textual.widgets    import Input, Button, ListView, ListItem
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION: colour palette  (GitHub Dark — change here, not scattered across the file like a Sith)
+# SECTION: colour palette  (GitHub Dark - change here, not scattered across the file like a Sith)
 # ══════════════════════════════════════════════════════════════════════════════
 
 # ── Semantic status colours ────────────────────────────────────────────────────
-CLR_SUCCESS   = "#3fb950"   # green  — server lives. the Force is strong today
-CLR_ERROR     = "#f85149"   # red    — it's a trap. again. at 3am.
-CLR_WARNING   = "#d29922"   # amber  — I have a bad feeling about this
-CLR_ACCENT    = "#58a6ff"   # blue   — GitHub blue cosplay, very professional
-CLR_INFO      = "#0178d4"   # blue   — "helpful" info nobody reads. it's there. trust me.
+CLR_SUCCESS   = "#3fb950"   # green  - server lives. the Force is strong today
+CLR_ERROR     = "#f85149"   # red    - it's a trap. again. at 3am.
+CLR_WARNING   = "#d29922"   # amber  - I have a bad feeling about this
+CLR_ACCENT    = "#58a6ff"   # blue   - GitHub blue cosplay, very professional
+CLR_INFO      = "#0178d4"   # blue   - "helpful" info nobody reads. it's there. trust me.
 
 # ── Interactive state colours ──────────────────────────────────────────────────
-CLR_CURSOR    = "#df8000"   # orange — YOU ARE HERE. hello there.
-CLR_TAB_ACTIVE = "#ffa62b"  # amber  — the tab you opened and will never close
-CLR_TAB_PLUGIN = "#4EBF71"  # green  — plugins get their own special green, they earned it
+CLR_CURSOR    = "#df8000"   # orange - YOU ARE HERE. hello there.
+CLR_TAB_ACTIVE = "#ffa62b"  # amber  - the tab you opened and will never close
+CLR_TAB_PLUGIN = "#4EBF71"  # green  - plugins get their own special green, they earned it
 
 # ── Text / label hierarchy ─────────────────────────────────────────────────────
-CLR_TEXT      = "#c9d1d9"   # primary text — not white, eyes aren't made of durasteel
-CLR_TEXT_DIM  = "#8b949e"   # muted — these aren't the droids you're looking for
-CLR_LABEL     = "#888780"   # labels — one in ten users actually reads these
-CLR_METRIC    = "#666666"   # CPU RAM Disk — grey like a Monday, grey like the Death Star walls
-CLR_IDLE      = "#484f58"   # waiting — the colour of existential dread
+CLR_TEXT      = "#c9d1d9"   # primary text - not white, eyes aren't made of durasteel
+CLR_TEXT_DIM  = "#8b949e"   # muted - these aren't the droids you're looking for
+CLR_LABEL     = "#888780"   # labels - one in ten users actually reads these
+CLR_METRIC    = "#666666"   # CPU RAM Disk - grey like a Monday, grey like the Death Star walls
+CLR_IDLE      = "#484f58"   # waiting - the colour of existential dread
 
 # ── Host list colours ──────────────────────────────────────────────────────────
-CLR_HOST      = "#58a6ff"   # host IP — blue because IPs are important, okay?
-CLR_HOST_SEL  = "#c0c0ff"   # selected host — almost purple, almost stylish
-CLR_HOST_LBL  = "#8888cc"   # host label — supporting character, not the hero
+CLR_HOST      = "#58a6ff"   # host IP - blue because IPs are important, okay?
+CLR_HOST_SEL  = "#c0c0ff"   # selected host - almost purple, almost stylish
+CLR_HOST_LBL  = "#8888cc"   # host label - supporting character, not the hero
 
 # ── Stats / metric value colours ──────────────────────────────────────────────
-CLR_STAT_HI   = "#a07020"   # highlighted value — gold for the chosen one
-CLR_STAT_LO   = "#888800"   # normal value — just exists, bothers no one
+CLR_STAT_HI   = "#a07020"   # highlighted value - gold for the chosen one
+CLR_STAT_LO   = "#888800"   # normal value - just exists, bothers no one
 
 # ── Background colours ─────────────────────────────────────────────────────────
-CLR_BG_FIREWALL = "#0d2b0d" # dark green — Matrix aesthetic. very serious. do not touch.
+CLR_BG_FIREWALL = "#0d2b0d" # dark green - Matrix aesthetic. very serious. do not touch.
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1976,7 +1957,7 @@ def _make_rot(filename, level=logging.DEBUG) -> _RotFH:
     h.setFormatter(_LOG_FMT)
     return h
 
-# deflect.log — full app log (DEBUG+), main logger
+# deflect.log - full app log (DEBUG+), main logger
 _log = logging.getLogger("deflect")
 _log.setLevel(logging.DEBUG)
 _log.propagate = False
@@ -1984,14 +1965,14 @@ if not _log.handlers:
     _log.addHandler(_make_rot("deflect.log", logging.DEBUG))
     _log.addHandler(_make_rot("errors.log",  logging.ERROR))   # errors-only, stays small
 
-# security.log — security events (bans, attack loop errors)
+# security.log - security events (bans, attack loop errors)
 _log_sec = logging.getLogger("deflect.security")
 _log_sec.setLevel(logging.DEBUG)
 if not _log_sec.handlers:
     _log_sec.addHandler(_make_rot("security.log", logging.INFO))
 # propagates to _log → security entries also appear in deflect.log
 
-# ai.log — AI defense / managed decisions and actions
+# ai.log - AI defense / managed decisions and actions
 _log_ai = logging.getLogger("deflect.ai")
 _log_ai.setLevel(logging.DEBUG)
 if not _log_ai.handlers:
@@ -2685,7 +2666,7 @@ class ConfigManager:
             try:
                 self._data = json.loads(self._path.read_text(encoding="utf-8"))
             except Exception as e:
-                # JSON parsing failed — either corruption or user hand-edited it badly
+                # JSON parsing failed - either corruption or user hand-edited it badly
                 _log.error("Failed to load config from %s, using defaults: %s: %s",
                           self._path, type(e).__name__, e)
                 self._data = copy.deepcopy(_DEFAULT_JSON)
@@ -3438,7 +3419,7 @@ _PAT_TIME    = re.compile(r"(\w{3}\s+\d+\s[\d:]+)")
 
 _GEO_CACHE: dict[str, str] = {}
 
-# Fallback chain — tried in order on 429 / connection error.
+# Fallback chain - tried in order on 429 / connection error.
 # Each entry: (url_template_with_{ip}, json_key_for_country_code)
 _GEO_PROVIDERS: list[tuple[str, str]] = [
     ("http://ip-api.com/json/{ip}?fields=countryCode", "countryCode"),  # 45 req/min, no key
@@ -3448,8 +3429,8 @@ _GEO_PROVIDERS: list[tuple[str, str]] = [
 
 # Circuit-breaker state: maps url_template → epoch time until which provider is skipped.
 _GEO_PROVIDER_BACKOFF: dict[str, float] = {}
-_GEO_BACKOFF_429_SECS  = 420   # 7 min — confirmed rate-limit
-_GEO_BACKOFF_ERR_SECS  = 180   # 3 min — transient network error
+_GEO_BACKOFF_429_SECS  = 420   # 7 min - confirmed rate-limit
+_GEO_BACKOFF_ERR_SECS  = 180   # 3 min - transient network error
 
 
 async def _geo_fetch(ip: str) -> str:
@@ -3465,7 +3446,7 @@ async def _geo_fetch(ip: str) -> str:
         resume_at = _GEO_PROVIDER_BACKOFF.get(url_tpl, 0)
         if now < resume_at:
             remaining = int(resume_at - now)
-            _log.debug("GeoIP provider %s in backoff (%ds left) — skipping", url_tpl, remaining)
+            _log.debug("GeoIP provider %s in backoff (%ds left) - skipping", url_tpl, remaining)
             continue
         url = url_tpl.format(ip=ip)
         try:
@@ -3475,7 +3456,7 @@ async def _geo_fetch(ip: str) -> str:
             data = await loop.run_in_executor(None, _get)
             cc = (data.get(key) or "").strip()[:2]
             if cc:
-                # Successful response — clear any lingering backoff for this provider
+                # Successful response - clear any lingering backoff for this provider
                 _GEO_PROVIDER_BACKOFF.pop(url_tpl, None)
                 return cc
         except _ue.HTTPError as e:
@@ -3538,12 +3519,12 @@ class AuthEvent:
     auth_method: str    = ""   # password | publickey | sasl
     country:     str    = ""
     raw_line:    str    = ""
-    is_own:      bool   = False  # True = Deflect script's own SSH connection — skip detection
+    is_own:      bool   = False  # True = Deflect script's own SSH connection - skip detection
 
 
 @dataclass
 class AuthThreatEvent:
-    """Anomaly detected by AnomalyDetector — surfaces in AuthSentinel and Attack Radar."""
+    """Anomaly detected by AnomalyDetector - surfaces in AuthSentinel and Attack Radar."""
     ts:               str
     host_id:          str
     kind:             str    # BREACH_CONFIRMED | BRUTE_FORCE | PASSWORD_SPRAY | CREDENTIAL_STUFFING | HONEYPOT | ROOT_SSH | IMPOSSIBLE_TRAVEL | MAIL_FLOOD
@@ -4095,7 +4076,7 @@ class SecurityRadar:
             if mon.email_brute:
                 m = _pat_exim_auth.search(line) or _pat_pfix_auth.search(line)
                 if m:
-                    # groups: (phrase-first IP, ip-first IP) — take whichever matched
+                    # groups: (phrase-first IP, ip-first IP) - take whichever matched
                     ip = next((g for g in m.groups() if g), None)
                     if ip:
                         ip_auth_fails[ip].append(ts)
@@ -4180,7 +4161,7 @@ class SecurityRadar:
             r"Access denied for user ['\"]?\S+['\"]?@['\"]?(\d{1,3}(?:\.\d{1,3}){3})['\"]?",
             re.I)
         # PostgreSQL: "FATAL:  password authentication failed for user"
-        # with host in the same or nearby context — connection lines have "host=IP"
+        # with host in the same or nearby context - connection lines have "host=IP"
         _pat_pg_auth = re.compile(
             r'(?:FATAL|ERROR).*?(?:password authentication failed|role .* does not exist)',
             re.I)
@@ -4360,7 +4341,7 @@ class AuthSentinelEngine:
         self._pool          = pool
         self._cfg           = cfg
         self._host_username = host_username   # SSH user Deflect connects as (e.g. "root")
-        # Circular buffers — accessed read-only from UI thread
+        # Circular buffers - accessed read-only from UI thread
         self._events:  deque[AuthEvent]       = deque(maxlen=500)
         self._threats: deque[AuthThreatEvent] = deque(maxlen=200)
         self._sessions: list[AuthSession]     = []
@@ -4443,7 +4424,7 @@ class AuthSentinelEngine:
             _log_auth.info("[AbuseIPDB] %s  score=%d  %s", ip, score, detail)
             if score >= 75:
                 _log_auth.warning(
-                    "[AbuseIPDB HIGH RISK] %s  score=%d  — auto-ban candidate", ip, score)
+                    "[AbuseIPDB HIGH RISK] %s  score=%d  - auto-ban candidate", ip, score)
         except Exception as e:
             _log.debug("AbuseIPDB lookup failed for %s: %s", ip, e)
         finally:
@@ -4503,7 +4484,7 @@ class AuthSentinelEngine:
                 delta = q - self._queue_prev
                 if delta > 200 and q > 500:
                     _log_auth.warning(
-                        "[MAIL_FLOOD] host=%s  queue_depth=%d  delta=+%d  — possible spam relay",
+                        "[MAIL_FLOOD] host=%s  queue_depth=%d  delta=+%d  - possible spam relay",
                         host_id, q, delta)
                     new_threats.append(AuthThreatEvent(
                         ts=_now_utc(), host_id=host_id,
@@ -4590,7 +4571,7 @@ class AuthSentinelEngine:
             # Mark the event as the script's own connection so detection is skipped.
             # Condition: src_ip is one of our operator IPs AND username matches
             # the configured SSH user for this host (e.g. "root").
-            # SafetyGuard.all_our_ips() is checked lazily here — it may grow over
+            # SafetyGuard.all_our_ips() is checked lazily here - it may grow over
             # time as new connections are registered, but that is fine.
             own_ips  = SafetyGuard.get().all_our_ips()
             is_own   = bool(
@@ -4648,7 +4629,7 @@ class AuthSentinelEngine:
         # ── HONEYPOT ──────────────────────────────────────────────────────────
         if ev.username in (cfg.honeypot_accounts or []):
             _log_auth.critical(
-                "[HONEYPOT] host=%s ip=%s cc=%s user=%s proto=%s  — honeypot account triggered",
+                "[HONEYPOT] host=%s ip=%s cc=%s user=%s proto=%s  - honeypot account triggered",
                 ev.host_id, ev.src_ip, cc, ev.username, ev.protocol)
             threats.append(AuthThreatEvent(
                 ts=ev.ts, host_id=ev.host_id,
@@ -4724,7 +4705,7 @@ class AuthSentinelEngine:
                 elapsed = now - min(all_ts) if all_ts else 0
                 _log_auth.critical(
                     "[BREACH_CONFIRMED P0] host=%s ip=%s cc=%s user=%s proto=%s/%s  "
-                    "failures=%d elapsed=%.0fs — IMMEDIATE RESPONSE REQUIRED",
+                    "failures=%d elapsed=%.0fs - IMMEDIATE RESPONSE REQUIRED",
                     ev.host_id, ev.src_ip, cc, ev.username,
                     ev.protocol, ev.auth_method, user_failures, elapsed)
                 threats.append(AuthThreatEvent(
@@ -4732,8 +4713,8 @@ class AuthSentinelEngine:
                     kind="BREACH_CONFIRMED", severity="P0",
                     username=ev.username, src_ip=ev.src_ip, country=cc,
                     detail=(
-                        f"{user_failures} failures then success ({cc}) — "
-                        f"{elapsed:.0f}s elapsed — {ev.protocol}/{ev.auth_method}"
+                        f"{user_failures} failures then success ({cc}) - "
+                        f"{elapsed:.0f}s elapsed - {ev.protocol}/{ev.auth_method}"
                     ),
                     failure_count=user_failures,
                     elapsed_seconds=elapsed,
@@ -4742,7 +4723,7 @@ class AuthSentinelEngine:
             # ── ROOT_SSH ──────────────────────────────────────────────────────
             if ev.username == "root" and ev.protocol == "ssh":
                 _log_auth.warning(
-                    "[ROOT_SSH] host=%s ip=%s cc=%s method=%s  — direct root login",
+                    "[ROOT_SSH] host=%s ip=%s cc=%s method=%s  - direct root login",
                     ev.host_id, ev.src_ip, cc, ev.auth_method)
                 threats.append(AuthThreatEvent(
                     ts=ev.ts, host_id=ev.host_id,
@@ -4751,7 +4732,7 @@ class AuthSentinelEngine:
                     detail=f"Root SSH login via {ev.auth_method} from {ev.src_ip} ({cc})",
                 ))
 
-            # ── IMPOSSIBLE_TRAVEL (geo check deferred — IP → country via GeoIP) ──
+            # ── IMPOSSIBLE_TRAVEL (geo check deferred - IP → country via GeoIP) ──
             # Store for future geo correlation (GeoIP lookup runs in SecurityRadar)
             self._geo_hist[ev.username].append((now, ev.src_ip, ev.country))
             self._geo_hist[ev.username] = self._geo_hist[ev.username][-20:]
@@ -5088,13 +5069,13 @@ class HostAgent:
         # Alert recovery tracking: maps EventKind → bool (True = currently in alert state)
         self._alert_active: dict[EventKind, bool] = {}
 
-        # AI Managed — action history (10 entries ≈ 10 min at 60s/cycle).
+        # AI Managed - action history (10 entries ≈ 10 min at 60s/cycle).
         # Each entry is a one-line string: "[HH:MM] kind target → result".
         # Passed verbatim into the next AI call so the model can detect restart
         # loops, count consecutive failures, and avoid duplicate work across cycles.
         self._ai_action_history: deque = deque(maxlen=10)
 
-        # AI Managed — per-service restart cooldown.
+        # AI Managed - per-service restart cooldown.
         # Maps service name → monotonic deadline before which restart is blocked.
         # Default cooldown: 600 s (10 min) set after each successful restart.
         # Prevents a feedback loop where AI restarts a struggling service every 60 s.
@@ -5380,7 +5361,7 @@ class HostAgent:
                     last_err = f"port {port} refused"
                     continue
                 except OSError as e:
-                    # Network unreachable, timed out, etc. — stop trying other ports
+                    # Network unreachable, timed out, etc. - stop trying other ports
                     _log.debug("Failed to fetch SSL cert expiry for %s: %s: %s", domain, type(e).__name__, e)
                     return -1
                 except Exception as e:
@@ -6938,7 +6919,7 @@ class HostAgent:
         """
         _RESTART_COOLDOWN_S = 600  # 10 min between restarts of the same service
 
-        await asyncio.sleep(90)   # initial delay — let metrics settle first
+        await asyncio.sleep(90)   # initial delay - let metrics settle first
         while True:
             await asyncio.sleep(60)
             try:
@@ -7535,7 +7516,7 @@ class SshKeyManager:
                 f"sed -i '/{rollback_line[:40]}/d' ~{username}/.ssh/authorized_keys 2>/dev/null || true"
             )
             await self._pool.run(host_id, rb_cmd)
-            yield ("verify", False, f"New key auth failed ({e}) — rolled back")
+            yield ("verify", False, f"New key auth failed ({e}) - rolled back")
             return
         yield ("verify", True, f"New key authenticated successfully as {username}")
 
@@ -7553,7 +7534,7 @@ class SshKeyManager:
         except Exception as e:
             _log.warning("[generate_and_deploy_key] backup failed: %s", e)
             yield ("backup", False, f"Backup failed: {e}")
-            # Don't return — backup failure is not fatal
+            # Don't return - backup failure is not fatal
 
         _log.info("[generate_and_deploy_key] DONE host=%s user=%s", host_id, username)
         yield ("done", True, f"Key generated and deployed for {username} ✓")
@@ -7669,7 +7650,7 @@ class SshKeyManager:
             yield ("remove_old", None, "Removing old pubkey from authorized_keys…")
             # Use a unique substring of the pubkey comment/fingerprint
             # Use the key blob (base64 material, field [1]) not the comment (field [-1]).
-            # Comment is often user@host which the new key shares — causing both to be deleted.
+            # Comment is often user@host which the new key shares - causing both to be deleted.
             old_blob = old_pubkey.split()[1] if len(old_pubkey.split()) >= 2 else old_pubkey
             old_snippet = old_blob[:40].replace("/", r"\/").replace("+", r"\+")
             rm_cmd = f"sed -i '/{old_snippet}/d' {remote_akf} 2>/dev/null && echo OK"
@@ -7902,7 +7883,7 @@ _DEFLECT_HOSTS_FILE = _SSH_DIR / "deflect_hosts"
 _INCLUDE_LINE     = "Include ~/.ssh/deflect_hosts"
 _DEFLECT_HOSTS_HEADER = (
     "# ── Deflect One managed SSH hosts ────────────────────────────────────\n"
-    "# Auto-generated — edit hosts via Deflect One (deflect.py).\n"
+    "# Auto-generated - edit hosts via Deflect One (deflect.py).\n"
     "# Manual edits here will be overwritten on next host change.\n"
     "# ──────────────────────────────────────────────────────────────────────\n\n"
 )
@@ -7913,7 +7894,7 @@ class SSHConfigSyncManager:
     Keeps ~/.ssh/deflect_hosts in sync with Deflect's host list.
 
     Call sync_from_raw(raw_hosts) after any add/edit/delete operation,
-    passing self._data["hosts"] directly from ConfigManager — no HostConfig
+    passing self._data["hosts"] directly from ConfigManager - no HostConfig
     deserialization needed.
 
     On the very first sync, also injects an Include line into ~/.ssh/config
@@ -8513,7 +8494,7 @@ class ServerCard(Panel):
                 t.append("✓upd", style="green")
             t.append("\n")
 
-        # Docker — all containers with status icons, health badge, keyboard nav
+        # Docker - all containers with status icons, health badge, keyboard nav
         if metrics.docker_containers:
             containers = metrics.docker_containers
             self._docker_containers = containers
@@ -8998,7 +8979,7 @@ class AttackRadarPanel(Panel):
 
         # Build a grep command tuned to the attack kind so we hit the right logs.
         # grep -rH: recursive + always show filename (helps identify the service).
-        # zgrep covers rotated .gz files — count mismatch between radar and L often
+        # zgrep covers rotated .gz files - count mismatch between radar and L often
         # happens because older hits are in compressed rotated logs grep-r can't read.
         # Each section falls back gracefully with 2>/dev/null.
         ssh_logs = (
@@ -9030,7 +9011,7 @@ class AttackRadarPanel(Panel):
         elif kind in ("email_brute", "email_scan"):
             cmd = f"( {email_logs} ; {ssh_logs} ; {syslog_grep} ) | sort | tail -80"
         else:
-            # SSH/scan/brute/breakin — auth logs primary, also check http in case
+            # SSH/scan/brute/breakin - auth logs primary, also check http in case
             cmd = f"( {ssh_logs} ; {http_logs} ; {syslog_grep} ) | sort | tail -80"
 
         try:
@@ -9059,7 +9040,7 @@ class AttackRadarPanel(Panel):
             pass
 
     def _open_auth_sentinel(self):
-        """'h' key — open AuthSentinelScreen, pre-filtered to selected attack's host."""
+        """'h' key - open AuthSentinelScreen, pre-filtered to selected attack's host."""
         host_id = ""
         if self._grouped:
             visible = self._grouped[:16]
@@ -9206,7 +9187,7 @@ class AttackRadarPanel(Panel):
                          style="yellow")
                 t.append(f"    Fix: {w['fix']}\n", style="grey50")
 
-        # Security hardening hint — shown when active attacks suggest a specific fix
+        # Security hardening hint - shown when active attacks suggest a specific fix
         if self._grouped:
             active_kinds = {info['kind'] for _, info in self._grouped[:16]}
             hints = []
@@ -10069,7 +10050,7 @@ class DeflectApp(App):
                 ddos_active=radar_s.ddos_active, ddos_info=radar_s.ddos_info,
                 port_warnings=radar_s.port_warnings,
                 ip_hosts=self._radar.ip_hosts)
-            # Note: auth_threats not passed here (optimistic ban update — not critical)
+            # Note: auth_threats not passed here (optimistic ban update - not critical)
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
@@ -10200,6 +10181,12 @@ class DeflectApp(App):
             if not getattr(self, "_quit_confirmed", False):
                 self._quit_confirmed = True
                 return
+        # Save host order before exiting
+        self._cfg.host_order = self._card_order
+        if "ui" not in self._cfgman._data:
+            self._cfgman._data["ui"] = {}
+        self._cfgman._data["ui"]["host_order"] = self._card_order
+        self._cfgman._save()
         self.exit()
 
     # reset confirm flag whenever user does anything else (navigation, etc.)
@@ -10458,7 +10445,7 @@ def _braille_bar(ratio: float, width: int = 8) -> str:
 
 class AuthSentinelScreen(ModalScreen):
     """
-    v0.78 — Multi-protocol authentication intelligence dashboard.
+    v0.78 - Multi-protocol authentication intelligence dashboard.
     Ctrl+H to open. Escape to close.
     """
 
@@ -10498,7 +10485,7 @@ class AuthSentinelScreen(ModalScreen):
         self._sel_ev  = 0       # selected row in feed
         self._sel_ses = 0       # selected row in sessions
         self._sel_audit = 0     # selected row in SSH audit tab
-        # Active host for audit/drill-down actions — None = fleet-wide view
+        # Active host for audit/drill-down actions - None = fleet-wide view
         agents = list(pool.all_agents()) if pool else []
         self._active_host: str = (
             initial_host if initial_host
@@ -10582,7 +10569,7 @@ class AuthSentinelScreen(ModalScreen):
                     self._draw_heatmap()
                 self._update_breach_badge()
         else:
-            # Data unchanged — still refresh title/badge (rate, spark) cheaply
+            # Data unchanged - still refresh title/badge (rate, spark) cheaply
             with self.app.batch_update():
                 self._update_title()
                 self._update_rate_badge()
@@ -10672,10 +10659,10 @@ class AuthSentinelScreen(ModalScreen):
 
     _TAB_FOOTERS = {
         0: " ↑↓/click:select  s:✓only  f:✗only  x:all  b:ban  l:raw-log  t:timeline  v:session  c:contain  a:AI",
-        1: " Statistics — last 500 events fleet-wide  |  Ctrl+←/→ or 1-5: switch tab  Esc:close",
-        2: " SSH Audit — ↑↓/click:select  Enter:live-fetch  h:switch-host  |  Esc:close",
+        1: " Statistics - last 500 events fleet-wide  |  Ctrl+←/→ or 1-5: switch tab  Esc:close",
+        2: " SSH Audit - ↑↓/click:select  Enter:live-fetch  h:switch-host  |  Esc:close",
         3: " Mail Abuse monitor  |  Ctrl+←/→ or 1-5: switch tab  Esc:close",
-        4: " Auth Heatmap — 24h per protocol  green:ok  red:fail  yellow:mixed  darker=more  |  Esc:close",
+        4: " Auth Heatmap - 24h per protocol  green:ok  red:fail  yellow:mixed  darker=more  |  Esc:close",
     }
 
     def _update_footer(self) -> None:
@@ -10747,7 +10734,7 @@ class AuthSentinelScreen(ModalScreen):
             return
         lv.clear()
         if not events:
-            lv.append(ListItem(Static("  No auth events — waiting for log data…",
+            lv.append(ListItem(Static("  No auth events - waiting for log data…",
                                       markup=False)))
             return
 
@@ -10836,7 +10823,7 @@ class AuthSentinelScreen(ModalScreen):
             host_lbl  = ses.host_id[:8]
             ip        = (ses.src_ip or "local")[:15]
             cc        = (ses.country or "")[:2]
-            idle      = ses.idle[:5] if ses.idle else "—"
+            idle      = ses.idle[:5] if ses.idle else "-"
             row = RText(no_wrap=True)
             row.append(flag, style="bold red" if is_breach else "dim")
             row.append(f"{ses.user[:10]:<10}", style=user_col)
@@ -10962,7 +10949,7 @@ class AuthSentinelScreen(ModalScreen):
 
         # ── Header ───────────────────────────────────────────────────────────
         h = RText()
-        h.append("  PROTOCOL BREAKDOWN  (last 500 events — 60-min sparklines)", style="bold")
+        h.append("  PROTOCOL BREAKDOWN  (last 500 events - 60-min sparklines)", style="bold")
         lines.append(h)
         lines.append(RText(""))
 
@@ -11080,7 +11067,7 @@ class AuthSentinelScreen(ModalScreen):
         host_lbl = self._host_label(self._active_host) if self._active_host else "fleet"
         header = RText()
         header.append(f"  sshd_config HARDENING AUDIT  (CIS Benchmark Level 1)"
-                      f"  —  host: {host_lbl}  (h: switch  Enter: live fetch)\n",
+                      f"  -  host: {host_lbl}  (h: switch  Enter: live fetch)\n",
                       style="bold")
         lv.append(ListItem(Static(header, markup=False)))
 
@@ -11093,7 +11080,7 @@ class AuthSentinelScreen(ModalScreen):
             row.append(f"[{severity}] ", style=sev_style)
             row.append(f"{name:<28} ", style="bold" if is_sel else "")
             row.append(f"expect: {expected:<6} ", style="dim")
-            row.append(f"— {note}", style="dim")
+            row.append(f"- {note}", style="dim")
             lv.append(ListItem(Static(row, markup=False)))
 
         hint = RText()
@@ -11163,7 +11150,7 @@ class AuthSentinelScreen(ModalScreen):
             counts[proto][diff_h][key] += 1
 
         lines: list = []
-        lines.append(RText("  AUTH HEATMAP  — last 24 hours per protocol  (← older | newer →)",
+        lines.append(RText("  AUTH HEATMAP  - last 24 hours per protocol  (← older | newer →)",
                            style="bold"))
 
         # Header: hour labels
@@ -11317,7 +11304,7 @@ class AuthSentinelScreen(ModalScreen):
             ev  = events[self._sel_ev]
             body = ev.raw_line or "(no raw line)"
             self.app.push_screen(AiAnalysisPopup(
-                f"Raw log — {ev.protocol} / {ev.host_id}", body
+                f"Raw log - {ev.protocol} / {ev.host_id}", body
             ))
 
     def action_session_view(self) -> None:
@@ -11371,14 +11358,14 @@ class AuthSentinelScreen(ModalScreen):
         )
 
     async def action_ai_intel(self) -> None:
-        """'a' key — AI Auth Intel: fleet-wide authentication threat analysis."""
+        """'a' key - AI Auth Intel: fleet-wide authentication threat analysis."""
         try:
             engine = self.app._pool.ai_engine
         except Exception:
             self.notify("AI engine not available", severity="warning")
             return
         if not engine.enabled:
-            self.notify("AI disabled — configure in F6 → 🤖 AI", severity="warning")
+            self.notify("AI disabled - configure in F6 → 🤖 AI", severity="warning")
             return
         # Check that at least one host has auth_intel_ai enabled (opt-in per host)
         agents = list(self._pool.all_agents())
@@ -11388,7 +11375,7 @@ class AuthSentinelScreen(ModalScreen):
         ]
         if not ai_enabled_hosts:
             self.notify(
-                "AI Auth Intel is disabled — enable auth_intel_ai per host in F6 → Security",
+                "AI Auth Intel is disabled - enable auth_intel_ai per host in F6 → Security",
                 severity="warning",
             )
             return
@@ -11450,7 +11437,7 @@ class AuthSentinelScreen(ModalScreen):
         if raw == engine.DISABLED:
             self.notify("AI disabled", severity="warning")
             return
-        self.app.push_screen(AiAnalysisPopup("🤖 AI Auth Intel — Fleet Analysis", raw))
+        self.app.push_screen(AiAnalysisPopup("🤖 AI Auth Intel - Fleet Analysis", raw))
 
     # ── List navigation (keyboard + mouse) ───────────────────────────────────
 
@@ -11493,13 +11480,13 @@ class AuthSentinelScreen(ModalScreen):
     async def _fetch_ssh_check(self, check_idx: int) -> None:
         """Fetch live value for the selected CIS check from _active_host."""
         if not self._active_host:
-            self.notify("No host selected — press 'h' to pick a host", severity="warning")
+            self.notify("No host selected - press 'h' to pick a host", severity="warning")
             return
         name, expected, severity, note = self._SSH_CHECKS[check_idx]
         # grep the directive from sshd_config (handles comments + indentation)
         cmd = (
             f"grep -i '^[[:space:]]*{name}' /etc/ssh/sshd_config 2>/dev/null "
-            f"|| echo '(directive not found — default applies)'"
+            f"|| echo '(directive not found - default applies)'"
         )
         self.notify(f"⟳ Fetching {name} from {self._host_label(self._active_host)}…")
         try:
@@ -11510,11 +11497,11 @@ class AuthSentinelScreen(ModalScreen):
         body = (
             f"CIS Check: {name}\n"
             f"Expected:  {expected}\n"
-            f"Severity:  {severity}  — {note}\n\n"
+            f"Severity:  {severity}  - {note}\n\n"
             f"Live value on {self._host_label(self._active_host)}:\n"
             f"  {raw}\n"
         )
-        self.app.push_screen(AiAnalysisPopup(f"sshd_config — {name}", body))
+        self.app.push_screen(AiAnalysisPopup(f"sshd_config - {name}", body))
 
 
 # ── SessionActivityInspector ──────────────────────────────────────────────────
@@ -11559,7 +11546,7 @@ SessionActivityInspector {
 
 class SessionActivityInspector(ModalScreen):
     """
-    v0.78 — Live forensic view of a suspicious session.
+    v0.78 - Live forensic view of a suspicious session.
     Shows SSH commands (via auditd), SQL queries, SMTP envelopes, file activity.
     """
 
@@ -11596,7 +11583,7 @@ class SessionActivityInspector(ModalScreen):
         geo_disp = f" ({cc})" if cc else ""
         with Container(id="sai-outer"):
             yield Static(
-                f" ● SESSION INSPECTOR — {user} @ {self._host_id}  src: {ip}{geo_disp}",
+                f" ● SESSION INSPECTOR - {user} @ {self._host_id}  src: {ip}{geo_disp}",
                 id="sai-title",
             )
             with Horizontal(id="sai-tab-bar"):
@@ -11628,7 +11615,7 @@ class SessionActivityInspector(ModalScreen):
             cc = _GEO_CACHE.get(ip, "")
             geo_disp = f" ({cc})" if cc else ""
             self.query_one("#sai-title", Static).update(
-                f" ● SESSION INSPECTOR — {user} @ {self._host_id}  src: {ip}{geo_disp}"
+                f" ● SESSION INSPECTOR - {user} @ {self._host_id}  src: {ip}{geo_disp}"
             )
         except Exception:
             pass
@@ -11682,13 +11669,13 @@ class SessionActivityInspector(ModalScreen):
 
     async def _stream_history(self) -> None:
         """
-        Tab 0 — three-layer command history strategy:
+        Tab 0 - three-layer command history strategy:
 
-        Layer 1 — bash_history snapshot: shows commands the user ran before
+        Layer 1 - bash_history snapshot: shows commands the user ran before
                   this session and during it (if HISTFILE is flushed).
-        Layer 2 — auditd EXECVE stream: if auditd is running, tail new EXECVE
-                  records in real time — most accurate, captures every command.
-        Layer 3 — /proc/*/cmdline poll: fallback when auditd absent — polls
+        Layer 2 - auditd EXECVE stream: if auditd is running, tail new EXECVE
+                  records in real time - most accurate, captures every command.
+        Layer 3 - /proc/*/cmdline poll: fallback when auditd absent - polls
                   all processes owned by the user every 8s for new commands.
         """
         user = self._session.user
@@ -11733,7 +11720,7 @@ class SessionActivityInspector(ModalScreen):
         else:
             # ── Layer 3: /proc poll every 8s + history diff ───────────────────
             self._push_section("LIVE POLL  (/proc cmdline + history diff  every 8s)")
-            self._push("  auditd not running — using process poll fallback", style="dim yellow")
+            self._push("  auditd not running - using process poll fallback", style="dim yellow")
             self._live_interval = self.set_interval(8, self._poll_history_and_proc)
 
     async def _stream_auditd(self, client: "paramiko.SSHClient", user: str) -> None:
@@ -11782,7 +11769,7 @@ class SessionActivityInspector(ModalScreen):
     def _parse_audit_line(self, line: str) -> str:
         """Convert raw audit log line to human-readable command."""
         import re as _re
-        # USER_CMD: sudo command — easy to read
+        # USER_CMD: sudo command - easy to read
         if "USER_CMD" in line:
             m = _re.search(r"cmd=([0-9A-Fa-f]+)", line)
             if m:
@@ -11812,14 +11799,14 @@ class SessionActivityInspector(ModalScreen):
         return ""
 
     async def _poll_history_and_proc(self) -> None:
-        """Called every 8s by set_interval — shows new history lines + live processes."""
+        """Called every 8s by set_interval - shows new history lines + live processes."""
         client = self._ssh_client()
         if client is None:
             return
         user = self._session.user
         hist = self._history_path or f"/home/{user}/.bash_history"
 
-        # History diff — show only lines added since last check
+        # History diff - show only lines added since last check
         raw = await self._run_cmd(client, f"cat {hist} 2>/dev/null | tail -500")
         lines = [l.rstrip() for l in raw.splitlines() if l.strip()]
         if len(lines) > self._history_seen:
@@ -11829,7 +11816,7 @@ class SessionActivityInspector(ModalScreen):
             for ln in new_lines:
                 self._push(ln)
 
-        # /proc cmdline for all user processes — snapshot of what's running now
+        # /proc cmdline for all user processes - snapshot of what's running now
         procs_raw = await self._run_cmd(
             client,
             f"for p in /proc/[0-9]*/cmdline; do "
@@ -12075,7 +12062,7 @@ _CONTAINMENT_STEPS = [
 
 class ContainmentDialog(ModalScreen):
     """
-    v0.78 — Ordered incident response workflow.
+    v0.78 - Ordered incident response workflow.
     Executes containment steps sequentially with per-step confirmation.
     """
 
@@ -12127,7 +12114,7 @@ class ContainmentDialog(ModalScreen):
         elif event.button.id == "btn-useradm":
             # Open UserAdminScreen focused on the contained user so the operator
             # can inspect / revoke SSH keys / remove from groups / run further actions.
-            # This is purely additive — it does not change the containment flow.
+            # This is purely additive - it does not change the containment flow.
             user = self._session.user
             host = self._session.host_id
             if host and hasattr(self._pool, "add_host"):
@@ -12148,14 +12135,14 @@ class ContainmentDialog(ModalScreen):
             self.dismiss(None)
 
     def _open_ban_select(self) -> None:
-        """Step 0 — open BanSelectScreen to choose IP/subnet + host scope, then trigger_ban."""
+        """Step 0 - open BanSelectScreen to choose IP/subnet + host scope, then trigger_ban."""
         ip = self._session.src_ip or ""
         detected = [self._session.host_id] if self._session.host_id else []
         all_hosts = list(self._pool.host_ids())
 
         def _on_ban(result) -> None:
             if result is None:
-                return  # operator cancelled — stay on step 0
+                return  # operator cancelled - stay on step 0
             target, host_ids = result
             _log_auth.warning(
                 "[CONTAINMENT step=1/%d] host=%s  action='Block IP via BanSelectScreen'"
@@ -12265,7 +12252,7 @@ class ContainmentDialog(ModalScreen):
 
 class IncidentTimelineView(ModalScreen):
     """
-    v0.78 — Automated attack narrative for a selected threat or attacker IP.
+    v0.78 - Automated attack narrative for a selected threat or attacker IP.
     Builds a sequential timeline from AuthEvent / AuthThreatEvent data.
     Accessible via 't' key on selected threat in AuthSentinelScreen.
     """
@@ -12349,7 +12336,7 @@ class IncidentTimelineView(ModalScreen):
         cc = (getattr(th, "country", "") or _GEO_CACHE.get(ip, "") if ip else "") or ""
         cc_disp = f" ({cc})" if cc else ""
         t = RText()
-        t.append(f"  ★ INCIDENT TIMELINE  — attacker {ip}{cc_disp}  user:{user}  [{p_rating}]\n\n",
+        t.append(f"  ★ INCIDENT TIMELINE  - attacker {ip}{cc_disp}  user:{user}  [{p_rating}]\n\n",
                  style=sev_style)
 
         # Stats header
@@ -12409,22 +12396,22 @@ class IncidentTimelineView(ModalScreen):
                 t.append(f"  {ts_s}  ", style="dim")
                 t.append(f"[{rt.severity}] {rt.kind}{cc_part}", style=sty)
                 if rt.detail:
-                    t.append(f"  — {rt.detail[:60]}", style="dim")
+                    t.append(f"  - {rt.detail[:60]}", style="dim")
                 t.append("\n")
 
         # Conclusion
         t.append("\n  ─── Conclusion ───\n\n", style="grey23")
         breach = any(rt.kind == "BREACH_CONFIRMED" for rt in related_th)
         if breach:
-            t.append("  ⚠ BREACH CONFIRMED — account was successfully accessed after "
+            t.append("  ⚠ BREACH CONFIRMED - account was successfully accessed after "
                      "repeated failures.\n", style="bold red")
             t.append("  Immediate action required: kill session, rotate credentials, "
                      "block IP.\n", style="red")
         elif total_ok > 0:
-            t.append(f"  Suspicious: {total_ok} successful auth(s) detected — "
+            t.append(f"  Suspicious: {total_ok} successful auth(s) detected - "
                      "manual review recommended.\n", style="yellow")
         else:
-            t.append(f"  Attack contained — {total_fail} failures, no successful auth.\n",
+            t.append(f"  Attack contained - {total_fail} failures, no successful auth.\n",
                      style="green")
 
         # Store plain-text version for clipboard copy
@@ -12473,11 +12460,11 @@ class IncidentTimelineView(ModalScreen):
         lines += ["", "## Threats Detected", ""]
         for rt in threats:
             ts_s = rt.ts[11:19] if len(rt.ts) >= 19 else rt.ts
-            lines.append(f"- `{ts_s}` **[{rt.severity}] {rt.kind}** — {rt.detail}")
+            lines.append(f"- `{ts_s}` **[{rt.severity}] {rt.kind}** - {rt.detail}")
         breach = any(rt.kind == "BREACH_CONFIRMED" for rt in threats)
         lines += ["", "## Conclusion", ""]
         if breach:
-            lines.append("**⚠ BREACH CONFIRMED** — account was successfully accessed "
+            lines.append("**⚠ BREACH CONFIRMED** - account was successfully accessed "
                          "after repeated failures.")
         lines.append("")
         lines.append("*Generated by Deflect One v0.78 AuthSentinel*")
@@ -12499,7 +12486,7 @@ class IncidentTimelineView(ModalScreen):
             )
             self.notify("Report copied to clipboard", severity="information")
         except Exception:
-            self.notify(f"Copy failed — report in log", severity="warning")
+            self.notify(f"Copy failed - report in log", severity="warning")
             _log.info("INCIDENT REPORT:\n%s", self._report_text)
 
     def action_close(self) -> None:
@@ -12521,8 +12508,8 @@ class NotificationManager:
         "RAM_WARN", "RAM_CRITICAL",
         "DISK_WARN", "DISK_CRITICAL",
         "AI_NOTIFICATION",        # send_notification / escalate_to_human from _ai_managed_loop
-        # v0.78 AuthSentinel — P0 and CRITICAL threats always notify
-        "AUTH_BREACH_CONFIRMED",  # P0: success after ≥N failures — always fires
+        # v0.78 AuthSentinel - P0 and CRITICAL threats always notify
+        "AUTH_BREACH_CONFIRMED",  # P0: success after ≥N failures - always fires
         "AUTH_HONEYPOT",          # CRITICAL: honeypot account touched
         "AUTH_ROOT_SSH",          # HIGH: root SSH login succeeded
         "AUTH_IMPOSSIBLE_TRAVEL", # HIGH: same user, two distant geos
@@ -12827,9 +12814,9 @@ _AI_PROMPTS: dict[str, str] = {
         "TOP THREATS (up to 5):\n"
         "· <IP or user>  <protocol>  <host>  <key indicator>\n\n"
         "RECOMMENDED ACTIONS:\n"
-        "· <action>  [auto|confirm]  — <brief rationale>\n\n"
+        "· <action>  [auto|confirm]  - <brief rationale>\n\n"
         "Rules:\n"
-        "· Only use data provided — do not invent IPs, usernames, or events.\n"
+        "· Only use data provided - do not invent IPs, usernames, or events.\n"
         "· Mark actions requiring human confirmation as [confirm].\n"
         "· Mark safe autonomous actions as [auto].\n"
         "· Prioritize BREACH_CONFIRMED threats above all others."
@@ -14210,7 +14197,7 @@ class AppSettingsScreen(ModalScreen):
             container.mount(Input(value=", ".join(mon.honeypot_accounts or []),
                                    placeholder="honeypot, fake_admin",
                                    id="sec-inp-honeypots"))
-            container.mount(Static("AbuseIPDB API key (optional — leave blank to disable):", classes="lbl"))
+            container.mount(Static("AbuseIPDB API key (optional - leave blank to disable):", classes="lbl"))
             container.mount(Input(value=mon.abuseipdb_key,
                                    placeholder="paste key from abuseipdb.com",
                                    password=True,
@@ -14718,7 +14705,7 @@ class _ShellOutput(RichLog, can_focus=True):
             lines_store = self._lines          # list[Strip] in Textual's RichLog
             if not lines_store:
                 return ""
-            # offset: RichLog may be scrolled — adjust by scroll_y
+            # offset: RichLog may be scrolled - adjust by scroll_y
             offset = int(self.scroll_y)
             abs_y0 = offset + y0
             abs_y1 = offset + y1
@@ -15059,7 +15046,7 @@ class SshShellScreen(ModalScreen):
         On every update:
           1. Detect how many lines scrolled off the top (shift).
           2. Move those lines from the live viewport into permanent history
-             by keeping them in _lines (they're already written — just stop
+             by keeping them in _lines (they're already written - just stop
              including them in the "live" count).
           3. Replace the live viewport block (last _live_rows lines) with
              the current pyte screen buffer.
@@ -15455,7 +15442,7 @@ class SshShellScreen(ModalScreen):
             # Kept as a safety net in case Textual's priority handling changes.
             return
         # Don't forward keys to shell when AI command mode is active.
-        # Do NOT call event.stop() here — that would swallow the event before
+        # Do NOT call event.stop() here - that would swallow the event before
         # the Input widget can process it (backspace, arrows, etc. would break).
         # Simply returning without forwarding is sufficient.
         if self._ai_mode == "command":
@@ -15566,7 +15553,7 @@ class SshShellScreen(ModalScreen):
                 self._ai_cmd_translated = ""
                 self.action_toggle_ai_cmd()  # close bar, refocus shell
             else:
-                # No translated command yet — if input has text, translate then execute
+                # No translated command yet - if input has text, translate then execute
                 try:
                     input_val = self.query_one("#ai-cmd-input", Input).value.strip()
                 except Exception:
@@ -15614,7 +15601,7 @@ class SshShellScreen(ModalScreen):
                 label=label, address=address, os_info=os_info)
             _log.debug("_translate_and_exec: translate_cmd returned=%r", cmd)
             if cmd == engine.DISABLED:
-                cmd = "# AI disabled — enable in F6 → 🤖 AI"
+                cmd = "# AI disabled - enable in F6 → 🤖 AI"
             if cmd.startswith("#"):
                 _log.debug("_translate_and_exec: got comment/disabled response, not executing")
                 try:
@@ -15640,7 +15627,7 @@ class SshShellScreen(ModalScreen):
                 pass
 
     def action_open_file_manager(self) -> None:
-        """Ctrl+F — open the File Manager pre-navigated to this host and its CWD."""
+        """Ctrl+F - open the File Manager pre-navigated to this host and its CWD."""
         host_id = self._host_id
         pool    = self._pool
 
@@ -15753,7 +15740,7 @@ class AiAnalysisPopup(ModalScreen):
             import json as _json
             data = _json.loads(text)
         except Exception:
-            return raw  # not JSON — show as-is
+            return raw  # not JSON - show as-is
         lines: list[str] = []
         threat = data.get("threat_level", "")
         color = {"HIGH": "red", "MEDIUM": "yellow", "LOW": "green"}.get(threat, "white")
@@ -16682,14 +16669,14 @@ class PortForwardsScreen(ModalScreen):
         self._cfgman.save_host_port_forwards(self._host_id, forwards)
 
     def action_open_ssh(self):
-        """F2 — open SSH shell for this host."""
+        """F2 - open SSH shell for this host."""
         self.dismiss(None)
         hs = self._pool.state(self._host_id)
         init_cmd = _get_ssh_init_cmd(hs)
         self.app.push_screen(SshShellScreen(self._pool, self._host_id, init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — open File Manager for this host."""
+        """Ctrl+F - open File Manager for this host."""
         self.dismiss(None)
         self.app.push_screen(FileManagerScreen(self._pool, initial_host_id=self._host_id))
 
@@ -17244,7 +17231,7 @@ class DockerScreen(ModalScreen):
                 severity="warning",
             )
 
-        # Build a prefill stub — passed directly to HostEditorScreen without
+        # Build a prefill stub - passed directly to HostEditorScreen without
         # adding to the pool first (avoids a spurious auto-connect attempt).
         stub_id = f"{parent_host_id}-docker-{c.id[:8]}"
         stub = HostConfig(
@@ -17329,7 +17316,7 @@ class DockerScreen(ModalScreen):
         self._refresh_view()
 
     def action_open_ssh(self):
-        """F2 — open SSH shell on the current host."""
+        """F2 - open SSH shell on the current host."""
         hid = self._current_host_id()
         if not hid:
             return
@@ -17339,7 +17326,7 @@ class DockerScreen(ModalScreen):
         self.app.push_screen(SshShellScreen(self._pool, hid, init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — open File Manager on the current host."""
+        """Ctrl+F - open File Manager on the current host."""
         hid = self._current_host_id()
         if not hid:
             return
@@ -18246,7 +18233,7 @@ class RestoreHostDialog(ModalScreen):
             self.app.notify(f"✓ '{label}' restored", severity="information")
             self.dismiss(True)
         else:
-            self.app.notify(f"Could not restore '{label}' — entry may have expired",
+            self.app.notify(f"Could not restore '{label}' - entry may have expired",
                             severity="error")
             self.dismiss(False)
 
@@ -18543,11 +18530,11 @@ class FleetManagerScreen(ModalScreen):
         except Exception:
             label = hid
         if self._pending_delete == hid:
-            # Second Del press — confirmed, proceed with delete
+            # Second Del press - confirmed, proceed with delete
             self._pending_delete = None
             asyncio.create_task(self._do_delete(hid, label))
         else:
-            # First press — show warning, ask for second press
+            # First press - show warning, ask for second press
             self._pending_delete = hid
             self.app.notify(
                 f"Delete '{label}'? Press Del again to confirm or Esc to cancel.",
@@ -18608,7 +18595,7 @@ class FleetManagerScreen(ModalScreen):
         self.app.push_screen(AiHealthAuditScreen(self._pool, host_ids))
 
     def action_open_ssh(self):
-        """F2 — open SSH shell for the host at cursor."""
+        """F2 - open SSH shell for the host at cursor."""
         hid = self._host_id_at_cursor()
         if not hid:
             self.app.notify("Select a host first", severity="warning")
@@ -18619,7 +18606,7 @@ class FleetManagerScreen(ModalScreen):
         self.app.push_screen(SshShellScreen(self._pool, hid, init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — open File Manager for the host at cursor."""
+        """Ctrl+F - open File Manager for the host at cursor."""
         hid = self._host_id_at_cursor()
         if not hid:
             self.app.notify("Select a host first", severity="warning")
@@ -18628,7 +18615,7 @@ class FleetManagerScreen(ModalScreen):
         self.app.push_screen(FileManagerScreen(self._pool, initial_host_id=hid))
 
     def action_move_up(self):
-        """Ctrl+Up — move selected host up (syncs with main window)."""
+        """Ctrl+Up - move selected host up (syncs with main window)."""
         hid = self._host_id_at_cursor()
         if not hid:
             return
@@ -18656,7 +18643,7 @@ class FleetManagerScreen(ModalScreen):
         self._refresh_table(keep_cursor=True)
 
     def action_move_down(self):
-        """Ctrl+Down — move selected host down (syncs with main window)."""
+        """Ctrl+Down - move selected host down (syncs with main window)."""
         hid = self._host_id_at_cursor()
         if not hid:
             return
@@ -19212,9 +19199,9 @@ class BulkOpsScreen(ModalScreen):
 
             ok_n  = sum(1 for s in self._status.values() if s == "done")
             err_n = sum(1 for s in self._status.values() if s == "error")
-            _log.info("BulkOps: [%s] finished — %d ok, %d error(s)", name, ok_n, err_n)
+            _log.info("BulkOps: [%s] finished - %d ok, %d error(s)", name, ok_n, err_n)
             self.app.notify(
-                f"✓ {ok_n} ok  ✗ {err_n} error(s)  —  Enter to view output",
+                f"✓ {ok_n} ok  ✗ {err_n} error(s)  -  Enter to view output",
                 severity="information" if err_n == 0 else "warning")
 
             # Build result list for the output screen
@@ -19476,7 +19463,7 @@ class RotateKeyScreen(ModalScreen):
         box = self.query_one("#rk-box")
         if self._username:
             box.border_title = (
-                f"🔑  Generate SSH Key — {self._username}  -  {n} host{'s' if n!=1 else ''}: "
+                f"🔑  Generate SSH Key - {self._username}  -  {n} host{'s' if n!=1 else ''}: "
                 + ", ".join(labels[:3]) + ("…" if n > 3 else "")
             )
         else:
@@ -19637,26 +19624,26 @@ class RotateKeyScreen(ModalScreen):
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION: user_admin_screen  (v0.78)
-# Ctrl+J — Linux user & group administration for any host or container.
+# Ctrl+J - Linux user & group administration for any host or container.
 #
 # Architecture:
-#   UserAdminService  — command execution + audit log (no UI state).
+#   UserAdminService  - command execution + audit log (no UI state).
 #                       Single class used by both UserAdminScreen and
 #                       ContainmentDialog so containment commands are never
 #                       duplicated between the two screens.
-#   _UserDangerGuard  — safety analysis before any mutating operation.
+#   _UserDangerGuard  - safety analysis before any mutating operation.
 #                       Prevents accidental self-lockout and warns about
 #                       root / privileged-group targets.
-#   _UaConfirmDialog  — multi-level confirmation ModalScreen:
+#   _UaConfirmDialog  - multi-level confirmation ModalScreen:
 #                         warn      → single Yes/No
 #                         dangerous → Yes/No + type username
 #                         critical  → type username + lockout phrase
-#   UserAdminScreen   — main ModalScreen (DockerScreen-pattern):
+#   UserAdminScreen   - main ModalScreen (DockerScreen-pattern):
 #                         host tabs (←→), 5 content tabs (U/G/K/S/D),
 #                         keyboard-first navigation
-#   UserEditDialog    — create / edit user properties
-#   GroupEditDialog   — create / edit group
-#   SshKeysDialog     — view/append/remove authorized_keys per user;
+#   UserEditDialog    - create / edit user properties
+#   GroupEditDialog   - create / edit group
+#   SshKeysDialog     - view/append/remove authorized_keys per user;
 #                       full rotation delegates to existing RotateKeyScreen
 #                       to avoid duplicating that logic
 # ══════════════════════════════════════════════════════════════════════════════
@@ -19664,7 +19651,7 @@ class RotateKeyScreen(ModalScreen):
 import datetime as _uadm_dt
 import base64   as _uadm_b64
 
-# Privileged groups — membership in any of these warrants extra warnings.
+# Privileged groups - membership in any of these warrants extra warnings.
 # docker and lxd provide near-root access via container escape paths.
 _PRIVILEGED_GROUPS = frozenset({
     "root", "sudo", "admin", "wheel", "docker", "lxd", "adm"
@@ -19711,7 +19698,7 @@ class GroupInfo:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# UserAdminService — command execution layer (no UI state)
+# UserAdminService - command execution layer (no UI state)
 # ══════════════════════════════════════════════════════════════════════════════
 
 class UserAdminService:
@@ -19751,7 +19738,7 @@ class UserAdminService:
         Execute cmd on host (or inside a container via docker exec).
         Delegates to pool.run() so connection-state checks, reconnect logic,
         and the 10-second SSH timeout are all handled by the existing
-        _SingleHostPool._exec() path — matching every other screen in this app.
+        _SingleHostPool._exec() path - matching every other screen in this app.
         """
         full_cmd = self._wrap(cmd, container_id)
         try:
@@ -19768,7 +19755,7 @@ class UserAdminService:
     async def detect_current_user(self, host_id: str) -> str:
         """
         Return the username currently authenticated on the host.
-        Reads from HostConfig (SSH auth username) — this is the account
+        Reads from HostConfig (SSH auth username) - this is the account
         that would be locked out if we applied actions to it.
         """
         try:
@@ -19786,7 +19773,7 @@ class UserAdminService:
         Build list of UserInfo from /etc/passwd + shadow lock detection.
         /etc/shadow requires root; failure means is_locked may be incomplete.
         """
-        # Run all four enumeration commands in parallel — reduces wall time from
+        # Run all four enumeration commands in parallel - reduces wall time from
         # 4×timeout to 1×timeout on slow or distant hosts.
         (ok, passwd_out), (ok2, shadow_out), (ok3, who_out), (ok4, grp_out) = (
             await asyncio.gather(
@@ -19884,12 +19871,12 @@ class UserAdminService:
         """
         cmds = [
             f"id {username} 2>/dev/null",
-            f"chage -l {username} 2>/dev/null || echo '(chage unavailable — needs root)'",
+            f"chage -l {username} 2>/dev/null || echo '(chage unavailable - needs root)'",
             f"lastlog -u {username} 2>/dev/null | tail -1",
             f"grep '^{username}:' /etc/passwd 2>/dev/null",
             f"who | grep -w '{username}' 2>/dev/null || echo '(no active sessions)'",
             f"ps -u {username} --no-headers -o pid,stat,%cpu,%mem,comm 2>/dev/null | head -10 || echo '(none)'",
-            # bash/zsh history — readable only if we are root or the same user
+            # bash/zsh history - readable only if we are root or the same user
             (
                 f"HOME=$(getent passwd {username} | cut -d: -f6); "
                 f"for f in \"$HOME/.bash_history\" \"$HOME/.zsh_history\"; do "
@@ -19901,7 +19888,7 @@ class UserAdminService:
             self.run(host_id, c, container_id) for c in cmds
         ])
         sections = [
-            ("Identity",        results[0][1] if results[0][0] else "(id failed — user may not exist)"),
+            ("Identity",        results[0][1] if results[0][0] else "(id failed - user may not exist)"),
             ("Password aging",  results[1][1]),
             ("Last login",      results[2][1] if results[2][0] else "(lastlog unavailable)"),
             ("Passwd entry",    results[3][1] if results[3][0] else "(not in /etc/passwd)"),
@@ -19923,7 +19910,7 @@ class UserAdminService:
             )
             sections.append(("Disk usage", du_out if du_out else "(unavailable)"))
 
-        # Quota: optional — only shown if quota tools are installed.
+        # Quota: optional - only shown if quota tools are installed.
         # We deliberately don't assume quota support on every Debian host.
         ok_q, q_out = await self.run(
             host_id,
@@ -19975,7 +19962,7 @@ class UserAdminService:
         """
         Backup authorized_keys before any modification.
         Timestamped backup in the same .ssh directory protects against
-        accidental key removal — always call this before mutating the file.
+        accidental key removal - always call this before mutating the file.
         """
         ts  = _uadm_dt.datetime.now().strftime("%Y%m%d_%H%M%S")
         cmd = (
@@ -20035,7 +20022,7 @@ class UserAdminService:
     ) -> tuple[bool, str]:
         """
         Delete user with userdel.
-        remove_home defaults to False — safer to keep home directory so
+        remove_home defaults to False - safer to keep home directory so
         forensic data is preserved and the deletion is recoverable.
         Pass remove_home=True only after explicit user confirmation.
         """
@@ -20054,7 +20041,7 @@ class UserAdminService:
     ) -> tuple[bool, str]:
         """
         Lock account: disable password AND set shell to nologin.
-        Prefer this over delete for incident response — account stays
+        Prefer this over delete for incident response - account stays
         auditable and the action is reversible.
         """
         cmd = f"usermod -L -s /usr/sbin/nologin {username}"
@@ -20084,7 +20071,7 @@ class UserAdminService:
         container_id: Optional[str] = None,
         operator: str = "deflect",
     ) -> tuple[bool, str]:
-        """Add user to group (usermod -aG — append, does not remove other groups)."""
+        """Add user to group (usermod -aG - append, does not remove other groups)."""
         cmd = f"usermod -aG {group} {username}"
         ok, out = await self.run(host_id, cmd, container_id)
         self._audit("assign_group", host_id, container_id, operator,
@@ -20142,7 +20129,7 @@ class UserAdminService:
     ) -> tuple[bool, str]:
         """
         Replace entire authorized_keys with new_keys list.
-        Always backs up the existing file first — a critical safety net
+        Always backs up the existing file first - a critical safety net
         against accidental key removal (especially for the current login user).
         Pass new_keys=[] to revoke all keys (e.g. during containment).
         """
@@ -20233,7 +20220,7 @@ class UserAdminService:
         """
         results = []
 
-        # Step 1: Lock — always performed for emergency containment
+        # Step 1: Lock - always performed for emergency containment
         ok, out = await self.lock_user(host_id, username, container_id, operator)
         results.append(("Lock account", ok, out[:120]))
 
@@ -20295,7 +20282,7 @@ class UserAdminService:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# _UserDangerGuard — self-lockout and privileged-account protection
+# _UserDangerGuard - self-lockout and privileged-account protection
 # ══════════════════════════════════════════════════════════════════════════════
 
 class _UserDangerGuard:
@@ -20306,10 +20293,10 @@ class _UserDangerGuard:
     This guard protects against accidentally locking out the current SSH session.
 
     Protection levels returned by protection_level():
-      'ok'        — safe to proceed after normal confirmation
-      'warn'      — root/privileged target; show warning + single confirmation
-      'dangerous' — UID-0 user or user in sudo/admin/wheel; strong warning required
-      'critical'  — target IS the current SSH login user; must type username
+      'ok'        - safe to proceed after normal confirmation
+      'warn'      - root/privileged target; show warning + single confirmation
+      'dangerous' - UID-0 user or user in sudo/admin/wheel; strong warning required
+      'critical'  - target IS the current SSH login user; must type username
                     + full lockout phrase before any dangerous action is executed
     """
 
@@ -20397,7 +20384,7 @@ class _UserDangerGuard:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# _UaConfirmDialog — multi-level confirmation dialog
+# _UaConfirmDialog - multi-level confirmation dialog
 # ══════════════════════════════════════════════════════════════════════════════
 
 class _UaConfirmDialog(ModalScreen):
@@ -20405,10 +20392,10 @@ class _UaConfirmDialog(ModalScreen):
     Confirmation dialog for dangerous user administration actions.
 
     Levels:
-      'ok'        — shown as "Are you sure?" with Yes/No
-      'warn'      — shows warning text + Yes/No
-      'dangerous' — requires typing the target username before Yes is enabled
-      'critical'  — requires typing username + LOCKOUT_PHRASE
+      'ok'        - shown as "Are you sure?" with Yes/No
+      'warn'      - shows warning text + Yes/No
+      'dangerous' - requires typing the target username before Yes is enabled
+      'critical'  - requires typing username + LOCKOUT_PHRASE
 
     Calls callback(True) on confirm, callback(False) on cancel.
     """
@@ -20482,7 +20469,7 @@ class _UaConfirmDialog(ModalScreen):
                 typed_user = ""
             if typed_user != self._target:
                 self.app.notify(
-                    f"Username mismatch — type exactly: {self._target}",
+                    f"Username mismatch - type exactly: {self._target}",
                     severity="warning",
                 )
                 return
@@ -20493,7 +20480,7 @@ class _UaConfirmDialog(ModalScreen):
                 typed_phrase = ""
             if typed_phrase != _UserDangerGuard.LOCKOUT_PHRASE:
                 self.app.notify(
-                    f"Phrase mismatch — type exactly:\n{_UserDangerGuard.LOCKOUT_PHRASE}",
+                    f"Phrase mismatch - type exactly:\n{_UserDangerGuard.LOCKOUT_PHRASE}",
                     severity="error",
                 )
                 return
@@ -20506,7 +20493,7 @@ class _UaConfirmDialog(ModalScreen):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# UserAdminScreen — main screen
+# UserAdminScreen - main screen
 # ══════════════════════════════════════════════════════════════════════════════
 
 class _UAScroll(VerticalScroll):
@@ -20523,22 +20510,22 @@ class UserAdminScreen(ModalScreen):
     Tabs: [U]sers  [G]roups  [K]eys  [S]essions  [D]etails
 
     Keys (global):
-      ←  →          — switch between hosts
-      u/1           — Users tab
-      g/2           — Groups tab
-      k/3           — SSH Keys tab
-      w/4           — Sessions tab
-      d/5           — Details tab
-      ↑ ↓           — select row in current list
-      a             — add user (Users tab) / add group (Groups tab)
-      Enter / e     — edit selected user / group
-      l             — lock / unlock selected user (Users tab)
-      Del           — delete selected item (with confirmation)
-      K             — SSH Keys dialog for selected user
-      s             — show sudo rights for selected user
-      c             — emergency contain selected user (security action)
-      r             — refresh current tab
-      Esc / Ctrl+J  — close
+      ←  →          - switch between hosts
+      u/1           - Users tab
+      g/2           - Groups tab
+      k/3           - SSH Keys tab
+      w/4           - Sessions tab
+      d/5           - Details tab
+      ↑ ↓           - select row in current list
+      a             - add user (Users tab) / add group (Groups tab)
+      Enter / e     - edit selected user / group
+      l             - lock / unlock selected user (Users tab)
+      Del           - delete selected item (with confirmation)
+      K             - SSH Keys dialog for selected user
+      s             - show sudo rights for selected user
+      c             - emergency contain selected user (security action)
+      r             - refresh current tab
+      Esc / Ctrl+J  - close
     """
 
     DEFAULT_CSS = """
@@ -20675,7 +20662,7 @@ class UserAdminScreen(ModalScreen):
             self._keys_cache   = []
 
             # Discover Docker containers on this host so the sub-row can be shown.
-            # Failures are silent — not every host runs Docker.
+            # Failures are silent - not every host runs Docker.
             containers: list[tuple[str, str]] = []
             if ok_d and docker_out.strip():
                 for ln in docker_out.strip().splitlines():
@@ -20704,7 +20691,7 @@ class UserAdminScreen(ModalScreen):
             self._refresh_view()
 
     def _soft_refresh(self) -> None:
-        """Periodic refresh — skipped on Details tab to avoid thrashing SSH."""
+        """Periodic refresh - skipped on Details tab to avoid thrashing SSH."""
         if not self._loading and self._tab != "details":
             self.run_worker(self._load_data(), exclusive=True)
 
@@ -20748,7 +20735,7 @@ class UserAdminScreen(ModalScreen):
         self.run_worker(self._load_data(), exclusive=True)
 
     def action_container_prev(self) -> None:
-        """[ — switch to previous container (or back to bare host)."""
+        """[ - switch to previous container (or back to bare host)."""
         hid = self._current_host_id()
         containers = self._docker_containers.get(hid, []) if hid else []
         if not containers:
@@ -20762,7 +20749,7 @@ class UserAdminScreen(ModalScreen):
         self.run_worker(self._load_data(), exclusive=True)
 
     def action_container_next(self) -> None:
-        """] — switch to next container (or back to bare host)."""
+        """] - switch to next container (or back to bare host)."""
         hid = self._current_host_id()
         containers = self._docker_containers.get(hid, []) if hid else []
         if not containers:
@@ -20974,8 +20961,8 @@ class UserAdminScreen(ModalScreen):
             if self._tab not in ("users", "groups"):
                 return
             # event.y is relative to the clicked widget's top-left corner.
-            # For #ua-text (Static), y is already in document coordinates — no scroll adjustment needed.
-            # For #ua-content (scroller), y is in viewport coordinates — add scroll_y.
+            # For #ua-text (Static), y is already in document coordinates - no scroll adjustment needed.
+            # For #ua-content (scroller), y is in viewport coordinates - add scroll_y.
             if sender_id == "ua-content":
                 try:
                     scroll_y = int(self.query_one("#ua-content", _UAScroll).scroll_y)
@@ -21074,7 +21061,7 @@ class UserAdminScreen(ModalScreen):
             else:
                 u_style = CLR_TEXT if selected else "grey85"
                 uname_s = u.username[:20]
-            # Groups — highlight privileged groups in red
+            # Groups - highlight privileged groups in red
             group_parts = []
             for g in u.groups[:6]:
                 if g in _PRIVILEGED_GROUPS:
@@ -21361,7 +21348,7 @@ class UserAdminScreen(ModalScreen):
         await self._load_data()
 
     def _action_delete_user(self, hid: Optional[str], u: UserInfo) -> None:
-        """Delete user — presents a 3-option dialog (disable / delete / delete+home)."""
+        """Delete user - presents a 3-option dialog (disable / delete / delete+home)."""
         if not hid:
             return
         level = self._guard.protection_level("delete_user", u, hid, self._pool)
@@ -21380,7 +21367,7 @@ class UserAdminScreen(ModalScreen):
 
     async def _exec_delete_user(self, hid: str, username: str) -> None:
         _record_screen_exec("UserAdminScreen")
-        # Keep home directory by default — safer and forensically useful
+        # Keep home directory by default - safer and forensically useful
         ok, out = await self._svc.delete_user(hid, username, remove_home=False, container_id=self._current_container_id())
         self.app.notify(
             f"Deleted {username}: {out[:80]}" if ok else f"Delete failed: {out[:80]}",
@@ -21559,7 +21546,7 @@ class UserAdminScreen(ModalScreen):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# UserEditDialog — create or edit a Linux user
+# UserEditDialog - create or edit a Linux user
 # ══════════════════════════════════════════════════════════════════════════════
 
 class UserEditDialog(ModalScreen):
@@ -21704,7 +21691,7 @@ class UserEditDialog(ModalScreen):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# GroupEditDialog — create or edit a Linux group
+# GroupEditDialog - create or edit a Linux group
 # ══════════════════════════════════════════════════════════════════════════════
 
 class GroupEditDialog(ModalScreen):
@@ -21784,7 +21771,7 @@ class GroupEditDialog(ModalScreen):
             ok, out = await self._svc.create_group(self._host_id, name, container_id=cid)
             action = "create"
         else:
-            # groupmod -n (rename) — safest supported edit operation
+            # groupmod -n (rename) - safest supported edit operation
             ok, out = await self._svc.run(
                 self._host_id,
                 f"groupmod -n {name} {self._group.name}",
@@ -21806,7 +21793,7 @@ class GroupEditDialog(ModalScreen):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SshKeysDialog — view / edit authorized_keys for any user
+# SshKeysDialog - view / edit authorized_keys for any user
 # ══════════════════════════════════════════════════════════════════════════════
 
 class SshKeysDialog(ModalScreen):
@@ -21818,11 +21805,11 @@ class SshKeysDialog(ModalScreen):
     delegates to RotateKeyScreen rather than duplicating that logic here.
 
     Keys:
-      ↑ ↓   — select key row
-      a     — append a new key (opens Input dialog)
-      d/Del — remove selected key (with confirmation)
-      r     — open RotateKeyScreen for full rotation workflow
-      Esc   — close
+      ↑ ↓   - select key row
+      a     - append a new key (opens Input dialog)
+      d/Del - remove selected key (with confirmation)
+      r     - open RotateKeyScreen for full rotation workflow
+      Esc   - close
     """
 
     DEFAULT_CSS = """
@@ -21877,7 +21864,7 @@ class SshKeysDialog(ModalScreen):
 
     def on_mount(self) -> None:
         box = self.query_one("#skd-box")
-        box.border_title = f"🔑  SSH Keys — {self._username} @ {self._host_id}"
+        box.border_title = f"🔑  SSH Keys - {self._username} @ {self._host_id}"
         box.border_subtitle = (
             " ↑↓:select  g:generate  a:append  Del:remove  o:rotate(full)  Esc:close"
         )
@@ -24493,7 +24480,7 @@ class DiskScreen(ModalScreen):
                 self._redraw()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
-        """Enter / mouse click on a directory row — show action popup."""
+        """Enter / mouse click on a directory row - show action popup."""
         path = self._selected_path()
         if path:
             self.app.push_screen(_DiskDirActionScreen(path), lambda act: self._on_dir_action(act, path))
@@ -24522,7 +24509,7 @@ class DiskScreen(ModalScreen):
         return self._dir_paths[idx]
 
     def action_open_ssh(self) -> None:
-        """F2 — open SSH shell navigated to the selected directory."""
+        """F2 - open SSH shell navigated to the selected directory."""
         path = self._selected_path()
         if not path:
             self.app.notify("Select a directory first", severity="warning")
@@ -24534,7 +24521,7 @@ class DiskScreen(ModalScreen):
                                             init_cmd=init_cmd))
 
     def action_open_fm(self) -> None:
-        """Ctrl+F — open File Manager navigated to the selected directory."""
+        """Ctrl+F - open File Manager navigated to the selected directory."""
         path = self._selected_path()
         if not path:
             self.app.notify("Select a directory first", severity="warning")
@@ -24853,7 +24840,7 @@ class ProcessScreen(ModalScreen):
         return self._focused
 
     def action_open_ssh(self):
-        """F2 — open SSH shell for the host of the focused process (or filtered host)."""
+        """F2 - open SSH shell for the host of the focused process (or filtered host)."""
         hid = self._host_at_cursor()
         if not hid:
             self.app.notify("No host selected", severity="warning")
@@ -24864,7 +24851,7 @@ class ProcessScreen(ModalScreen):
         self.app.push_screen(SshShellScreen(self._pool, hid, init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — open File Manager for the host of the focused process."""
+        """Ctrl+F - open File Manager for the host of the focused process."""
         hid = self._host_at_cursor()
         if not hid:
             self.app.notify("No host selected", severity="warning")
@@ -25270,7 +25257,7 @@ class SecurityWizardScreen(ModalScreen):
             _log.warning("Exception: %s: %s", type(e).__name__, e)  # TODO: improve log quality
             label = self._host_id
         try:
-            self.query_one("#wiz-panel", Vertical).border_title = f" 🔍 SECURITY WIZARD — {label} "
+            self.query_one("#wiz-panel", Vertical).border_title = f" 🔍 SECURITY WIZARD - {label} "
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
@@ -25278,7 +25265,7 @@ class SecurityWizardScreen(ModalScreen):
 
     def _build_ufw_allow_cmds(self, listening: list) -> str:
         """Return shell fragment: 'ufw allow PORT/tcp' for every detected port.
-        Uses ; so each rule is attempted independently — ufw --force enable
+        Uses ; so each rule is attempted independently - ufw --force enable
         always runs even if one allow fails. No comments to avoid quoting issues."""
         if listening:
             return " ; ".join(
@@ -25494,16 +25481,16 @@ class SecurityWizardScreen(ModalScreen):
                 warn("ufw installed but INACTIVE")
                 if listening:
                     ports_preview = ", ".join(f"{p}/{lbl}" for p, lbl in listening[:6])
-                    hint(f"press e to enable ufw — will allow {len(listening)} detected ports: {ports_preview}{'…' if len(listening) > 6 else ''}")
+                    hint(f"press e to enable ufw - will allow {len(listening)} detected ports: {ports_preview}{'…' if len(listening) > 6 else ''}")
                 else:
                     hint("press e to enable ufw with detected ports")
         else:
             bad("ufw NOT installed")
             if listening:
                 ports_preview = ", ".join(f"{p}/{lbl}" for p, lbl in listening[:6])
-                hint(f"press i to install ufw — will allow {len(listening)} detected ports: {ports_preview}{'…' if len(listening) > 6 else ''}")
+                hint(f"press i to install ufw - will allow {len(listening)} detected ports: {ports_preview}{'…' if len(listening) > 6 else ''}")
             else:
-                hint("press i to install ufw — will allow all currently listening ports")
+                hint("press i to install ufw - will allow all currently listening ports")
 
         t.append("\n FAIL2BAN\n", style="bold white")
         if a.get("f2b_installed"):
@@ -25550,7 +25537,7 @@ class SecurityWizardScreen(ModalScreen):
         t.append("\n SSH HARDENING\n", style="bold white")
         mat = a.get("max_auth_tries")
         if mat is None:
-            warn("MaxAuthTries = default (6)  — brute-force window is too wide")
+            warn("MaxAuthTries = default (6)  - brute-force window is too wide")
             hint("press m to set MaxAuthTries 3")
         elif mat <= 3:
             ok(f"MaxAuthTries = {mat}  (good)")
@@ -25559,7 +25546,7 @@ class SecurityWizardScreen(ModalScreen):
             hint("press m to set MaxAuthTries 3")
         lgt = a.get("login_grace_time")
         if lgt is None:
-            warn("LoginGraceTime = default (120s)  — long auth windows waste connections")
+            warn("LoginGraceTime = default (120s)  - long auth windows waste connections")
             hint("press g to set LoginGraceTime 20")
         elif lgt <= 30:
             ok(f"LoginGraceTime = {lgt}s  (good)")
@@ -25570,7 +25557,7 @@ class SecurityWizardScreen(ModalScreen):
         if a.get("nginx_installed"):
             t.append("\n NGINX RATE LIMITING\n", style="bold white")
             if a.get("nginx_ratelimit"):
-                ok("limit_req_zone configured — rate limiting active")
+                ok("limit_req_zone configured - rate limiting active")
             else:
                 warn("No nginx rate limiting (limit_req_zone) found")
                 hint("press n to inject limit_req_zone 10r/s + reload nginx")
@@ -25592,10 +25579,10 @@ class SecurityWizardScreen(ModalScreen):
                 if a.get("postfix_ratelimited"):
                     ok("Postfix smtpd_client_connection_rate_limit is configured")
                 else:
-                    warn("No Postfix connection rate limit — vulnerable to SMTP brute")
+                    warn("No Postfix connection rate limit - vulnerable to SMTP brute")
                     hint("press p to set smtpd_client_connection_rate_limit=10 + reload")
             if a.get("exim_installed"):
-                ok("Exim4 detected — manual rate-limit review recommended")
+                ok("Exim4 detected - manual rate-limit review recommended")
 
         t.append("\n ACTIONS\n", style="bold white")
         if not a.get("ufw_installed"):
@@ -25606,7 +25593,7 @@ class SecurityWizardScreen(ModalScreen):
             t.append(" Reinstall ufw (restores deleted /etc/ufw config)\n", style="grey85")
         if a.get("ufw_installed") and not a.get("ufw_active") and not a.get("ufw_conf_missing"):
             t.append("  [e]", style="bold white on dark_red")
-            t.append(" Enable ufw — allow detected ports first, then activate\n", style="grey85")
+            t.append(" Enable ufw - allow detected ports first, then activate\n", style="grey85")
         if not a.get("f2b_installed"):
             t.append("  [f]", style="bold white on dark_green")
             t.append(" Install & start fail2ban\n", style="grey85")
@@ -25801,7 +25788,7 @@ class SecurityWizardScreen(ModalScreen):
 
         The generated command always includes a self-healing pre-check:
         if /etc/ufw is missing (e.g. after 'rm -rf /etc/ufw'), it reinstalls
-        the ufw package before proceeding — regardless of install_ufw flag.
+        the ufw package before proceeding - regardless of install_ufw flag.
         """
         listening = self._audit.get("listening_ports", [])
         def _on_confirm(selected: list | None):
@@ -25842,7 +25829,7 @@ class SecurityWizardScreen(ModalScreen):
 
 class UfwPortSelectScreen(ModalScreen):
     """
-    Shown before enabling ufw — lets the user choose which detected
+    Shown before enabling ufw - lets the user choose which detected
     listening ports to allow. Returns list[(port, label)] or None (cancel).
     Keys: ↑↓ navigate, Space toggle, Enter confirm, Esc cancel.
     """
@@ -25887,7 +25874,7 @@ class UfwPortSelectScreen(ModalScreen):
     def _redraw(self):
         t = Text()
         if not self._items:
-            t.append("  (no listening ports detected — only SSH port will be allowed)\n",
+            t.append("  (no listening ports detected - only SSH port will be allowed)\n",
                      style="grey50 italic")
         for i, (port, lbl, checked) in enumerate(self._items):
             sel = i == self._cursor
@@ -27232,7 +27219,7 @@ class DeflectAppV2(DeflectApp):
             )
             return
         # Sanity check: header must identify as Deflect One, tail must carry the EOF
-        # marker — a truncated or wrong download will be missing one or both.
+        # marker - a truncated or wrong download will be missing one or both.
         if b"APP_VERSION" not in new_bytes[:8192] or b"DEFLECT_EOF" not in new_bytes[-256:]:
             self.call_from_thread(
                 self.notify,
@@ -27386,7 +27373,7 @@ class DeflectAppV2(DeflectApp):
         self.push_screen(DockerScreen(self._pool, self._metrics, hid))
 
     def action_user_admin(self):
-        """Ctrl+J — open User & Group Administration screen for the focused host."""
+        """Ctrl+J - open User & Group Administration screen for the focused host."""
         if not hasattr(self._pool, "add_host"):
             self.notify("User Admin not available in demo mode", severity="warning")
             return
@@ -28248,7 +28235,7 @@ class DeployScreen(ModalScreen):
         self.notify("Scanning repos…", severity="information")
 
     def action_open_ssh(self):
-        """F2 — SSH shell into selected repo's directory (or just the host)."""
+        """F2 - SSH shell into selected repo's directory (or just the host)."""
         hid, path = self._selected_repo()
         if not hid:
             hid = self._focused
@@ -28262,7 +28249,7 @@ class DeployScreen(ModalScreen):
                                             init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — File Manager for selected repo's host and directory."""
+        """Ctrl+F - File Manager for selected repo's host and directory."""
         hid, path = self._selected_repo()
         if not hid:
             hid = self._focused
@@ -29657,7 +29644,7 @@ class FilePanelWidget(_Widget):
     def _refresh_table(self) -> None:
         tbl = self._tbl()
         tbl.clear(columns=True)
-        # Column headers — active sort column gets an arrow indicator
+        # Column headers - active sort column gets an arrow indicator
         arrow = "▲" if not self._sort_rev else "▼"
         name_hdr = f"Name {arrow}" if self._sort_col == "name" else "Name"
         size_hdr = f"Size {arrow}" if self._sort_col == "size" else "Size"
@@ -29791,7 +29778,7 @@ class FilePanelWidget(_Widget):
         if is_dir:
             try:
                 target = await loop.run_in_executor(None, self._adapter.readlink, link_path)
-                # readlink may return relative path — resolve against current dir
+                # readlink may return relative path - resolve against current dir
                 if target and not target.startswith("/"):
                     target = self._adapter.join(self._path, target)
                 await self._load_dir(target or link_path)
@@ -30037,7 +30024,7 @@ class _FmEditFavDialog(ModalScreen):
 
 class _FmFavouritesScreen(ModalScreen):
     """
-    Ctrl+D — Favourite Locations dialog (Total Commander style).
+    Ctrl+D - Favourite Locations dialog (Total Commander style).
     Flat list of saved host+path pairs with descriptions.
     Enter: navigate to  |  a/Ins: add current  |  Del: remove  |  e/F2: edit
     """
@@ -30126,7 +30113,7 @@ class _FmFavouritesScreen(ModalScreen):
         footer.update(f" {len(self._favs)} location(s) saved")
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
-        """Enter on DataTable fires RowSelected — use it to navigate."""
+        """Enter on DataTable fires RowSelected - use it to navigate."""
         row = event.cursor_row
         if 0 <= row < len(self._favs):
             self.dismiss(self._favs[row])
@@ -30201,7 +30188,7 @@ class _FmFavouritesScreen(ModalScreen):
 
 class _FmAttrDialog(ModalScreen):
     """
-    Ctrl+Z — Edit file attributes: chmod (octal), chown user:group, touch mtime.
+    Ctrl+Z - Edit file attributes: chmod (octal), chown user:group, touch mtime.
     Works for both local and remote (remote uses SFTP chmod + SSH touch/chown).
     """
 
@@ -30300,7 +30287,7 @@ class _FmAttrDialog(ModalScreen):
 
 class _FmSymlinkDialog(ModalScreen):
     """
-    s — Create a new symlink or edit the target of an existing one (MC style).
+    s - Create a new symlink or edit the target of an existing one (MC style).
     Fields: link name, target path.
     """
 
@@ -30704,11 +30691,11 @@ def _cross_copy_chunked(src_a, src_path: str, dst_a, dst_path: str,
                         progress_cb, pause_ev, cancel_ref) -> None:
     """
     Blocking chunked cross-host copy (local↔remote or remote↔remote different hosts).
-    Phase 1: read entire source into memory (no progress — fast for local→remote).
+    Phase 1: read entire source into memory (no progress - fast for local→remote).
     Phase 2: write to destination in chunks, calling progress_cb per chunk so the
              transfer panel reflects the actual (slow) write to the destination.
     """
-    # Phase 1: read entire source into memory — no progress updates here
+    # Phase 1: read entire source into memory - no progress updates here
     if cancel_ref[0]:
         raise InterruptedError("Cancelled")
     if isinstance(src_a, _LocalFSAdapter):
@@ -30759,7 +30746,7 @@ def _cross_copy_chunked(src_a, src_path: str, dst_a, dst_path: str,
         finally:
             sftp.close()
     else:
-        # Generic adapter (e.g. Docker): no chunked write API — write all at once
+        # Generic adapter (e.g. Docker): no chunked write API - write all at once
         dst_a.write_bytes(dst_path, data)
         progress_cb(total)
 
@@ -31131,7 +31118,7 @@ class _FmTransferPanel(_Widget):
             spd = job.speed_str()
             if spd and job.status == _TJ_RUNNING:
                 t.append(f"  {spd}", style="cyan")
-            # Speed sparkline (1 line of braille) — smooth with 3-point moving average
+            # Speed sparkline (1 line of braille) - smooth with 3-point moving average
             if job.speed_hist and job.status in (_TJ_RUNNING, _TJ_DONE):
                 raw = list(job.speed_hist)
                 smoothed = [
@@ -31283,7 +31270,7 @@ class FileManagerScreen(ModalScreen):
         self._initial_adapter   = initial_adapter  # if set, overrides initial_host_id
         # container_id → (host_id, container_name) for Docker source-bar buttons
         self._docker_map: "dict[str, tuple[str, str]]" = {}
-        # _busy is gone — queue handles concurrency now
+        # _busy is gone - queue handles concurrency now
         # _xfer stores per-entry (src_a, src_path, dst_a, dst_path, move)
         # needed for retry; keyed by job_id
         self._xfer_meta: "dict[str, tuple]" = {}
@@ -31507,7 +31494,7 @@ class FileManagerScreen(ModalScreen):
                 container_label = fav.get("container_label", f"docker:{container_id[:12]}")
                 adapter = _DockerFSAdapter(host_id, container_id, self._pool,
                                            container_label=container_label)
-                # No source-bar button for Docker — clear active state
+                # No source-bar button for Docker - clear active state
                 self._sync_source_bar(f"__docker__{container_id}", side)
             else:
                 adapter = self._make_adapter(host_id)
@@ -31517,7 +31504,7 @@ class FileManagerScreen(ModalScreen):
         self.app.push_screen(_FmFavouritesScreen(self._pool, panel), _on_fav)
 
     def action_open_shell(self) -> None:
-        """Ctrl+T — open a shell pre-navigated to the active panel's current location."""
+        """Ctrl+T - open a shell pre-navigated to the active panel's current location."""
         adapter = self._active().adapter()
         path    = self._active().current_path()
 
@@ -31595,7 +31582,7 @@ class FileManagerScreen(ModalScreen):
             if path:
                 asyncio.create_task(panel._load_dir(path.strip()))
         self.app.push_screen(
-            _FmInputDialog("Quick CD — enter path:", default=panel.current_path()),
+            _FmInputDialog("Quick CD - enter path:", default=panel.current_path()),
             _on_path)
 
     def action_file_attrs(self) -> None:
@@ -32954,7 +32941,7 @@ class AiStatsScreen(ModalScreen):
 
 # ══════════════════════════════════════════════════════════════════════════════
 # SECTION: welcome_screen  (v0.78)
-# First-run onboarding — shown when no hosts are configured.
+# First-run onboarding - shown when no hosts are configured.
 # Three paths: Demo / Add Host / Import from ~/.ssh/config.
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -33020,7 +33007,7 @@ class _WelcomeStubPool:
 
 
 class SSHImportDialog(ModalScreen):
-    """Checklist of ~/.ssh/config hosts — user selects which to import into Deflect."""
+    """Checklist of ~/.ssh/config hosts - user selects which to import into Deflect."""
 
     DEFAULT_CSS = """
     SSHImportDialog { align: center middle; }
@@ -33119,7 +33106,7 @@ class _WCard(Static):
 
 
 class WelcomeScreen(ModalScreen):
-    """First-run onboarding screen — full-screen, three paths to get started."""
+    """First-run onboarding screen - full-screen, three paths to get started."""
 
     DEFAULT_CSS = """
     WelcomeScreen { align: center middle; background: $background; }
@@ -33167,12 +33154,12 @@ class WelcomeScreen(ModalScreen):
         with Container(id="welcome-box"):
             yield Static("D E F L E C T   O N E",          id="welcome-title")
             yield Static("Enterprise Infrastructure Command Center", id="welcome-sub")
-            yield Static("No hosts configured yet — choose a starting point:",
+            yield Static("No hosts configured yet - choose a starting point:",
                          id="welcome-intro")
 
-            yield _WCard("[bold]D[/bold]  Try Demo[dim] — explore 25+ screens, no SSH needed[/dim]",
+            yield _WCard("[bold]D[/bold]  Try Demo[dim] - explore 25+ screens, no SSH needed[/dim]",
                          id="wcard-demo", classes="wcard")
-            yield _WCard("[bold]A[/bold]  Add Your First Host[dim] — hostname · port · user · key or password[/dim]",
+            yield _WCard("[bold]A[/bold]  Add Your First Host[dim] - hostname · port · user · key or password[/dim]",
                          id="wcard-add",  classes="wcard")
 
             if self._ssh_hosts:
@@ -33180,10 +33167,10 @@ class WelcomeScreen(ModalScreen):
                 if n > 5:
                     preview += f"  ·  …+{n - 5} more"
                 yield _WCard(
-                    f"[bold]I[/bold]  Import ~/.ssh/config[dim] — {n} host{'s' if n != 1 else ''}: {preview}[/dim]",
+                    f"[bold]I[/bold]  Import ~/.ssh/config[dim] - {n} host{'s' if n != 1 else ''}: {preview}[/dim]",
                     id="wcard-import", classes="wcard")
 
-            yield Static("[dim]Tab / ↑↓ — navigate    Enter / click — select    Q — quit[/dim]",
+            yield Static("[dim]Tab / ↑↓ - navigate    Enter / click - select    Q - quit[/dim]",
                          id="welcome-hint")
 
     def on_mount(self) -> None:
@@ -33288,7 +33275,7 @@ class WelcomeScreen(ModalScreen):
 
 
 class WelcomeApp(App):
-    """Thin wrapper App that shows only WelcomeScreen — no background tasks."""
+    """Thin wrapper App that shows only WelcomeScreen - no background tasks."""
 
     CSS = "WelcomeScreen { background: $background; }"
 
@@ -33305,9 +33292,9 @@ class WelcomeApp(App):
 def _run_welcome(cfg_manager: "ConfigManager") -> str:
     """
     Run the welcome TUI and return the user's choice:
-      "demo" — launch demo mode (no SSH)
-      "run"  — hosts were added/imported, launch main app
-      "quit" — user pressed Q or Escape
+      "demo" - launch demo mode (no SSH)
+      "run"  - hosts were added/imported, launch main app
+      "quit" - user pressed Q or Escape
     """
     app = WelcomeApp(cfg_manager)
     app.run()
@@ -33378,7 +33365,7 @@ def _run_demo(cfg):
         HostConfig(id="linode-02",  label="App Server",  address="194.195.1.11",  tags=["app","prod"]),
         HostConfig(id="contabo-db", label="Database",    address="62.84.1.10",    tags=["db","prod"]),
         HostConfig(id="contabo-2",  label="Mail Server", address="62.84.1.11",    tags=["mail"],
-                   auth="password"),  # DEMO: offline — shows realistic fleet with one unreachable host
+                   auth="password"),  # DEMO: offline - shows realistic fleet with one unreachable host
     ]
     cfg.hosts = demo_hosts
 
