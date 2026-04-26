@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "deflect-one"
-version = "0.76.3"
+version = "0.78"
 description = "Enterprise Infrastructure Command Center — DevOps + Cybersecurity in one terminal"
 readme = "README.md"
 license = { text = "MIT" }
