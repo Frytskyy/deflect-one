@@ -2,7 +2,7 @@
 """
 DEFLECT ONE
 ===========
-Enterprise Infrastructure Command Center — DevOps + Cybersecurity + AI
+Enterprise Infrastructure Command Center - DevOps + Cybersecurity + AI
 
 One terminal. One SSH session. Infinite servers.
 
@@ -14,7 +14,7 @@ threat defense, service orchestration, and AI-powered automation (optional) in a
 agentless Python application.
 
 No agent daemons. No Prometheus scrape targets. No polling APIs. Every operation
-runs via SSH — direct shell execution across your fleet with encrypted credential
+runs via SSH - direct shell execution across your fleet with encrypted credential
 storage and hardware-bound encryption.
 
 Perfect for:
@@ -28,7 +28,7 @@ Perfect for:
 Built because monitoring your infrastructure shouldn't require Prometheus, Grafana,
 Loki, AlertManager, a dozen YAML files, and a degree in Kubernetes. For a solo
 engineer or small team, Deflect One is your infrastructure dashboard, firewall console,
-and AI assistant (optional) — all in one file, all from one terminal.
+and AI assistant (optional) - all in one file, all from one terminal.
 
 Created by: Volodymyr Frytskyy (WhitemanV)
 Website:    https://www.vladonai.com/deflect-one
@@ -48,8 +48,14 @@ FEATURES
 
 [X] Active Cybersecurity Defense
    • Attack Radar: real-time visualization of attack IPs, geo-location, attack types
+   • Auth Sentinel (Ctrl+H) [v0.78]: multi-protocol auth intelligence (SSH/sudo/mail/DB/FTP)
+     - live event feed + active sessions + threat summary + sshd hardening audit
+     - P0 breach detection (≥10 failures then success → instant alert)
+   • Session Activity Inspector [v0.78]: live forensic SSH command stream (auditd EXECVE)
+   • Containment Dialog [v0.78]: ordered incident response (block IP → kill session → disable account)
+     - credential rotation (random password + key revoke) + evidence preservation
    • Fail2ban integration: view jails, active bans, ban/unban individual IPs
-   • Firewall management (ufw / iptables): add/delete rules, audit, bulk operations
+   • Firewall management (ufw / iptables): add/delete rules, audit, CIS hardening checklist
    • Intrusion detection: protocol anomalies, brute-force patterns, DDoS signatures
    • SSH key audit: which keys exist on which hosts, when they were last used
    • Automatic incident timeline: when attacks started, peak, escalation
@@ -58,6 +64,11 @@ FEATURES
    • SSH command execution across server fleets (paramiko native, not subprocess)
    • SSH port forwarding editor and tunnel management
    • Interactive shell (F2) with terminal emulation and SSH tty
+   • Linux user & group administration (Ctrl+J) [v0.78]:
+     - create/edit/delete users & groups, lock/unlock, SSH key management per user
+     - generate new SSH keys (local gen + deploy + verify), full key rotation
+     - SSH shell as any user (via sudo), view sudo rights, active sessions, user details
+     - emergency containment (block + disable) with safety guards for current SSH user
    • Dual-panel file manager (like Midnight Commander / Norton Commander) with SFTP:
      browse, upload, download, edit, delete, copy between hosts, drag-and-drop panels
    • Log aggregation and cross-host grep with regex and presets
@@ -75,6 +86,8 @@ FEATURES
    • Portable encrypted export (master password protected)
    • Per-host configuration: SSH auth, port, polling intervals, services list
    • Host tags for logical grouping and bulk operations
+   • Linux account management: per-host user/group list, password policy (chage),
+     privilege audit (sudo/wheel/admin groups), quota monitoring
    • Flexible notifications: Telegram, e-mail, webhook, local sound alerts
    • Single JSON config file, no YAML, no external dependencies
 
@@ -83,14 +96,17 @@ FEATURES
      LM Studio, or any OpenAI-compatible endpoint
    • Dual-tier model strategy: SMART tier (reasoning) + FAST tier (low-latency)
    • Per-host LLM instructions: autonomous host management loops with human escalation
-   • AI Threat Assessment: analyze attack patterns, suggest mitigations
-   • AI Health Audit: cross-host root-cause analysis, performance anomaly detection
+   • AI Threat Assessment: analyze attack patterns, suggest mitigations (Auth Sentinel)
+   • AI Health Audit [v0.76]: cross-host root-cause analysis, CPU/RAM/disk anomalies,
+     security issues (exposed ports, weak SSH config, unpatched packages)
+   • AI Security Wizard [v0.76]: interactive hardening checklist (SSH config, firewall,
+     fail2ban, sysctl, AppArmor/SELinux), CIS Benchmark alignment
    • Natural-language terminal (Ctrl+A): describe what you want in English, AI
      translates to CLI/SSH/Bash and executes it
    • AI Shell Integration (F8/F9): real-time command hints + natural language
      to shell command translation in your SSH terminal
    • Semi-auto and Full-auto defense modes: AI-driven incident response within
-     configured policy boundaries
+     configured policy boundaries (via Containment Dialog + UserAdmin)
    • Token budget management: hourly/daily quotas per tier with notifications
    • Graceful degradation: works fully without AI (optional feature)
 
@@ -110,12 +126,24 @@ Linux (Alternative - User Install):
     pip install --user -r requirements.txt
     python3 deflect.py
 
+Windows (Recommended - pip install):
+    python -m pip install --user deflect-one
+    python -m deflect --demo       # demo mode (no real SSH)
+    python -m deflect              # reads deflect.json, manages real infrastructure
+
+Windows (Alternative - Virtual Environment):
+    python -m venv deflect-one-env
+    deflect-one-env\\Scripts\\activate
+    pip install deflect-one
+    python -m deflect --demo
+    python -m deflect              # reads deflect.json, manages real infrastructure
+
 Windows/macOS:
     python -m venv deflect-one-env
     deflect-one-env\\Scripts\\activate
     pip install -r requirements.txt
     python3 deflect.py --demo
-
+    
 Minimal (no AI):
     pip install textual paramiko cryptography pyyaml pyte
     python3 deflect.py --demo
@@ -215,39 +243,6 @@ SSH & Connectivity:
     (systemctl, apt/dnf/pacman, ss, netstat, curl, jq, etc.)
   • Does NOT require: agents, daemons, or special permissions on managed hosts
     (though some features like firewall rules require root or sudo)
-
-Keyboard Shortcuts — Deflect One (main dashboard)
-================================================
-
-Infrastructure Screens:
-  Ctrl+D  Docker (containers, images, resource usage)
-  Ctrl+P  Process monitor (cross-host top, OOM)
-  Ctrl+R  Network reconnaissance (ping, traceroute, port scan presets)
-  Ctrl+W  Firewall (UFW/iptables rules, add/delete, ban/unban IPs)
-  Ctrl+T  Cron & timers (view, edit, schedule)
-  Ctrl+B  Network connections (ss -tnp, state filters)
-  Ctrl+Y  Databases (PostgreSQL, MySQL, Redis, MongoDB introspection)
-  Ctrl+G  Deployments (git pull, restart, rollback)
-  Ctrl+U  Backups (restic/borg/rclone/rsnapshot status)
-  Ctrl+L  Log aggregation (cross-host regex grep)
-  Ctrl+E  Env audit (diff .env files, SSH key audit)
-  Ctrl+F  Dual-panel file manager (Midnight Commander style, SFTP, copy between hosts)
-  Ctrl+X  Email monitor (MTA queue, accounts, errors)
-  Ctrl+S  Script runner (edit, deploy, schedule bash/Python)
-
-Security & AI:
-  Ctrl+K  Vault (secrets, export/import)
-  Ctrl+N  Host editor (add new host + AI instructions per host)
-  Ctrl+O  Edit host
-  Ctrl+A  AI Chat (natural-language conversation with full context)
-  Ctrl+I  AI stats (token usage, cost tracking by tier)
-  F2      Interactive SSH shell (with F8 hints, F9 AI command translate)
-  F3      Log tail (journalctl -f, auth.log, nginx, etc.)
-  F4      Disk usage
-  F5      SSH port forwarding
-  F6      Settings (🤖 AI configuration, thresholds, notifications)
-  F8      Apt upgrade (package manager updates)
-  F9      Fleet manager (bulk operations across multiple hosts)
 
 LICENSE
 =======
@@ -372,7 +367,7 @@ Deflect One operates in two fundamental modes:
 
 Uniqueness: monitoring + cybersecurity + service management + AI assistance
 in a single agentless tool (SSH only, no agents on servers). One platform,
-infinite servers — Deflect One scales from home labs to enterprise fleets.
+infinite servers - Deflect One scales from home labs to enterprise fleets.
 
 ════════════════════════════════════════════════════════════════
   Technology Stack
@@ -396,10 +391,10 @@ AI (optional, install based on chosen provider):
 Dependencies no longer needed:
   pyyaml - completely removed from runtime (config migrated to JSON)
 
-Installation (minimal — Deflect One core):
+Installation (minimal - Deflect One core):
   pip install textual paramiko cryptography
 
-Installation (with AI — Deflect One full):
+Installation (with AI - Deflect One full):
   pip install textual paramiko cryptography anthropic openai
 
 ════════════════════════════════════════════════════════════════
@@ -428,6 +423,10 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   # SECTION: host_agent              ← _SingleHostPool, EventKind, AgentEvent,
   #                                     HostAgent (10+ loops), AgentPool,
   #                                     _MetricsFacade, _RadarFacade, _WatcherFacade
+  # SECTION: ssh_config_sync (v0.78) ← SSHConfigSyncManager - keeps ~/.ssh/deflect_hosts
+  #                                     in sync with Deflect host list; one-time Include
+  #                                     injection into ~/.ssh/config (GitHub CLI pattern)
+  #                                     + _parse_ssh_config_hosts() - lightweight parser
   # SECTION: render / braille        ← braille_sparkline(), gradient_bar(), pct_color()
   # SECTION: notification_manager    ← NotificationManager (sound/Telegram/email/webhook)
   # SECTION: ai_engine               ← AIEngine, AIHostContext, AIAttackContext,
@@ -444,12 +443,39 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   #                                     + F8: AI Hints, F9: AI Command
   # SECTION: port_forwards_screen    ← _TunnelEntry, PortForwardsScreen (F5) - SSH tunnel editor
   # SECTION: pf_rule_editor          ← _PFRuleEditor (ModalScreen) - port forward rule editing
-  # SECTION: docker_screen           ← DockerScreen (Ctrl+D)
+  # SECTION: docker_screen           ← _DockerRenameDialog (ModalScreen) - rename container (e key)
+  #                                     DockerScreen (Ctrl+D) - e:rename  a:add-as-host (prefill, no
+  #                                     spurious auto-connect); Enter/e edits users/groups in UserAdmin
   # SECTION: docker_run_wizard       ← DockerRunWizard (ModalScreen) - docker run configuration
   # SECTION: docker_port_editor      ← DockerPortEditorScreen (ModalScreen) - port mapping editor
   # SECTION: network_recon_screen    ← NetworkReconScreen (Ctrl+R), _RECON_PRESETS
-  # SECTION: fleet_manager_screen    ← FleetManagerScreen (F9), BulkOpsScreen,
-  #                                     BulkOpsResultScreen, RotateKeyScreen, _BULK_OPS
+  # SECTION: fleet_manager_screen    ← RestoreHostDialog (ModalScreen) - list + restore
+  #                                     hosts from 7-day deleted archive (v0.78) [r]
+  #                                     FleetManagerScreen (F9) - host roster DataTable
+  #                                     with add/edit/clone/delete, Source column (v0.78),
+  #                                     5-second undo on delete (v0.78)
+  #                                     BulkOpsScreen, BulkOpsResultScreen,
+  #                                     RotateKeyScreen - new key written to same dir as
+  #                                       original key_path (v0.78 source-aware rotation),
+  #                                     _BULK_OPS
+  # SECTION: user_admin_screen (v0.78) ← UserAdminService - SSH command execution +
+  #                                     audit log for all user/group actions; called by
+  #                                     both UserAdminScreen and ContainmentDialog so
+  #                                     containment logic is never duplicated
+  #                                     _UserDangerGuard - self-lockout + privileged-user
+  #                                     protection (critical/dangerous/warn levels)
+  #                                     _UaConfirmDialog - multi-level confirmation modal
+  #                                     (requires username typing + lockout phrase for
+  #                                     critical operations on the current SSH login user)
+  #                                     UserAdminScreen (Ctrl+J) - main admin screen:
+  #                                     host tabs, 5 content tabs (Users/Groups/Keys/
+  #                                     Sessions/Details), keyboard-first navigation
+  #                                     Enter/e: edit user or group (v0.78)
+  #                                     UserEditDialog - create/edit user (name, shell, groups)
+  #                                     GroupEditDialog - create/edit group
+  #                                     SshKeysDialog - view/append/remove authorized_keys
+  #                                     for any user; rotation delegates to RotateKeyScreen
+  #                                     to avoid duplicating SshKeyManager logic
   # SECTION: apt_upgrade_screen      ← AptUpgradeScreen (F8)
   # SECTION: vault_screen            ← VaultScreen (Ctrl+K) - secrets + export/import
   # SECTION: passphrase_dialog       ← PassphraseDialog (ModalScreen) - vault passphrase entry
@@ -457,12 +483,17 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   #                                     HostEditorScreen (Ctrl+N new, Ctrl+O edit)
   #                                     + 🤖 AI tab: per-host AI instructions
   #                                     + Delete button (edit mode only) with confirmation
+  #                                     + prefill=HostConfig mode (v0.78) - pre-fills all fields
+  #                                       without adding stub to pool; used by DockerScreen "a"
   # SECTION: script_runner           ← ScriptScreen (Ctrl+S) - file browser, inline editor,
   #                                     run via SSH stdin, SFTP deploy, cron schedule
   #                                     + AI Generate: NL description → bash/python script
   # SECTION: disk_screen             ← DiskScreen (F4), _DiskDirActionScreen - mount points, top dirs, ETA, 
   # SECTION: process_monitor_screen  ← ProcessScreen (Ctrl+P) - cross-host top, kill, OOM
   # SECTION: safety_guard            ← SafetyGuard - self-ban/lockout prevention
+  # SECTION: ban_select_screen       ← BanSelectScreen (ModalScreen) - IP/subnet/host scope picker
+  #                                     [b] in Attack Radar, AuthSentinel, Firewall + ContainmentDialog step 1
+  #                                     Checks SafetyGuard before ban; supports /24 and /16 subnet bans
   # SECTION: security_wizard         ← SecurityWizardScreen (ModalScreen) - firewall/security setup
   # SECTION: firewall_screen         ← FirewallScreen (Ctrl+W) - ufw/iptables, add/delete rules
   # SECTION: cron_screen             ← CronScreen (Ctrl+T) - crontab + systemd timers, CRUD
@@ -472,15 +503,14 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   # SECTION: backup_screen           ← BackupScreen (Ctrl+U) - restic/borg/rclone/rsnapshot status
   # SECTION: log_agg_screen          ← LogAggScreen (Ctrl+L) - cross-host regex grep, presets
   # SECTION: env_screen              ← EnvScreen (Ctrl+E) - .env diff, SSH key audit
-  # SECTION: file_manager_screen     ← FileEntry, _FileSystemAdapter,
+  # SECTION: file_manager_screen     ← FileManagerScreen (Ctrl+F), FileEntry,
+  #                                     _FileSystemAdapter,
   #                                     _LocalFSAdapter, _RemoteFSAdapter,
   #                                     FilePanelWidget (multi-select: Ins/Space/^A/^D),
-  #                                     _FmInputDialog, FileViewerScreen,
-  #                                     FileEditorScreen,
+  #                                     _FmInputDialog, FileViewerScreen, FileEditorScreen,
   #                                     _FmXferJob, _FmTransferQueue, _FmTransferPanel,
   #                                     _local_copy_chunked, _sftp_copy_chunked,
-  #                                     _cross_copy_chunked, _fm_get_queue,
-  #                                     FileManagerScreen (Ctrl+F)
+  #                                     _cross_copy_chunked, _fm_get_queue
   # SECTION: email_monitor_screen    ← EmailMonitorScreen (Ctrl+X)
   # SECTION: log_tail_screen         ← LogTailScreen (F3) - journalctl -f / tail -F
   #                                     + 8 tabs: Journal|Auth|Nginx|Apache|Email|Fail2ban|UFW|Syslog
@@ -488,6 +518,15 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   # SECTION: ui / dashboard          ← Panel, ServerCard, AttackRadarPanel,
   #                                     ServicesPanel, StatsBar, FKeyBar,
   #                                     DeflectApp, DeflectAppV2
+  # SECTION: welcome_screen (v0.78)  ← _parse_ssh_config_hosts() - lightweight OpenSSH
+  #                                     config parser (skips wildcards)
+  #                                     _WelcomeStubPool - minimal pool stub for onboarding
+  #                                     SSHImportDialog (ModalScreen) - checklist of
+  #                                     ~/.ssh/config hosts with toggle-select + Import
+  #                                     WelcomeScreen (ModalScreen) - 3-card first-run UI:
+  #                                     [D] Demo / [A] Add Host / [I] Import SSH config
+  #                                     WelcomeApp - thin App wrapper that pushes WelcomeScreen
+  #                                     _run_welcome() → "demo"|"run"|"quit"
   # SECTION: entrypoint              ← _check_deps(), _run(), _run_demo(), main()
 
 ════════════════════════════════════════════════════════════════
@@ -691,16 +730,18 @@ Portable export (Ctrl+K → Export) re-encrypts under master password → deflec
 Each host = one HostAgent with 10 parallel asyncio loops:
 
 HostAgent("linode-01")
-  ├── _metrics_loop()      every poll_interval s  → CPU/RAM/Disk/Net → HostMetrics
-  ├── _services_loop()     every 10s → systemctl + _react_services() (auto-restart)
-  ├── _security_loop()     every 8s  → auth.log / fail2ban → SecurityRadar
-  ├── _heartbeat_loop()    every 30s → total_uptime_s + last_seen → deflect.json
-  ├── _cmd_worker()        asyncio.Queue → executes UI commands serially
-  ├── _inventory_loop()    5s after connect, then every 1h → scans installed software
-  ├── _ssl_loop()          15s after connect, then every 6h → SSL cert expiry
-  ├── _docker_loop()       10s after connect, then every 15s → docker ps/stats
-  ├── _apt_loop()          20s after connect, then every 1h → apt upgradable + OS info
-  └── _reconnect_loop()    every 5s → checks transport, reconnect + downtime_events
+  ├── _metrics_loop()          every poll_interval s  → CPU/RAM/Disk/Net → HostMetrics
+  ├── _services_loop()         every 10s → systemctl + _react_services() (auto-restart)
+  ├── _security_loop()         every 8s  → auth.log / fail2ban → SecurityRadar
+  ├── _auth_sentinel_loop()    every 12s → multi-protocol auth log parsing → AuthSentinelEngine
+  │                                        fires P0/CRITICAL/HIGH AuthThreatEvents
+  ├── _heartbeat_loop()        every 30s → total_uptime_s + last_seen → deflect.json
+  ├── _cmd_worker()            asyncio.Queue → executes UI commands serially
+  ├── _inventory_loop()        5s after connect, then every 1h → scans installed software
+  ├── _ssl_loop()              15s after connect, then every 6h → SSL cert expiry
+  ├── _docker_loop()           10s after connect, then every 15s → docker ps/stats
+  ├── _apt_loop()              20s after connect, then every 1h → apt upgradable + OS info
+  └── _reconnect_loop()        every 5s → checks transport, reconnect + downtime_events
 
 _SingleHostPool - minimal wrapper around HostState, allows
 MetricsCollector / SecurityRadar / ServiceWatcher to work without changes.
@@ -763,10 +804,20 @@ Modal screens (open on top of the main screen):
                                          token budget / quota notifications
   DockerScreen             Ctrl+D   - docker ps/stats, exec shell, stop/restart/logs,
                                       add container as host
+                            p, d*    - (from ServerCard) open docker for focused host [v0.78]
+                              (*when card is focused, 'd' enters docker container navigation
+                                mode: ↑↓ select, Enter open, Esc exit)
+  DockerRunWizard          (from DockerScreen) - interactive docker run builder
+                                      image selector, port/volume/env bindings
+  DockerPortEditorScreen   (from DockerScreen) - port binding wizard
+  DockerRenameDialog       (from DockerScreen) - rename container
   NetworkReconScreen       Ctrl+R   - nmap/dig/whois/traceroute/curl via SSH
                                       11 presets, choice of source host and target
   FleetManagerScreen       F9       - table of all hosts, checkboxes, bulk ops
                                       🤖 AI Audit All: health report across entire fleet
+  AiHealthAuditScreen      (from Fleet "🤖") - [v0.76] 🤖 AI-powered fleet health analysis
+                                      Multi-host system audit: CPU/RAM/disk/load anomalies
+                                      Security issues: exposed ports, weak SSH config, unpatched
   BulkOpsScreen            (from F9) - parallel execution of commands on selected hosts
                                       categories: Security / System / Services / Docker / APT
   BulkOpsResultScreen      (auto)    - per-host output viewer after BulkOps execution
@@ -786,7 +837,13 @@ Modal screens (open on top of the main screen):
                                       🤖 AI Generate: NL description → bash/python script
   DiskScreen               F4       - mount points with bar + ETA "disk full", top-10 dirs
   ProcessScreen            Ctrl+P   - cross-host top, kill PID, OOM events
+                            p*       - (from ServerCard) open process monitor [v0.78]
+                              (*when card is focused, 'p' opens ProcessScreen for that host)
   FirewallScreen           Ctrl+W   - ufw/iptables rules, add/delete, toggle ufw
+                                      🤖 AI Firewall Audit: CIS Benchmark analysis
+  SecurityWizardScreen     (from Firewall) - [v0.76] 🤖 AI-guided security hardening
+                                      interactive checklist: SSH config, firewall, fail2ban,
+                                      sysctl hardening, AppArmor/SELinux status
   CronScreen               Ctrl+T   - crontab + systemd timers, CRUD, bulk add
   NetConnectionsScreen     Ctrl+B   - ss -tnp, filter by state, Summary with anomalies
   DBScreen                 Ctrl+Y   - PostgreSQL/MySQL/Redis/MongoDB - conn/size/QPS/hit%
@@ -794,6 +851,10 @@ Modal screens (open on top of the main screen):
   BackupScreen             Ctrl+U   - restic/borg/rclone/rsnapshot - last run, status
   LogAggScreen             Ctrl+L   - cross-host regex grep, 5 presets, live results
   EnvScreen                Ctrl+E   - .env diff between hosts, SSH authorized_keys audit
+  EmailMonitorScreen       Ctrl+M   - Mail service monitoring
+                                      Queue depth, bounce rate, last run timestamp,
+                                      syslog tail for postfix/dovecot/exim errors
+                                      accessible via 'm' hotkey on host card
   FileManagerScreen        Ctrl+F   - dual-panel file manager (MC style);
                                       Local + SSH/SFTP remote panels
                                       Navigation: Tab switch panel, Ctrl+U swap panels
@@ -803,7 +864,7 @@ Modal screens (open on top of the main screen):
                                       Symlinks: Enter follows symlink (navigates if → dir)
                                         s - create new symlink / edit target of existing one
                                       File attributes (Ctrl+Z): chmod (octal), chown user:group,
-                                        Touch (update mtime) — works local + remote (SSH)
+                                        Touch (update mtime) - works local + remote (SSH)
                                       Multi-select: Ins/Space toggle, ^A sel-all, \\ desel
                                       F2:rename F3:view F4:edit F5:copy F6:move F7:mkdir F8:del
                                       Sort: ^1 by name, ^2 by size, ^3 by date
@@ -822,69 +883,171 @@ Modal screens (open on top of the main screen):
                                         · P: pause/resume all  C: cancel job  Del: clear done
                                         · queue survives screen close (background transfers)
                                       _FmTransferPanel: visible only during active/error jobs
+  FileViewerScreen         (from F3/F4 hotkey) - syntax-highlighted file viewer
+                                      Line numbers, horizontal scroll, wrap toggle (W)
+  FileEditorScreen         (from F4 hotkey) - remote file editor with save/cancel
+                                      Line-by-line editing, syntax highlight, nano-style help
   AiChatScreen             Ctrl+A   - 🤖 AI Chat: streaming conversation for focused host
                                       (v0.75) full host context in system prompt,
                                       command proposals with Execute/Edit/Cancel
   AiStatsScreen            Ctrl+I   - 🤖 AI Stats: token usage by tier (smart/fast) and day
                                       provider/model info, hourly/daily/session totals,
                                       last 7 days breakdown
+  AuthSentinelScreen       Ctrl+H   - [v0.78] Multi-protocol authentication intelligence
+                                      Live feed of SSH/sudo/mail/DB/FTP auth events (all hosts)
+                                      Tab 1: Live Event Feed + Active Sessions + Threat Summary
+                                      Tab 2: Fleet Auth Statistics + protocol breakdown heatmap
+                                      Tab 3: sshd_config Hardening Auditor (CIS Benchmark)
+                                      Tab 4: Mail Abuse Monitor (queue flood / bounce spike)
+                                      P0 breach detection: ≥10 failures then success → instant alert
+                                      "v": SessionActivityInspector - live SSH command stream
+  SessionActivityInspector (from AuthSentinel "v" key) - [v0.78] Live forensic session view
+                                      Tab 1: SSH Command Stream (auditd EXECVE / /proc fallback)
+                                      Tab 2: SQL Live Inspector (pg_stat_activity / SHOW PROCESSLIST)
+                                      Tab 3: SMTP Envelope Inspector (postcat subjects + senders)
+                                      Tab 4: File & Network Activity (inotifywait + ss)
+  ContainmentDialog        (from AuthSentinel "c" key) - [v0.78] Ordered incident response
+                                      Step 1: Block IP (ufw insert 1 deny) - prevent reconnect
+                                      Step 2: Kill session (loginctl terminate-session)
+                                      Step 3: Disable account (usermod -L -s /sbin/nologin)
+                                      Step 4: Credential rotation (random password + key revoke)
+                                      Step 5: Evidence preservation (history + netstat snapshot)
+                                      [v0.78+] "User Admin" button (enabled after step 3):
+                                        opens UserAdminScreen focused on the contained user
+                                        for further actions (revoke SSH keys, remove from sudo)
+  IncidentTimelineView     (from AuthSentinel "t" key) - [v0.78] Attack narrative + copy report
+                                      Sequential event log with delta-time between events
+                                      AbuseIPDB score badge per IP, P1–P4 severity rating
+                                      "Copy as Markdown" to clipboard for Jira/Slack/incident tracker
+  UserAdminScreen          Ctrl+J   - [v0.78+] Linux user & group administration
+                                      Host tabs (←→), 5 content tabs:
+                                        [U]sers: list with UID/shell/status/groups; system
+                                          users dimmed; current SSH user marked ★;
+                                          a=add  e=edit  l=lock/unlock  K=SSH keys
+                                          h=SSH shell  c=emergency contain  Del=delete
+                                        [G]roups: list with GID/members; privileged groups
+                                          (sudo/admin/wheel/docker/lxd) highlighted ⚡;
+                                          a=add  e=edit  Del=delete
+                                        [K]eys: authorized_keys for selected user;
+                                          g=generate new key  a=append  Del=remove
+                                          o=full rotation  backup; rotation →RotateKeyScreen
+                                        [W]Sessions: who/w active session viewer
+                                        [D]etails: id/chage/lastlog/ps/du/quota for user
+                                      Safety: _UserDangerGuard blocks or requires
+                                        multi-step confirmation for operations on
+                                        current SSH user (critical level: must type
+                                        username + "I UNDERSTAND THIS MAY LOCK ME OUT")
+                                      All mutations logged to admin.log + security.log
+  UserEditDialog           (from UserAdminScreen "a"/"e") - create or edit a Linux user
+                                      username, shell, add-to-groups
+  GroupEditDialog          (from UserAdminScreen "a"/"e") - create or rename a group
+  SshKeysDialog            (from UserAdminScreen "K")   - [v0.78+] authorized_keys viewer/editor
+                                      g=generate new key (local gen + deploy + verify)
+                                      a=append key  Del=remove selected
+                                      o=full rotation (delegates to RotateKeyScreen)
+                                      warns before removing last key of current SSH user
+  _UaConfirmDialog         (internal) - multi-level confirmation: warn/dangerous/critical
+                                        critical requires typing username + lockout phrase
 
 ════════════════════════════════════════════════════════════════
-  Keyboard Shortcuts (real mode - DeflectAppV2)
+  Keyboard Shortcuts  (real mode - DeflectAppV2)
 ════════════════════════════════════════════════════════════════
 
-  Tab / Shift+Tab   - next/previous panel
-  ← →               - switch between ServerCards
-  ↑ ↓               - select row in Attack Radar or Services
-  Enter / b         - ban IP (focus on Radar)
-  r                 - restart service (focus on Services)
-  F1                - Navigation panel (function buttons + shortcuts + donate)
-  F2                - SSH shell (focused host)
-                      └─ F8: 🤖 AI Hints | F9: 🤖 AI Command (inside shell)
-                      └─ Ctrl+F: Go to File Manager for current host/location
-  F3                - Live log tail - 8 tabs (Journal/Auth/Nginx/Apache/Email/Fail2ban/UFW/Syslog)
-                      └─ Ctrl+←/→ or click tab to switch sources
-  F4                - Disk usage drill-down
-  F5                - Port forwards (focused host)
-  F6                - App settings (General / Notifications / Security / 🤖 AI)
-  F7                - ban last IP from any panel
-  F8                - APT upgrade manager
-  F9                - Fleet Manager (all hosts, bulk ops)
-  Ctrl+A            - 🤖 AI Chat (streaming conversation for focused host)  [v0.75]
-  Ctrl+B            - Network Connections (bandwidth top)
-  Ctrl+D            - Docker panel (focused host)
-                      └─ inside File Manager: Favourite Locations (add/go/del/edit)
-  Ctrl+E            - Environment / Config diff + SSH key audit
-  Ctrl+G            - Git / Deploy manager
-  Ctrl+I            - 🤖 AI Stats (token usage by tier and day)
-  Ctrl+K            - Secrets Vault + Export/Import
-  Ctrl+L            - Log Aggregation (cross-host grep)
-  Ctrl+M            - Email Monitor  [maintenance: press 'm' on focused host card]
-  Ctrl+N            - add new SSH host
-  Ctrl+O            - edit focused host
-  Ctrl+P            - Process monitor (cross-host top + OOM)
-  Ctrl+R            - Network Recon
-  Ctrl+S            - Script Runner (library + deploy + cron + 🤖 AI Generate)
-  Ctrl+T            - Cron / Timers manager
-  Ctrl+U            - Backup status monitor
-  Ctrl+W            - Firewall manager
-  Ctrl+Y            - Database monitor (PG/MySQL/Redis/Mongo)
-  Ctrl+F            - File Manager (dual-panel, Local + SFTP)
-                      └─ Tab: switch panel  Ctrl+U: swap panels  Alt/Meta+C: quick CD
-                      └─ Home/Left: top of list  End/Right: bottom
-                      └─ Enter: open dir / follow symlink target
-                      └─ s: create/edit symlink  Ctrl+Z: attrs (chmod/chown/touch)
-                      └─ ^1/2/3: sort by name/size/date  (again = reverse)
-                      └─ Ctrl+D: Favourites  \\: desel all
-  q / F10           - quit
+  GLOBAL NAVIGATION
+  ────────────────────────────────────────────────────────────
+  Tab / Shift+Tab     next / previous panel
+  ← →                 switch between ServerCards
+  ↑ ↓                 select row (Attack Radar or Services panel)
+  q / F10             quit
 
-  Attack Radar (when focused):
-  ↑ ↓               - select IP row
-  Enter / b         - ban selected IP
-  🤖 a              - AI analysis of selected event  [v0.75]
+  FUNCTION KEYS
+  ────────────────────────────────────────────────────────────
+  F1    Help / Navigation panel (all shortcuts, donate link)
+  F2    SSH shell (focused host)
+        └─ F8: 🤖 AI Hints   F9: 🤖 AI Command   Ctrl+F: open File Manager
+  F3    Live log tail - 8 sources: Journal · Auth · Nginx · Apache · Email · Fail2ban · UFW · Syslog
+        └─ Ctrl+←/→ or click tab to switch source
+  F4    Disk usage drill-down (top-10 dirs, ETA to full)
+  F5    SSH port-forward editor  ⚠ Windows Terminal may intercept
+  F6    App settings: General / Notifications / Security / 🤖 AI  ⚠ same caveat
+  F7    Ban last IP (from any panel)
+  F8    APT upgrade manager (upgradable packages per host)
+  F9    Fleet Manager (all hosts, checkboxes, bulk ops, 🤖 AI Audit All)
 
-⚠️ Windows Terminal intercepts F5 and F6 - use them only in Windows Terminal
-   with system shortcuts disabled. Safe zone: F1-F4, F7-F10, any Ctrl+.
+  INFRASTRUCTURE SCREENS
+  ────────────────────────────────────────────────────────────
+  Ctrl+B    Network Connections - ss -tnp, state filters, anomaly summary
+  Ctrl+D    Docker - containers, images, resource usage
+            └─ DockerRunWizard · DockerPortEditorScreen · DockerRenameDialog
+  Ctrl+E    Env / Config audit - .env diff between hosts, SSH key audit
+  Ctrl+F    File Manager - dual-panel Local + SFTP (Midnight Commander style)
+            └─ Tab: switch panel   Ctrl+U: swap panels   Alt/Meta+C: quick CD
+            └─ Ins/Space: toggle select   ^A: select all   \: desel all
+            └─ F2:rename  F3:view  F4:edit  F5:copy  F6:move  F7:mkdir  F8:del
+            └─ s: symlink   Ctrl+Z: attrs (chmod/chown/touch)
+            └─ ^1/2/3: sort by name/size/date  (press again to reverse)
+            └─ Ctrl+D: Favourite Locations  (add · navigate · edit · delete)
+            └─ Transfer queue: P=pause/resume  C=cancel  Del=clear done
+  Ctrl+G    Git / Deploy - repos status, pull, restart service, rollback
+  Ctrl+L    Log Aggregation - cross-host regex grep, 5 presets
+  Ctrl+M    Email Monitor - MTA queue, bounce rate, postfix/dovecot/exim errors
+  Ctrl+P    Process monitor - cross-host top, kill PID, OOM events
+  Ctrl+R    Network Recon - nmap/dig/whois/traceroute/curl, 11 presets
+  Ctrl+S    Script Runner - library, inline editor, SFTP deploy, cron scheduling
+            └─ 🤖 AI Generate: natural-language description → bash/python script
+  Ctrl+T    Cron & Timers - crontab + systemd timers, CRUD, bulk add
+  Ctrl+U    Backup monitor - restic · borg · rclone · rsnapshot
+  Ctrl+W    Firewall - UFW/iptables rules, add/delete, toggle UFW
+            └─ 🤖 AI Firewall Audit   → SecurityWizardScreen (hardening checklist)
+  Ctrl+Y    Database monitor - PostgreSQL · MySQL · Redis · MongoDB
+
+  SECURITY & AI SCREENS
+  ────────────────────────────────────────────────────────────
+  Ctrl+A    🤖 AI Chat - streaming conversation with full host context  [v0.75]
+  Ctrl+H    Auth Sentinel - multi-protocol authentication intelligence  [v0.78]
+            └─ Tab 1: Live Event Feed + Active Sessions + Threat Summary
+            └─ Tab 2: Fleet Auth Statistics + protocol breakdown heatmap
+            └─ Tab 3: sshd_config Hardening Auditor (CIS Benchmark)
+            └─ Tab 4: Mail Abuse Monitor (queue flood / bounce spike)
+            └─ v: SessionActivityInspector   c: ContainmentDialog   t: IncidentTimeline
+            └─ b: ban IP fleet-wide   a: 🤖 AI Auth Intel   l: raw logs
+            └─ s/f: filter success/failed   r: return to Attack Radar
+  Ctrl+I    🤖 AI Stats - token usage by tier/day, provider info, 7-day breakdown
+  Ctrl+J    User & Group Administration  [v0.78+]
+            └─ Tabs: [U]sers · [G]roups · [K]eys · [W]Sessions · [D]etails  (←→ switch host)
+            └─ Users:  a=add  e=edit  l=lock/unlock  K=SSH keys  h=shell  c=contain
+            └─ Groups: a=add  e=edit  Del=delete
+            └─ Keys:   g=generate  a=append  o=full rotation  Del=remove
+  Ctrl+K    Secrets Vault - view/edit encrypted secrets, Export/Import with password
+  Ctrl+N    Add new SSH host (+ per-host 🤖 AI instructions)
+  Ctrl+O    Edit focused host (Security config, all settings, AI instructions)
+
+  SERVER CARD SHORTCUTS  (when a card is focused)           [v0.78]
+  ────────────────────────────────────────────────────────────
+  Click            focus card
+  Double-click     open DockerScreen (if containers) or ProcessScreen
+  o                edit host  (= Ctrl+O)
+  a                toggle AI-controlled mode
+  m                toggle maintenance mode
+  p                open ProcessScreen for this host
+  d                docker container navigation  (↑↓ select · Enter open · Esc exit)
+  F2               SSH shell  (= global F2)
+  f / Ctrl+F       File Manager  (= global Ctrl+F)
+  Ctrl+←/→/↑/↓    reposition card in grid
+
+  ATTACK RADAR  (when focused)
+  ────────────────────────────────────────────────────────────
+  ↑ ↓              select IP row
+  Enter / b        ban selected IP
+  a                🤖 AI analysis of selected event  [v0.75]
+
+  SERVICES PANEL  (when focused)
+  ────────────────────────────────────────────────────────────
+  ↑ ↓              select service row
+  r                restart selected service
+
+⚠️  Windows Terminal intercepts F5 and F6 - disable system shortcuts to use them.
+    Safe zone: F1–F4, F7–F10, any Ctrl+letter.
 
 ════════════════════════════════════════════════════════════════
   Critical Technical Details
@@ -1293,10 +1456,10 @@ v0.76 [X] 4/17/2026
   [X] PyPI publishing via GitHub Actions (Trusted Publisher / OIDC)
   · .github/workflows/publish.yml: triggers on v* tag push
   · Steps: checkout → setup-python 3.11 → build → pypa/gh-action-pypi-publish@release/v1
-  · No stored API tokens — OIDC id-token: write permission only
+  · No stored API tokens - OIDC id-token: write permission only
   · pyproject.toml: name=deflect-one, entry points deflect + deflect-one → deflect:main
-  · Optional dependency groups: [ai] and [all] — anthropic, openai
-  · py-modules = ["deflect"] — single-file package, no subdirectories
+  · Optional dependency groups: [ai] and [all] - anthropic, openai
+  · py-modules = ["deflect"] - single-file package, no subdirectories
 
   [X] Centralised colour palette (new SECTION: colour_palette)
   · All colours extracted into named constants: CLR_SUCCESS, CLR_ERROR, CLR_CURSOR,
@@ -1306,40 +1469,265 @@ v0.76 [X] 4/17/2026
 
   [X] ScrollableContainer for ServerCard grid (layout fix)
   · #grid-hosts wrapped in ScrollableContainer (height: 1fr, overflow-y: scroll)
-  · #grid-hosts inner container: height: auto — grows to content
-  · Cards no longer get clipped when hosting many servers — list scrolls
+  · #grid-hosts inner container: height: auto - grows to content
+  · Cards no longer get clipped when hosting many servers - list scrolls
 
-  [X] AI Managed Host — cross-cycle state persistence + restart loop prevention
+  [X] AI Managed Host - cross-cycle state persistence + restart loop prevention
   · _ai_action_history (deque maxlen=10): last ~10 min of actions injected into every AI call
-    Format: "[HH:MM] kind target → result_snippet" — model can detect restart loops, escalate
+    Format: "[HH:MM] kind target → result_snippet" - model can detect restart loops, escalate
   · _ai_restart_cooldown (dict service→deadline): blocks restart_service for 600 s per service
     Blocked attempt appends "COOLDOWN(Xs)" to history so model switches to send_notification
   · EventKind.AI_NOTIFICATION added; both send_notification and escalate_to_human route through
     NotificationManager; escalate_to_human prepends "⚠️ ACTION REQUIRED: "
 
-  [X] AI Managed Host — system/user prompt split
+  [X] AI Managed Host - system/user prompt split
   · system prompt: static fields only (label, address, os_info, ai_instructions, safe_footer)
   · user_prompt: dynamic state (time, metrics, services, inventory, action history)
   · Avoids re-sending ~160 tokens of dynamic data in every system prompt
 
-  [X] Attack Radar — "l" key: raw log lines for selected IP
+  [X] Attack Radar - "l" key: raw log lines for selected IP
   · grep across auth.log / fail2ban.log / ufw.log / nginx logs / syslog, tail -50
   · Result shown in existing AiAnalysisPopup (no new screen); Rich markup escaped
-  · border_subtitle updated to include \[l]ogs hint
+  · border_subtitle updated to include [l]ogs hint
 
-  [X] Host Editor — Delete button (edit mode only)
+  [X] Host Editor - Delete button (edit mode only)
   · _ConfirmDeleteDialog(ModalScreen): yes/no confirmation before removal
   · Button visible only when editing an existing host
   · On confirm: pool.remove_host() → notify → dismiss
 
   [X] Minor fixes and polish
   · datetime.utcnow() → datetime.now(datetime.UTC) in four places (deprecation fix)
-  · File Manager Docker: dedup by "{hid}__{cid}" key — fixes duplicate containers across hosts
+  · File Manager Docker: dedup by "{hid}__{cid}" key - fixes duplicate containers across hosts
   · ServerCard: "f" as alternative to Ctrl+F for File Manager
   · APP_SITE and license URL updated to vladonai.com/deflect-one
   · AI instruction examples in HostEditorScreen updated to actionable history-aware patterns
 
-  v0.77 (plan - DNS Manager + Email Services control)
+  v0.78 - AuthSentinel: Multi-Protocol Authentication Intelligence + First-Run Onboarding
+          + Enhanced ServerCard UX (health badges, docker nav, card reordering)
+
+  ── SERVERCARD ENHANCEMENTS ──────────────────────────────────────────────────
+
+  [X] Health score badge             - weighted score 0–100 in border_title
+                                       (CPU 30% + RAM 30% + Disk 20% + services 20%)
+                                       colour: green ≥80 | yellow 60–79 | red <60
+  [X] Hostname moved to border_title - frees up one content line, cleaner layout
+                                       with tags [prod] + 🔧 maintenance + 🤖 AI-controlled
+  [X] Trend arrows for CPU/RAM       - ↑↑/↑/↓/↓↓ shows 1-step delta (Δ≥5% or Δ≥15%)
+  [X] Docker container list + nav    - all containers always visible (not just running[:3])
+                                       status icons: ▶ (running) / ■ (stopped)
+                                       docker health badge [100%] / [67%] / [0%]
+                                       keyboard nav: d→select  ↑↓→navigate  Enter→open  Esc→exit
+                                       selected container shows: → ▶ nginx  1.2%cpu 0.8%mem
+  [X] Hover border highlight         - subtle $accent-darken-1 on hover for visual feedback
+  [X] Click interactions             - single=focus  double=open DockerScreen (or ProcessScreen)
+  [X] Keyboard shortcuts             - p:ProcessScreen  d:docker nav  Ctrl+←→↑↓:move card
+  [X] Card reordering in grid        - Ctrl+arrows to swap position, persists during session
+                                       synced with Tab-navigation order (_panel_order)
+
+  ── DEMO MODE ────────────────────────────────────────────────────────────────
+
+  [X] Demo pool stubs completed        - all_agents() · state() · ai_engine wired;
+                                         fixes "tick error: no attribute all_agents"
+  [X] _DEFAULT_JSON hosts: []          - fresh install now shows WelcomeScreen instead
+                                         of a fake "My VPS" stub that fails to connect
+  [X] Attack Radar in demo             - 12 seed events across all hosts (was 7, linode-01 only);
+                                         timestamps spread backwards so history looks real;
+                                         1–3 new events per tick from 8 countries/hosts;
+                                         banned_count increments gradually
+  [X] WelcomeScreen interaction        - _WCard(can_focus=True) + on_click + on_mount focus;
+                                         Tab/↑↓ navigate · Enter activates · click works
+
+  ── FIRST-RUN ONBOARDING ─────────────────────────────────────────────────────
+
+  [X] WelcomeScreen(ModalScreen)      - 3-card TUI on cold launch (no hosts configured):
+                                        [D] Demo · [A] Add Host · [I] Import ~/.ssh/config
+  [X] _run_welcome(cfg_manager)       - WelcomeApp wrapper; main() calls it instead of sys.exit(0)
+  [X] SSHConfigSyncManager            - owns ~/.ssh/deflect_hosts; rewrites on every host
+                                        change; prepends Include to ~/.ssh/config once (with
+                                        backup); opt-out via "ssh_config_sync": false
+  [X] SSHImportDialog(ModalScreen)    - toggle-select checklist of ~/.ssh/config hosts
+  [X] _parse_ssh_config_hosts()       - lightweight OpenSSH config parser, skips wildcards
+  [X] HostConfig.import_source / import_source_path / import_source_alias
+
+  Credential write-back rules (on key/password rotation):
+    A. ~/.ssh/deflect_hosts  → always rewritten silently (Deflect owns this file)
+    B. ~/.ssh/config         → diff-view confirmation if import_source == "ssh_config"
+    C. PuTTY registry        → confirmation dialog if import_source == "putty" (Windows)
+
+  [ ] EmptyStatePanel(Widget)         - inline empty state when all hosts deleted in-app
+  [ ] SSHConfigPatcher                - surgical per-field edit in ~/.ssh/config
+  [ ] PasswordRotationScreen          - remote chpasswd + vault update + write-back UI
+                                        (secrets.token_urlsafe(24) or custom; rollback on fail)
+  [ ] CredentialWriteBackDialog       - diff-view confirmation modal, "never ask" checkbox
+  [ ] PuTtyImporter (Windows only)    - winreg reader → HostConfig list
+  [ ] RegistryPatcher (Windows only)  - winreg write for PuTTY session fields
+
+  ── HOST MANAGEMENT UX ───────────────────────────────────────────────────────
+
+  [X] FleetManagerScreen (F9)          - Source column; 5s undo on delete; [r] restore
+  [X] RestoreHostDialog(ModalScreen)   - list + restore from 7-day deleted archive [r]
+  [X] ConfigManager.delete_host        - archives host to deleted_hosts before removal
+  [X] ConfigManager.restore_deleted_host / get_deleted_hosts / _prune_deleted_hosts (7d TTL)
+  [X] ConfigManager._build_host_config - extracted helper dict→HostConfig
+
+  [ ] AddHostWizard(ModalScreen)       - 3-step wizard: ① Basics → ② Auth → ③ Options
+                                         (ContentSwitcher; Test Connection in step 2)
+  [ ] _test_connection(host) → result  - async SSH probe, returns latency or error
+  [ ] ArchiveAction                    - disabled=True flag, filter in FleetManagerScreen
+  [ ] ContextMenu(Widget)              - '.' key popup: edit · clone · archive · delete
+  [ ] FirstTimeHintBanner(Widget)      - dismissable one-shot hint (tracked in app_stats)
+
+  ── AUTH SENTINEL ────────────────────────────────────────────────────────────
+
+  Unified auth surveillance across all hosts - SSH, sudo, mail, DB, FTP, web panels.
+  Attack Radar watches the perimeter; AuthSentinel watches what gets THROUGH.
+
+  [X] AuthSentinelScreen (Ctrl+H)     - 3-panel dashboard: AuthEventFeed (live stream,
+                                        color-coded) · ActiveSessionsPanel (who/where/how)
+                                        · ThreatSummaryPanel (top IPs, campaigns, breaches)
+                                        Keys: l=raw logs · s/f=filter · b=ban · a=AI Intel
+                                              k=kill session · v=SessionActivityInspector
+  [X] AuthEventParser                 - 30+ regex patterns; auto-detects auth.log vs secure;
+                                        SSH/SFTP/sudo/su/PAM/Dovecot/Postfix SASL/MySQL/
+                                        PostgreSQL/vsftpd/Redis/MongoDB/Webmin
+  [X] AnomalyDetector                 - 11 detection rules:
+                                        BRUTE_FORCE · PASSWORD_SPRAY · CREDENTIAL_STUFFING
+                                        SUCCESSFUL_AFTER_FAILURES (P0, evidence of breach -
+                                          T+0s evidence snapshot, T+1s AI Intel + session spy,
+                                          T+2s Radar P0 marker + notification, T+3s Containment)
+                                        IMPOSSIBLE_TRAVEL · ROOT_SSH_LOGIN · HONEYPOT_ACCOUNT
+                                        PRIVILEGE_ESCALATION_CHAIN · NEW_IP_FOR_USER
+                                        AUTH_METHOD_DOWNGRADE · CONCURRENT_SESSIONS
+  [X] AuthHeatmapWidget               - 24h×7d braille density grid per protocol;
+                                        off-baseline cells highlighted (bright border)
+  [X] AbuseIPDB enrichment            - async /check on new IPs, 24h cache, auto-ban ≥75%
+  [X] IncidentTimelineView            - sequential attack narrative with ∆t; P1-P4 rating;
+                                        "copy as report" → markdown
+  [X] AI Auth Intel                   - AuthIntelAgent; cross-host correlation; 6 AI actions
+                                        (ban_ip · kill_session · lock_account ·
+                                        send_notification · generate_incident_report ·
+                                        escalate_to_human); 600s cooldown per action
+  [X] Fleet Auth Statistics (Tab 2)   - per-host sparklines; protocol breakdown;
+                                        top 10 usernames+ASNs; Auth Health Score 0-100
+  [X] sshd_config Hardening Auditor   - CIS L1 checklist (10 items); auto-fix with backup;
+    (Tab 3)                             sshd -t validation; systemctl reload sshd
+  [X] EmailAbuseDetector (Tab 4)      - 6 MAIL_FLOOD patterns (Postfix/Exim); SMTP envelope
+                                        inspection via postcat; MailAbusePanel with sparklines
+  [X] SessionActivityInspector ("v")  - 4-tab live forensics:
+                                        ① SSH commands (auditd/proc fallback, dangerous-cmd highlight)
+                                        ② SQL live (pg_stat_activity / SHOW PROCESSLIST / REDIS MONITOR)
+                                        ③ SMTP envelope (postcat headers, phishing signatures)
+                                        ④ File+network (inotifywait + ss + pstree)
+  [X] Attack Radar integration        - auth anomalies as ◆ markers; drill-down to AuthSentinel
+                                        from radar and back ("r"); ambient anomaly badge
+  [X] ContainmentWorkflow             - 5-step stepper: ① block IP → ② kill session →
+    (ContainmentDialog)                 ③ disable account (4 options) → ④ rotate credentials →
+                                        ⑤ preserve evidence; "One-click P1 Response"
+  [X] Notification integration        - auth templates; per-host severity threshold;
+                                        digest mode; "incident declared" bundling
+
+  AuthSentinelScreen UX overhaul:
+  [X] Flickering fix                  - batch_update() + change detection before repaint
+  [X] ListView panels                 - replaced monolithic Static in all 3 main panels;
+                                        _lv_show_lines() helper; native scroll + click
+  [X] Tab buttons                     - Button widgets (id="sentinel-tab-N"), hover CSS
+  [X] Braille sparklines              - _braille_spark / _braille_bar across all panels
+                                        (feed/threats/statistics/heatmap/title bar)
+  [X] Host indicator + navigation     - "h" cycles agents; initial_host drill-down param
+  [X] Key conflict resolved           - "a"=AI Intel, "x"=clear filter
+  [X] AI Auth Intel opt-in            - SecurityMonitoringConfig.auth_intel_ai: bool = False
+  [X] Breach CSS classes              - breach-row · flagged-session · p0-threat
+  [X] Dynamic titles + footer         - tab-context-sensitive footer; event/breach counts
+
+  ── USER & GROUP ADMINISTRATION (Ctrl+J) ─────────────────────────────────────
+
+  [X] UserAdminService                - command execution + audit log for all user/group
+                                        operations; supports both host and docker-exec paths;
+                                        called by UserAdminScreen AND ContainmentDialog so
+                                        containment logic is never duplicated
+  [X] _UserDangerGuard                - 4-level safety gate (ok / warn / dangerous / critical)
+                                        detects current SSH login user; blocks or requires
+                                        multi-step confirmation before any action that could
+                                        cause self-lockout; warns for root/privileged targets
+  [X] _UaConfirmDialog                - confirmation modal with 3 levels:
+                                        warn: Yes/No  · dangerous: type username  ·
+                                        critical: type username + "I UNDERSTAND THIS MAY LOCK ME OUT"
+  [X] UserAdminScreen (Ctrl+J)        - main Linux user & group administration screen:
+                                        host tabs (←→); 5 content tabs:
+                                          Users: UID/shell/status/groups; system users dimmed;
+                                            current SSH user marked ★; privileged groups in red;
+                                            a=add  e=edit  l=lock/unlock  K=SSH keys
+                                            c=emergency contain  Del=delete
+                                          Groups: GID/members; privileged groups highlighted ⚡;
+                                            a=add  e=edit  Del=delete
+                                          SSH Keys: authorized_keys for selected user;
+                                            append/remove/backup; rotation → RotateKeyScreen
+                                          Sessions: who/w active sessions viewer
+                                          Details: id/chage/lastlog/ps/du/quota/sudo rights
+                                        All mutations logged to admin.log + security.log
+  [X] UserEditDialog                  - create/edit user: name, shell, add-to-groups
+  [X] GroupEditDialog                 - create/rename group
+  [X] SshKeysDialog                   - authorized_keys viewer/editor for any user:
+                                        append key, remove selected key (with last-key warning),
+                                        backup before every mutation; full rotation delegates
+                                        to RotateKeyScreen (avoids duplicating SshKeyManager)
+  [X] ContainmentDialog integration   - additive "User Admin" button (enabled after step 3);
+                                        opens UserAdminScreen focused on the contained user
+                                        for further actions (revoke keys, remove from sudo)
+  [X] Admin audit log                 - admin.log (separate from deflect.log) for SIEM use;
+                                        every mutation records timestamp/host/operator/cmd/result
+
+  ── DOCKER SCREEN & HOST EDITOR ─────────────────────────────────────────────
+
+  [X] DockerScreen - container rename  - "e" key opens _DockerRenameDialog; runs
+                                          docker rename <old> <new> via SSH;
+                                          fix: on_input_submitted() replaces on_key(enter)
+                                          - Input widget consumes Enter and fires
+                                          Input.Submitted, so on_key never received it
+                                          (rename silently never ran);
+                                          fix: _fetch_docker() called on success so
+                                          DockerScreen and ServerCard dkr-row both
+                                          reflect the new name immediately without
+                                          waiting for the 15-second poll cycle
+  [X] DockerScreen - "add as host" fix - removed spurious pool.add_host() before
+                                          HostEditorScreen opens (was triggering
+                                          auto-connect popup "port 22 not accessible"
+                                          and saving an orphaned stub to deflect.json
+                                          if the user pressed Escape in the editor);
+                                          now passes prefill=stub directly to editor;
+                                          fix: orphaned stub cleanup - if a stub with
+                                          the same ID already exists in the pool (left
+                                          by the old code), it is removed via
+                                          remove_host() before the editor opens
+  [X] HostEditorScreen - prefill mode  - new prefill=HostConfig parameter fills all
+                                          fields (label, address, port, user, auth,
+                                          key_path, tags) without clearing address
+                                          (clone_from always cleared address); used
+                                          by DockerScreen "add as host" so the IP is
+                                          pre-filled and the new host ID is stable
+  [X] UserAdminScreen - Enter to edit  - Enter key is now an alias for "e" in Users
+                                          and Groups tabs; hint bar updated
+                                          to show "Enter/e:edit"
+  [X] Docker SSH directory fix         - SshShellScreen now auto-detects Docker containers
+                                          by "docker" tag and adds "cd /" to ensure correct
+                                          root directory; fixes "Permission denied" errors
+                                          when SSH'ing to containers from parent host;
+                                          all 12 push_screen(SshShellScreen) calls updated
+                                          to use _get_ssh_init_cmd() helper
+
+  ── SSH KEY ROTATION - SOURCE-AWARE WRITE-BACK ───────────────────────────────
+
+  [X] SshKeyManager.rotate_key        - new key is now written to the same directory
+                                          as the original key_path (e.g. ~/.ssh/work/
+                                          if the original was ~/.ssh/work/id_ed25519)
+                                          instead of always writing to ~/.ssh/;
+                                          preserves compatibility with other programs
+                                          (git, IDE integrations, etc.) that reference
+                                          the same .ssh subfolder by path;
+                                          falls back to ~/.ssh/ if original dir does
+                                          not exist or equals ~/.ssh/ already
+
+v0.79 (plan - DNS Manager + Email Services control)
 
   [ ] DNSMonitorScreen (Ctrl+Shift+D) - DNS service monitoring
   · Integration with BIND / systemd-resolved: status, query logs, resolution time
@@ -1458,7 +1846,7 @@ from cryptography.hazmat.primitives import hashes
 from rich.text import Text
 from textual.app        import App, ComposeResult
 from textual.message    import Message
-from textual.containers import Container, Horizontal, Vertical, ScrollableContainer
+from textual.containers import Container, Horizontal, Vertical, ScrollableContainer, VerticalScroll
 from textual.widgets    import Static, RichLog
 from textual.binding    import Binding
 from textual.reactive   import reactive
@@ -1468,39 +1856,39 @@ from textual.widgets    import Input, Button, ListView, ListItem
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# SECTION: colour palette  (GitHub Dark — change here, not scattered across the file like a Sith)
+# SECTION: colour palette  (GitHub Dark - change here, not scattered across the file like a Sith)
 # ══════════════════════════════════════════════════════════════════════════════
 
 # ── Semantic status colours ────────────────────────────────────────────────────
-CLR_SUCCESS   = "#3fb950"   # green  — server lives. the Force is strong today
-CLR_ERROR     = "#f85149"   # red    — it's a trap. again. at 3am.
-CLR_WARNING   = "#d29922"   # amber  — I have a bad feeling about this
-CLR_ACCENT    = "#58a6ff"   # blue   — GitHub blue cosplay, very professional
-CLR_INFO      = "#0178d4"   # blue   — "helpful" info nobody reads. it's there. trust me.
+CLR_SUCCESS   = "#3fb950"   # green  - server lives. the Force is strong today
+CLR_ERROR     = "#f85149"   # red    - it's a trap. again. at 3am.
+CLR_WARNING   = "#d29922"   # amber  - I have a bad feeling about this
+CLR_ACCENT    = "#58a6ff"   # blue   - GitHub blue cosplay, very professional
+CLR_INFO      = "#0178d4"   # blue   - "helpful" info nobody reads. it's there. trust me.
 
 # ── Interactive state colours ──────────────────────────────────────────────────
-CLR_CURSOR    = "#df8000"   # orange — YOU ARE HERE. hello there.
-CLR_TAB_ACTIVE = "#ffa62b"  # amber  — the tab you opened and will never close
-CLR_TAB_PLUGIN = "#4EBF71"  # green  — plugins get their own special green, they earned it
+CLR_CURSOR    = "#df8000"   # orange - YOU ARE HERE. hello there.
+CLR_TAB_ACTIVE = "#ffa62b"  # amber  - the tab you opened and will never close
+CLR_TAB_PLUGIN = "#4EBF71"  # green  - plugins get their own special green, they earned it
 
 # ── Text / label hierarchy ─────────────────────────────────────────────────────
-CLR_TEXT      = "#c9d1d9"   # primary text — not white, eyes aren't made of durasteel
-CLR_TEXT_DIM  = "#8b949e"   # muted — these aren't the droids you're looking for
-CLR_LABEL     = "#888780"   # labels — one in ten users actually reads these
-CLR_METRIC    = "#666666"   # CPU RAM Disk — grey like a Monday, grey like the Death Star walls
-CLR_IDLE      = "#484f58"   # waiting — the colour of existential dread
+CLR_TEXT      = "#c9d1d9"   # primary text - not white, eyes aren't made of durasteel
+CLR_TEXT_DIM  = "#8b949e"   # muted - these aren't the droids you're looking for
+CLR_LABEL     = "#888780"   # labels - one in ten users actually reads these
+CLR_METRIC    = "#666666"   # CPU RAM Disk - grey like a Monday, grey like the Death Star walls
+CLR_IDLE      = "#484f58"   # waiting - the colour of existential dread
 
 # ── Host list colours ──────────────────────────────────────────────────────────
-CLR_HOST      = "#58a6ff"   # host IP — blue because IPs are important, okay?
-CLR_HOST_SEL  = "#c0c0ff"   # selected host — almost purple, almost stylish
-CLR_HOST_LBL  = "#8888cc"   # host label — supporting character, not the hero
+CLR_HOST      = "#58a6ff"   # host IP - blue because IPs are important, okay?
+CLR_HOST_SEL  = "#c0c0ff"   # selected host - almost purple, almost stylish
+CLR_HOST_LBL  = "#8888cc"   # host label - supporting character, not the hero
 
 # ── Stats / metric value colours ──────────────────────────────────────────────
-CLR_STAT_HI   = "#a07020"   # highlighted value — gold for the chosen one
-CLR_STAT_LO   = "#888800"   # normal value — just exists, bothers no one
+CLR_STAT_HI   = "#a07020"   # highlighted value - gold for the chosen one
+CLR_STAT_LO   = "#888800"   # normal value - just exists, bothers no one
 
 # ── Background colours ─────────────────────────────────────────────────────────
-CLR_BG_FIREWALL = "#0d2b0d" # dark green — Matrix aesthetic. very serious. do not touch.
+CLR_BG_FIREWALL = "#0d2b0d" # dark green - Matrix aesthetic. very serious. do not touch.
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1534,7 +1922,7 @@ class ContentSwitcher(Container):
 DEFLECT_DIR = Path(__file__).parent
 
 # ── App identity (change version in ONE place only) ───────────────────────────
-APP_VERSION = "0.76"
+APP_VERSION = "0.78"
 APP_SITE    = "vladonai.com/deflect-one"
 APP_GITHUB  = "github.com/WhitemanV/deflect-one"
 APP_SPONSOR = "vladonai.com/sponsor"
@@ -1569,7 +1957,7 @@ def _make_rot(filename, level=logging.DEBUG) -> _RotFH:
     h.setFormatter(_LOG_FMT)
     return h
 
-# deflect.log — full app log (DEBUG+), main logger
+# deflect.log - full app log (DEBUG+), main logger
 _log = logging.getLogger("deflect")
 _log.setLevel(logging.DEBUG)
 _log.propagate = False
@@ -1577,14 +1965,14 @@ if not _log.handlers:
     _log.addHandler(_make_rot("deflect.log", logging.DEBUG))
     _log.addHandler(_make_rot("errors.log",  logging.ERROR))   # errors-only, stays small
 
-# security.log — security events (bans, attack loop errors)
+# security.log - security events (bans, attack loop errors)
 _log_sec = logging.getLogger("deflect.security")
 _log_sec.setLevel(logging.DEBUG)
 if not _log_sec.handlers:
     _log_sec.addHandler(_make_rot("security.log", logging.INFO))
 # propagates to _log → security entries also appear in deflect.log
 
-# ai.log — AI defense / managed decisions and actions
+# ai.log - AI defense / managed decisions and actions
 _log_ai = logging.getLogger("deflect.ai")
 _log_ai.setLevel(logging.DEBUG)
 if not _log_ai.handlers:
@@ -1608,15 +1996,32 @@ class SecurityMonitoringConfig:
     # v0.6 - email attack detection
     email_brute:          bool  = True   # AUTH failures / aggressive SMTP login attempts
     email_scan:           bool  = True   # RCPT-to unknown users / user enumeration
+    # v0.7 - database attack detection
+    db_brute:             bool  = True   # MySQL/MariaDB/PostgreSQL auth failures
     # Thresholds
     http_flood_threshold: int   = 100   # req/min per IP
     conn_flood_threshold: int   = 50    # simultaneous connections per IP
     ddos_threshold:       int   = 500   # req/min across top-5 IPs combined
     email_brute_threshold:int   = 10    # AUTH failures per IP in log window → email_brute
+    db_brute_threshold:   int   = 5     # DB auth failures per IP in log window → db_brute
     # Log paths
     nginx_log:            str   = "/var/log/nginx/access.log"
     apache_log:           str   = "/var/log/apache2/access.log"
     email_log:            str   = ""    # "" = auto-detect (exim4 mainlog or mail.log)
+    db_log:               str   = ""    # "" = auto-detect (mysql error.log / pg log)
+    # v0.78 - AuthSentinel multi-protocol auth intelligence
+    auth_sentinel:              bool       = True
+    breach_failure_threshold:   int        = 10     # failures before success → P0 BREACH_CONFIRMED
+    breach_lookback_minutes:    int        = 120    # window for failure counting
+    auth_brute_threshold:       int        = 10     # failures/5min from one IP → BRUTE_FORCE HIGH
+    auth_spray_users:           int        = 5      # distinct users from one IP → PASSWORD_SPRAY
+    auth_stuffing_ips:          int        = 5      # distinct IPs on same user → CREDENTIAL_STUFFING
+    mail_flood_threshold:       int        = 50     # outbound msgs/5min per SASL user → MAIL_FLOOD
+    honeypot_accounts:          list       = field(default_factory=list)   # any login attempt = CRITICAL
+    known_ips:                  dict       = field(default_factory=dict)   # {user: [ip,...]} whitelist
+    auto_contain_on_breach:     bool       = False  # auto-block IP on P0 without operator confirm
+    abuseipdb_key:              str        = ""     # AbuseIPDB v2 API key (optional enrichment)
+    auth_intel_ai:              bool       = False  # AI Auth Intel analysis (opt-in; disabled by default)
 
 
 @dataclass
@@ -1638,6 +2043,9 @@ class HostConfig:
     ai_controlled: bool       = False                        # if True - AI manages the host, ServerCard shows 🤖
     monitoring:    SecurityMonitoringConfig = field(default_factory=SecurityMonitoringConfig)
     ai_instructions: str      = ""                           # per-host freeform AI goals (v0.75)
+    import_source:       str  = "manual"                     # "manual"|"ssh_config"|"putty"|"demo" (v0.78)
+    import_source_path:  str  = ""                           # absolute path to source file (v0.78)
+    import_source_alias: str  = ""                           # original Host alias in source (v0.78)
 
 
 @dataclass
@@ -1686,6 +2094,7 @@ class AIConfig:
 @dataclass
 class AppConfig:
     hosts:            list[HostConfig] = field(default_factory=list)
+    host_order:       list[str] = field(default_factory=list)  # Order of hosts in UI
     refresh_interval: int   = 5
     sparkline_width:  int   = 18
     command_timeout:  int   = 10
@@ -1711,19 +2120,12 @@ class AppConfig:
     sound_enabled:    bool  = False
     # AI engine
     ai:               AIConfig = field(default_factory=AIConfig)
+    # SSH config sync (v0.78)
+    ssh_config_sync:  bool     = True  # write ~/.ssh/deflect_hosts on host changes
 
 
 _DEFAULT_HOSTS_YAML = """\
-hosts:
-  - id: example-vps
-    label: "My VPS"
-    address: 192.168.1.100
-    port: 22
-    username: root
-    auth: key
-    key_path: ~/.ssh/id_rsa
-    tags: [web]
-    poll_interval: 5
+hosts: []
 """
 
 _DEFAULT_CONFIG_YAML = """\
@@ -1794,8 +2196,13 @@ def load_config() -> AppConfig:
             monitoring   = monitoring,
         ))
 
+    # Load host order from config, default to current order
+    host_ids = [h["id"] for h in raw_hosts.get("hosts", [])]
+    host_order = raw_config.get("ui", {}).get("host_order", host_ids)
+
     return AppConfig(
         hosts            = hosts,
+        host_order       = host_order,
         refresh_interval = ui.get("refresh_interval", 5),
         sparkline_width  = ui.get("sparkline_width", 18),
         command_timeout  = ui.get("command_timeout", 10),
@@ -1912,23 +2319,7 @@ class HardwareVault:
 
 _DEFAULT_JSON: dict = {
     "version": 1,
-    "hosts": [
-        {
-            "id": "example-vps",
-            "label": "My VPS",
-            "address": "192.168.1.100",
-            "port": 22,
-            "username": "root",
-            "auth": "key",
-            "key_path": "~/.ssh/id_rsa",
-            "password": "",
-            "tags": ["web"],
-            "poll_interval": 5,
-            "services": [],
-            "port_forwards": [],
-            "agent": {"auto_restart_failed": False, "watch_services": []}
-        }
-    ],
+    "hosts": [],
     "ui": {
         "refresh_interval": 5,
         "sparkline_width": 18,
@@ -1968,6 +2359,9 @@ class ConfigManager:
         self._vault = HardwareVault()
         self._data: dict = {}
         self._load()
+        self._ssh_sync = SSHConfigSyncManager(
+            enabled=self._data.get("ssh_config_sync", True)
+        )
 
     # ── Public API ────────────────────────────────────────────────────────
 
@@ -1999,11 +2393,55 @@ class ConfigManager:
         else:
             hosts.append(raw)
         self._save()
+        self._ssh_sync.sync_from_raw(self._data.get("hosts", []))
+
+    # ── deleted-hosts archive (v0.78) ─────────────────────────────────────────
+    _DELETED_TTL = 7 * 24 * 3600  # 1 week in seconds
+
+    def _prune_deleted_hosts(self) -> None:
+        """Remove archive entries older than _DELETED_TTL."""
+        cutoff = time.time() - self._DELETED_TTL
+        bucket = self._data.get("deleted_hosts", [])
+        self._data["deleted_hosts"] = [
+            e for e in bucket
+            if e.get("deleted_at_ts", 0) >= cutoff
+        ]
+
+    def get_deleted_hosts(self) -> list[dict]:
+        """Return archived deleted hosts (each dict has 'deleted_at' + 'host' keys)."""
+        self._prune_deleted_hosts()
+        return list(self._data.get("deleted_hosts", []))
+
+    def restore_deleted_host(self, host_id: str) -> bool:
+        """Move a host from the deleted archive back to the active list.
+        Returns True if found and restored, False otherwise."""
+        self._prune_deleted_hosts()
+        bucket  = self._data.get("deleted_hosts", [])
+        match   = next((e for e in bucket if e["host"].get("id") == host_id), None)
+        if not match:
+            return False
+        self._data["deleted_hosts"] = [e for e in bucket
+                                        if e["host"].get("id") != host_id]
+        self._data.setdefault("hosts", []).append(match["host"])
+        self._save()
+        self._ssh_sync.sync_from_raw(self._data.get("hosts", []))
+        return True
 
     def delete_host(self, host_id: str):
-        self._data["hosts"] = [h for h in self._data.get("hosts", [])
-                                if h.get("id") != host_id]
+        hosts = self._data.get("hosts", [])
+        victim = next((h for h in hosts if h.get("id") == host_id), None)
+        self._data["hosts"] = [h for h in hosts if h.get("id") != host_id]
+        # archive for 1-week recovery window
+        if victim:
+            self._prune_deleted_hosts()
+            now = time.time()
+            self._data.setdefault("deleted_hosts", []).append({
+                "deleted_at":    time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime(now)),
+                "deleted_at_ts": now,
+                "host":          victim,
+            })
         self._save()
+        self._ssh_sync.sync_from_raw(self._data.get("hosts", []))
 
     def update_stats(self, host_id: str, patch: dict):
         stats = self._data.setdefault("stats", {})
@@ -2228,10 +2666,12 @@ class ConfigManager:
             try:
                 self._data = json.loads(self._path.read_text(encoding="utf-8"))
             except Exception as e:
-                # JSON parsing failed — either corruption or user hand-edited it badly
+                # JSON parsing failed - either corruption or user hand-edited it badly
                 _log.error("Failed to load config from %s, using defaults: %s: %s",
                           self._path, type(e).__name__, e)
                 self._data = copy.deepcopy(_DEFAULT_JSON)
+        # trim stale deleted-host archive entries on every load
+        self._prune_deleted_hosts()
 
     def _save(self):
         # Write config atomically so we don't corrupt it mid-write
@@ -2263,9 +2703,40 @@ class ConfigManager:
             "port_forwards": cfg.port_forwards,
             "maintenance":      cfg.maintenance,
             "ai_controlled":    cfg.ai_controlled,
-            "monitoring":       dataclasses.asdict(cfg.monitoring),
-            "ai_instructions":  cfg.ai_instructions,
+            "monitoring":           dataclasses.asdict(cfg.monitoring),
+            "ai_instructions":      cfg.ai_instructions,
+            "import_source":        cfg.import_source,
+            "import_source_path":   cfg.import_source_path,
+            "import_source_alias":  cfg.import_source_alias,
         }
+
+    def _build_host_config(self, h: dict) -> "HostConfig":
+        """Build a HostConfig from a raw host dict (as stored in deflect.json)."""
+        mon_raw    = h.get("monitoring", {})
+        monitoring = SecurityMonitoringConfig(**{k: v for k, v in mon_raw.items()
+                                                  if hasattr(SecurityMonitoringConfig, k)
+                                                  and not k.startswith('_')})
+        return HostConfig(
+            id            = h["id"],
+            label         = h.get("label", h["id"]),
+            address       = h["address"],
+            port          = h.get("port", 22),
+            username      = h.get("username", "root"),
+            auth          = h.get("auth", "key"),
+            key_path      = h.get("key_path", "~/.ssh/id_rsa"),
+            password      = self._vault.decrypt(h.get("password", "")),
+            tags          = h.get("tags", []),
+            poll_interval = h.get("poll_interval", 5),
+            services      = h.get("services", []),
+            port_forwards = h.get("port_forwards", []),
+            maintenance       = h.get("maintenance", False),
+            ai_controlled     = h.get("ai_controlled", False),
+            monitoring            = monitoring,
+            ai_instructions       = h.get("ai_instructions", ""),
+            import_source         = h.get("import_source",       "manual"),
+            import_source_path    = h.get("import_source_path",  ""),
+            import_source_alias   = h.get("import_source_alias", ""),
+        )
 
     def _build_app_config(self) -> AppConfig:
         d      = self._data
@@ -2279,30 +2750,7 @@ class ConfigManager:
         em  = notif.get("email", {})
         snd = notif.get("sound", {})
 
-        hosts = []
-        for h in d.get("hosts", []):
-            mon_raw = h.get("monitoring", {})
-            monitoring = SecurityMonitoringConfig(**{k: v for k, v in mon_raw.items()
-                                                     if hasattr(SecurityMonitoringConfig, k)
-                                                     and not k.startswith('_')})
-            hosts.append(HostConfig(
-                id           = h["id"],
-                label        = h.get("label", h["id"]),
-                address      = h["address"],
-                port         = h.get("port", 22),
-                username     = h.get("username", "root"),
-                auth         = h.get("auth", "key"),
-                key_path     = h.get("key_path", "~/.ssh/id_rsa"),
-                password     = self._vault.decrypt(h.get("password", "")),
-                tags         = h.get("tags", []),
-                poll_interval= h.get("poll_interval", 5),
-                services     = h.get("services", []),
-                port_forwards= h.get("port_forwards", []),
-                maintenance      = h.get("maintenance", False),
-                ai_controlled    = h.get("ai_controlled", False),
-                monitoring       = monitoring,
-                ai_instructions  = h.get("ai_instructions", ""),
-            ))
+        hosts = [self._build_host_config(h) for h in d.get("hosts", [])]
 
         ai_raw = d.get("ai", {})
         ai_cfg = AIConfig(
@@ -2349,8 +2797,9 @@ class ConfigManager:
             smtp_password    = self._vault.decrypt(em.get("smtp_password", "")),
             smtp_from        = em.get("from", ""),
             smtp_to          = em.get("to", ""),
-            sound_enabled    = snd.get("enabled", False),
-            ai               = ai_cfg,
+            sound_enabled     = snd.get("enabled", False),
+            ai                = ai_cfg,
+            ssh_config_sync   = d.get("ssh_config_sync", True),
         )
 
 
@@ -2473,6 +2922,29 @@ class CmdResult:
     def ok(self) -> bool:
         # both exit code must be 0 AND no separate error field set
         return self.exit_code == 0 and not self.error
+
+
+def _is_docker_host(host_state: "HostState") -> bool:
+    """Check if the host is a Docker container (by presence of 'docker' tag)."""
+    return "docker" in (host_state.config.tags or [])
+
+
+def _get_ssh_init_cmd(host_state: "HostState", init_cmd: Optional[str] = None) -> Optional[str]:
+    """
+    Get the SSH shell initialization command.
+    For Docker containers, ensures proper directory handling by adding cd to root first.
+    For other hosts, returns the init_cmd as-is.
+    """
+    if init_cmd:
+        # If there's an explicit init_cmd, use it (it takes precedence)
+        return init_cmd
+
+    if _is_docker_host(host_state):
+        # For Docker, ensure we're in the container's root directory
+        return "cd /"
+
+    # For regular hosts, no init_cmd needed
+    return None
 
 
 class ConnectionPool:
@@ -2947,6 +3419,61 @@ _PAT_TIME    = re.compile(r"(\w{3}\s+\d+\s[\d:]+)")
 
 _GEO_CACHE: dict[str, str] = {}
 
+# Fallback chain - tried in order on 429 / connection error.
+# Each entry: (url_template_with_{ip}, json_key_for_country_code)
+_GEO_PROVIDERS: list[tuple[str, str]] = [
+    ("http://ip-api.com/json/{ip}?fields=countryCode", "countryCode"),  # 45 req/min, no key
+    ("https://ipinfo.io/{ip}/json",                    "country"),       # 50k req/month, no key
+    ("https://freeipapi.com/api/json/{ip}",            "countryCode"),   # unlimited free tier
+]
+
+# Circuit-breaker state: maps url_template → epoch time until which provider is skipped.
+_GEO_PROVIDER_BACKOFF: dict[str, float] = {}
+_GEO_BACKOFF_429_SECS  = 420   # 7 min - confirmed rate-limit
+_GEO_BACKOFF_ERR_SECS  = 180   # 3 min - transient network error
+
+
+async def _geo_fetch(ip: str) -> str:
+    """Try each provider in _GEO_PROVIDERS until one succeeds. Returns 2-char CC or ''.
+
+    Circuit-breaker: a provider that returns 429 is skipped for 7 min;
+    a provider with a network/parse error is skipped for 3 min.
+    """
+    import urllib.request as _ur, urllib.error as _ue, json as _json
+    now  = time.time()
+    loop = asyncio.get_running_loop()
+    for url_tpl, key in _GEO_PROVIDERS:
+        resume_at = _GEO_PROVIDER_BACKOFF.get(url_tpl, 0)
+        if now < resume_at:
+            remaining = int(resume_at - now)
+            _log.debug("GeoIP provider %s in backoff (%ds left) - skipping", url_tpl, remaining)
+            continue
+        url = url_tpl.format(ip=ip)
+        try:
+            def _get(u=url):
+                req = _ur.Request(u, headers={"User-Agent": "deflect/0.78"})
+                return _json.loads(_ur.urlopen(req, timeout=5).read())
+            data = await loop.run_in_executor(None, _get)
+            cc = (data.get(key) or "").strip()[:2]
+            if cc:
+                # Successful response - clear any lingering backoff for this provider
+                _GEO_PROVIDER_BACKOFF.pop(url_tpl, None)
+                return cc
+        except _ue.HTTPError as e:
+            if e.code == 429:
+                _GEO_PROVIDER_BACKOFF[url_tpl] = now + _GEO_BACKOFF_429_SECS
+                _log.warning("GeoIP %s → 429 rate-limit, backing off %ds",
+                             url_tpl.split("/")[2], _GEO_BACKOFF_429_SECS)
+            else:
+                _GEO_PROVIDER_BACKOFF[url_tpl] = now + _GEO_BACKOFF_ERR_SECS
+                _log.debug("GeoIP %s → HTTP %d, backing off %ds",
+                           url_tpl.split("/")[2], e.code, _GEO_BACKOFF_ERR_SECS)
+        except Exception as e:
+            _GEO_PROVIDER_BACKOFF[url_tpl] = now + _GEO_BACKOFF_ERR_SECS
+            _log.debug("GeoIP %s → error %s, backing off %ds",
+                       url_tpl.split("/")[2], e, _GEO_BACKOFF_ERR_SECS)
+    return ""
+
 
 def _ip_in_net(ip_str: str, network) -> bool:
     """Return True if ip_str belongs to an ipaddress network object."""
@@ -2977,6 +3504,51 @@ class AttackEvent:
     campaign: bool = False
     live:     bool = False   # True for real-time connection events (Level 2)
     count:    int  = 1       # raw attempt count from the log window (one IP = one slot)
+
+
+@dataclass
+class AuthEvent:
+    """Single parsed authentication event from any protocol."""
+    ts:          str
+    host_id:     str
+    protocol:    str    # ssh | sudo | dovecot | postfix | mysql | postgresql | ftp | redis | mongo | webmin
+    event_type:  str    # accepted_password | accepted_key | failed_password | invalid_user | escalation | sasl_failed | auth_failed | auth_success
+    username:    str
+    src_ip:      str
+    success:     bool   = False
+    auth_method: str    = ""   # password | publickey | sasl
+    country:     str    = ""
+    raw_line:    str    = ""
+    is_own:      bool   = False  # True = Deflect script's own SSH connection - skip detection
+
+
+@dataclass
+class AuthThreatEvent:
+    """Anomaly detected by AnomalyDetector - surfaces in AuthSentinel and Attack Radar."""
+    ts:               str
+    host_id:          str
+    kind:             str    # BREACH_CONFIRMED | BRUTE_FORCE | PASSWORD_SPRAY | CREDENTIAL_STUFFING | HONEYPOT | ROOT_SSH | IMPOSSIBLE_TRAVEL | MAIL_FLOOD
+    severity:         str    # P0 | CRITICAL | HIGH | MEDIUM
+    username:         str
+    src_ip:           str
+    detail:           str    = ""
+    failure_count:    int    = 0
+    elapsed_seconds:  float  = 0.0
+    country:          str    = ""
+    auto_contained:   bool   = False
+
+
+@dataclass
+class AuthSession:
+    """Active login session parsed from `who -u`."""
+    user:        str
+    tty:         str
+    login_time:  str
+    src_ip:      str
+    idle:        str    = ""
+    host_id:     str    = ""
+    country:     str    = ""
+    flagged:     bool   = False  # True when linked to a breach event
 
 
 @dataclass
@@ -3109,11 +3681,12 @@ class SecurityRadar:
         self._update_stats()
 
     async def _poll_host(self, host_id: str):
+        mon = self._mon(host_id)
         cmd = _AUTH_CMD.format(n=self._log_lines)
         res = await self._pool.run(host_id, cmd)
         if not res.ok:
             return
-        events = self._parse_log(res.stdout, host_id)
+        events = self._parse_log(res.stdout, host_id, mon)
         for ev in events:
             await self._geoip(ev)
             ev.campaign = len(self._ip_hosts.get(ev.src_ip, set())) > 1
@@ -3152,7 +3725,6 @@ class SecurityRadar:
                         total += int(m.group(1))
             self._state.banned_count = total
 
-        mon = self._mon(host_id)
         if mon.http_flood or mon.exploit_scan or mon.http_brute or mon.bot_detection:
             await self._poll_http_logs(host_id, mon)
         if mon.conn_flood or mon.syn_flood:
@@ -3161,21 +3733,27 @@ class SecurityRadar:
             await self._poll_open_ports(host_id)
         if mon.email_brute or mon.email_scan:
             await self._poll_email_logs(host_id, mon)
+        if mon.db_brute:
+            await self._poll_db_logs(host_id, mon)
 
-    def _parse_log(self, raw: str, host_id: str) -> list[AttackEvent]:
+    def _parse_log(self, raw: str, host_id: str,
+                   mon: "SecurityMonitoringConfig | None" = None) -> list[AttackEvent]:
         events = []
         for line in raw.splitlines():
-            ev = self._parse_line(line, host_id)
+            ev = self._parse_line(line, host_id, mon)
             if ev:
                 events.append(ev)
         return events
 
-    def _parse_line(self, line: str, host_id: str) -> Optional[AttackEvent]:
+    def _parse_line(self, line: str, host_id: str,
+                    mon: "SecurityMonitoringConfig | None" = None) -> Optional[AttackEvent]:
         ts_m = _PAT_TIME.search(line)
         ts   = ts_m.group(1) if ts_m else "--:--:--"
 
         m = _PAT_FAILED.search(line)
         if m:
+            if mon and not mon.ssh_brute:
+                return None
             method, user, ip = m.group(1), m.group(2), m.group(3)
             if self._is_banned_event(ip, ts):
                 return None
@@ -3186,6 +3764,8 @@ class SecurityRadar:
 
         m = _PAT_INVALID.search(line)
         if m:
+            if mon and not mon.ssh_brute:
+                return None
             user, ip = m.group(1), m.group(2)
             if self._is_banned_event(ip, ts):
                 return None
@@ -3234,16 +3814,28 @@ class SecurityRadar:
         ev.flag = _cc_to_flag(ev.country)
 
     async def _poll_http_logs(self, host_id: str, mon: "SecurityMonitoringConfig"):
-        """Level 1 - parse nginx/apache access logs."""
-        log_path = mon.nginx_log or _NGINX_LOG_DEFAULT
-        cmd = _NGINX_CMD.format(n=200, log_path=log_path)
+        """Level 1 - parse nginx/apache access logs.
+
+        Covers standard paths, VestaCP/HestiaCP per-domain logs, and cPanel.
+        tail -qn suppresses filenames and reads N lines per file.
+        Shell globs silently expand to nothing if the directory is absent.
+        """
+        nginx_conf  = mon.nginx_log  or _NGINX_LOG_DEFAULT
+        apache_conf = mon.apache_log or _APACHE_LOG_DEFAULT
+        # tail -qn suppresses per-file headers; 50 lines per file, 400 combined max.
+        # Globs cover: standard paths, VestaCP/HestiaCP (/var/log/*/domains/ +
+        # /home/USER/web/DOMAIN/logs/), cPanel (/home/USER/access-logs/).
+        # Unmatched globs are silently ignored by 2>/dev/null.
+        cmd = (
+            f"tail -qn 50 {nginx_conf} {apache_conf} "
+            "/var/log/nginx/domains/*.log /var/log/apache2/domains/*.log "
+            "/home/*/web/*/logs/access.log /home/*/web/*/logs/*.log "
+            "/home/*/access-logs/* "
+            "2>/dev/null | tail -n 400"
+        )
         res = await self._pool.run(host_id, cmd)
         if not res.ok or not res.stdout.strip():
-            # try apache (fall back if nginx doesn't exist or has no logs)
-            cmd2 = _NGINX_CMD.format(n=200, log_path=mon.apache_log or _APACHE_LOG_DEFAULT)
-            res = await self._pool.run(host_id, cmd2)
-            if not res.ok:
-                return
+            return
 
         now = time.time()
         ip_req_times: dict[str, list] = defaultdict(list)
@@ -3251,7 +3843,7 @@ class SecurityRadar:
         new_events: list[AttackEvent] = []
 
         for line in res.stdout.splitlines():
-            ev = self._parse_nginx_line(line, host_id, ip_req_times, ip_statuses)
+            ev = self._parse_nginx_line(line, host_id, ip_req_times, ip_statuses, mon)
             if ev:
                 new_events.append(ev)
 
@@ -3293,7 +3885,8 @@ class SecurityRadar:
             self._state.events.extendleft(reversed(new_events[-30:]))
 
     def _parse_nginx_line(self, line: str, host_id: str,
-                          ip_req_times: dict, ip_statuses: dict
+                          ip_req_times: dict, ip_statuses: dict,
+                          mon: "SecurityMonitoringConfig | None" = None,
                           ) -> Optional[AttackEvent]:
         """Parse one nginx/apache combined log line, update counters, return event or None."""
         m = _PAT_NGINX_LINE.match(line)
@@ -3319,19 +3912,19 @@ class SecurityRadar:
 
         # Check User-Agent (it's after the status fields; not captured in regex,
         # but we can search the raw line). It's usually a giveaway for bots.
-        if _BAD_UA.search(line):
+        if (not mon or mon.bot_detection) and _BAD_UA.search(line):
             self._ip_hosts[ip].add(host_id)
             self._state.ip_counts[ip] += 1
             return AttackEvent(ts=ts, host_id=host_id, src_ip=ip,
                                username="-", method="http", kind="bot")
 
-        if method == "POST" and _BRUTE_PATHS.search(path):
+        if (not mon or mon.http_brute) and method == "POST" and _BRUTE_PATHS.search(path):
             self._ip_hosts[ip].add(host_id)
             self._state.ip_counts[ip] += 1
             return AttackEvent(ts=ts, host_id=host_id, src_ip=ip,
                                username="-", method="POST", kind="http_brute")
 
-        if _EXPLOIT_PATHS.search(path):
+        if (not mon or mon.exploit_scan) and _EXPLOIT_PATHS.search(path):
             self._ip_hosts[ip].add(host_id)
             self._state.ip_counts[ip] += 1
             return AttackEvent(ts=ts, host_id=host_id, src_ip=ip,
@@ -3423,14 +4016,17 @@ class SecurityRadar:
 
     async def _poll_email_logs(self, host_id: str, mon: "SecurityMonitoringConfig"):
         """Level 5 - parse Exim4/Postfix logs for email brute-force and user enumeration."""
-        # Auto-detect log path: try exim4 mainlog, fall back to postfix mail.log
+        # Auto-detect log path: try exim4 mainlog, fall back to postfix mail.log.
+        # VestaCP/HestiaCP use Exim4; busy mail servers need more lines because
+        # auth failures for many accounts accumulate quickly in mainlog.
         log_path = mon.email_log or ""
         if log_path:
-            cmd = f"tail -n 300 {log_path} 2>/dev/null"
+            cmd = f"tail -n 1000 {log_path} 2>/dev/null"
         else:
             cmd = (
-                "tail -n 300 /var/log/exim4/mainlog 2>/dev/null || "
-                "tail -n 300 /var/log/mail.log 2>/dev/null"
+                "tail -n 1000 /var/log/exim4/mainlog 2>/dev/null || "
+                "tail -n 1000 /var/log/mail.log 2>/dev/null || "
+                "tail -n 1000 /var/log/mail.info 2>/dev/null"
             )
         res = await self._pool.run(host_id, cmd)
         if not res.ok or not res.stdout.strip():
@@ -3441,13 +4037,29 @@ class SecurityRadar:
         ip_rcpt_unknown:  dict[str, int]  = defaultdict(int)
         new_events: list[AttackEvent] = []
 
-        # Patterns for Exim4: "[1.2.3.4]" in lines with "535" or "rejected AUTH"
-        # Patterns for Postfix: "SASL ... failure" or "reject: RCPT"
-        # (email servers are the most creative when it comes to log formats)
-        _pat_exim_auth  = re.compile(r'\[(\d{1,3}(?:\.\d{1,3}){3})\].*?(?:535|rejected AUTH|Incorrect authentication)', re.I)
-        _pat_exim_rcpt  = re.compile(r'\[(\d{1,3}(?:\.\d{1,3}){3})\].*?Unknown user', re.I)
-        _pat_pfix_auth  = re.compile(r'(?:SASL \w+ authentication failed|reject: .* 535).*?\[(\d{1,3}(?:\.\d{1,3}){3})\]', re.I)
-        _pat_pfix_rcpt  = re.compile(r'reject: RCPT.*?\[(\d{1,3}(?:\.\d{1,3}){3})\].*?(?:User unknown|no mailbox)', re.I)
+        # Exim4 (VestaCP/HestiaCP/standard): IP always in [x.x.x.x] form.
+        # VestaCP Exim4 auth failure examples:
+        #   "authenticator failed for ... [1.2.3.4]:port: 535 Incorrect..."
+        #   "[1.2.3.4]:port F=<> rejected SMTP AUTH"
+        #   "SMTP connection from [1.2.3.4] ... 535"
+        # Two patterns: phrase-before-IP and IP-before-phrase.
+        _IP4 = r'(\d{1,3}(?:\.\d{1,3}){3})'
+        _pat_exim_auth  = re.compile(
+            r'(?:authenticator failed|rejected SMTP AUTH|Incorrect authentication'
+            r'|535 [A-Z]).*?\[' + _IP4 + r'\]'
+            r'|\[' + _IP4 + r'\].*?(?:535|rejected SMTP AUTH|Incorrect authentication)',
+            re.I)
+        _pat_exim_rcpt  = re.compile(
+            r'(?:Unknown user|unrouteable address|invalid address).*?\[' + _IP4 + r'\]'
+            r'|\[' + _IP4 + r'\].*?(?:Unknown user|unrouteable address)',
+            re.I)
+        # Postfix patterns
+        _pat_pfix_auth  = re.compile(
+            r'(?:SASL \w+ authentication failed|reject:.*? 535).*?\[' + _IP4 + r'\]',
+            re.I)
+        _pat_pfix_rcpt  = re.compile(
+            r'reject: RCPT.*?\[' + _IP4 + r'\].*?(?:User unknown|no mailbox)',
+            re.I)
         _pat_ts_exim    = re.compile(r'^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2})')
         _pat_ts_pfix    = re.compile(r'^(\w{3}\s+\d+ \d{2}:\d{2}:\d{2})')
 
@@ -3464,14 +4076,17 @@ class SecurityRadar:
             if mon.email_brute:
                 m = _pat_exim_auth.search(line) or _pat_pfix_auth.search(line)
                 if m:
-                    ip = m.group(1)
-                    ip_auth_fails[ip].append(ts)
+                    # groups: (phrase-first IP, ip-first IP) - take whichever matched
+                    ip = next((g for g in m.groups() if g), None)
+                    if ip:
+                        ip_auth_fails[ip].append(ts)
 
             if mon.email_scan:
                 m = _pat_exim_rcpt.search(line) or _pat_pfix_rcpt.search(line)
                 if m:
-                    ip = m.group(1)
-                    ip_rcpt_unknown[ip] += 1
+                    ip = next((g for g in m.groups() if g), None)
+                    if ip:
+                        ip_rcpt_unknown[ip] += 1
 
         now_ts = datetime.datetime.now(datetime.UTC).strftime("%b %d %H:%M:%S")
 
@@ -3515,6 +4130,105 @@ class SecurityRadar:
         if new_events:
             self._state.events.extendleft(reversed(new_events[-20:]))
 
+    async def _poll_db_logs(self, host_id: str, mon: "SecurityMonitoringConfig"):
+        """Detect brute-force against MySQL/MariaDB and PostgreSQL.
+
+        MySQL/MariaDB error log: "Access denied for user ... from '1.2.3.4'"
+        PostgreSQL log:          "FATAL:  password authentication failed ... host=1.2.3.4"
+        MariaDB also logs:       "Access denied for user ... (using password: YES)"
+        """
+        log_path = mon.db_log or ""
+        if log_path:
+            cmd = f"tail -n 500 {log_path} 2>/dev/null"
+        else:
+            # Auto-detect: MySQL/MariaDB error log (several common paths),
+            # then PostgreSQL logs (version-agnostic glob).
+            cmd = (
+                "tail -qn 500 "
+                "/var/log/mysql/error.log /var/log/mysql.err "
+                "/var/log/mariadb/mariadb.log /var/log/mariadb.log "
+                "/var/lib/mysql/*.err "
+                "2>/dev/null ; "
+                "find /var/log/postgresql -name '*.log' 2>/dev/null "
+                "| head -3 | xargs tail -qn 200 2>/dev/null"
+            )
+        res = await self._pool.run(host_id, cmd)
+        if not res.ok or not res.stdout.strip():
+            return
+
+        # MySQL/MariaDB: "Access denied for user 'x'@'1.2.3.4' (using password: YES)"
+        _pat_mysql = re.compile(
+            r"Access denied for user ['\"]?\S+['\"]?@['\"]?(\d{1,3}(?:\.\d{1,3}){3})['\"]?",
+            re.I)
+        # PostgreSQL: "FATAL:  password authentication failed for user"
+        # with host in the same or nearby context - connection lines have "host=IP"
+        _pat_pg_auth = re.compile(
+            r'(?:FATAL|ERROR).*?(?:password authentication failed|role .* does not exist)',
+            re.I)
+        _pat_pg_host = re.compile(r'host=(\d{1,3}(?:\.\d{1,3}){3})')
+        # MariaDB audit plugin: "FAILED_CONNECT ... 1.2.3.4"
+        _pat_mariadb_audit = re.compile(
+            r'FAILED_CONNECT.*?(\d{1,3}(?:\.\d{1,3}){3})',
+            re.I)
+
+        ip_fails: dict[str, int] = defaultdict(int)
+        ts_map:   dict[str, str] = {}
+
+        lines = res.stdout.splitlines()
+        # two-pass for PostgreSQL: auth failure lines don't always have the host IP,
+        # but the preceding "connection received" line does.
+        prev_pg_host: str = ""
+        for line in lines:
+            ts_m = re.search(r'(\d{2}:\d{2}:\d{2})', line)
+            ts   = ts_m.group(1) if ts_m else ""
+
+            m = _pat_mysql.search(line)
+            if m:
+                ip = m.group(1)
+                ip_fails[ip] += 1
+                ts_map[ip] = ts
+                continue
+
+            m = _pat_mariadb_audit.search(line)
+            if m:
+                ip = m.group(1)
+                ip_fails[ip] += 1
+                ts_map[ip] = ts
+                continue
+
+            # PostgreSQL: track host from connection line, apply to next auth failure
+            hm = _pat_pg_host.search(line)
+            if hm:
+                prev_pg_host = hm.group(1)
+            if _pat_pg_auth.search(line) and prev_pg_host:
+                ip_fails[prev_pg_host] += 1
+                ts_map[prev_pg_host] = ts
+
+        now_ts = datetime.datetime.now(datetime.UTC).strftime("%b %d %H:%M:%S")
+        new_events: list[AttackEvent] = []
+        for ip, count in ip_fails.items():
+            if count < mon.db_brute_threshold:
+                continue
+            if self._is_banned_event(ip, now_ts):
+                continue
+            if any(e.src_ip == ip and e.kind == "db_brute"
+                   for e in list(self._state.events)[-50:]):
+                continue
+            ev = AttackEvent(
+                ts=ts_map.get(ip, now_ts), host_id=host_id, src_ip=ip,
+                username="-", method="db", kind="db_brute")
+            ev.count = count
+            self._ip_hosts[ip].add(host_id)
+            self._state.ip_counts[ip] += count
+            new_events.append(ev)
+
+        for ev in new_events:
+            await self._geoip(ev)
+            if mon.campaign_tracking:
+                ev.campaign = len(self._ip_hosts.get(ev.src_ip, set())) > 1
+        if new_events:
+            self._state.events.extendleft(reversed(new_events[-20:]))
+
     async def ban_ip_http(self, ip: str, host_ids: list[str]) -> dict[str, bool]:
         """Ban IP in nginx (Level 1 mitigation)."""
         cmd = _NGINX_BAN_CMD.format(ip=ip)
@@ -3525,6 +4239,570 @@ class SecurityRadar:
         """Level 4 mitigation: apply iptables hashlimit rate-limiting."""
         results = await self._pool.run_on(host_ids, _IPTABLES_RATELIMIT_CMD)
         return {hid: r.ok for hid, r in results.items()}
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION: auth_sentinel
+# ══════════════════════════════════════════════════════════════════════════════
+
+_log_auth = logging.getLogger("deflect.auth_sentinel")
+
+_AUTH_PATTERNS: list[tuple[str, str, re.Pattern]] = [
+    # (protocol, event_type, compiled_regex)
+    # ── SSH ──────────────────────────────────────────────────────────────────
+    ("ssh", "accepted_password",
+     re.compile(r'sshd\[\d+\].*Accepted password for (\S+) from ([\d.a-fA-F:]+) port')),
+    ("ssh", "accepted_key",
+     re.compile(r'sshd\[\d+\].*Accepted publickey for (\S+) from ([\d.a-fA-F:]+) port')),
+    ("ssh", "failed_password",
+     re.compile(r'sshd\[\d+\].*Failed password for (?:invalid user )?(\S+) from ([\d.a-fA-F:]+) port')),
+    ("ssh", "invalid_user",
+     re.compile(r'sshd\[\d+\].*Invalid user (\S+) from ([\d.a-fA-F:]+)')),
+    ("ssh", "disconnect",
+     re.compile(r'sshd\[\d+\].*Disconnected from (?:invalid user )?(\S+)? ?([\d.a-fA-F:]+) port')),
+    # ── sudo ─────────────────────────────────────────────────────────────────
+    ("sudo", "escalation",
+     re.compile(r'sudo\s*:.*USER=(\S+).*COMMAND=(.*)')),
+    ("sudo", "auth_failed",
+     re.compile(r'sudo\s*:.*authentication failure.*user=(\S+)')),
+    # ── PAM / su ─────────────────────────────────────────────────────────────
+    ("pam", "session_open",
+     re.compile(r'pam_unix\(su[:-]session\).*session opened for user (\S+) by (\S+)')),
+    # ── Dovecot IMAP / POP3 ──────────────────────────────────────────────────
+    ("dovecot", "accepted",
+     re.compile(r'dovecot.*(?:imap|pop3)-login: Login:.*user=<([^>]+)>.*rip=([\d.a-fA-F:]+)')),
+    ("dovecot", "auth_failed",
+     re.compile(r'dovecot.*(?:imap|pop3)-login: Disconnected.*auth failed.*user=<([^>]+)>.*rip=([\d.a-fA-F:]+)')),
+    # ── Postfix SASL ─────────────────────────────────────────────────────────
+    ("postfix", "sasl_failed",
+     re.compile(r'postfix.*warning:.*SASL \w+ authentication failed.*\[([\d.a-fA-F:]+)\]')),
+    ("postfix", "sasl_ok",
+     re.compile(r'postfix.*sasl_username=(\S+).*client=\S+\[([\d.a-fA-F:]+)\]')),
+    # ── MySQL / MariaDB ───────────────────────────────────────────────────────
+    ("mysql", "auth_failed",
+     re.compile(r"Access denied for user '([^']+)'@'([^']+)'")),
+    # ── PostgreSQL ────────────────────────────────────────────────────────────
+    ("postgresql", "auth_failed",
+     re.compile(r'FATAL:\s+password authentication failed for user "([^"]+)"')),
+    ("postgresql", "auth_ok",
+     re.compile(r'LOG:\s+connection received: host=([\d.a-fA-F:]+).*user=(\S+)')),
+    # ── vsftpd ───────────────────────────────────────────────────────────────
+    ("ftp", "auth_failed",
+     re.compile(r'FAIL LOGIN: Client "([\d.a-fA-F:]+)"')),
+    ("ftp", "accepted",
+     re.compile(r'OK LOGIN: Client "([\d.a-fA-F:]+)".*user (\S+)')),
+    # ── Redis ────────────────────────────────────────────────────────────────
+    ("redis", "auth_failed",
+     re.compile(r'ERR invalid password|WRONGPASS invalid username-password pair')),
+    # ── MongoDB ──────────────────────────────────────────────────────────────
+    ("mongo", "auth_failed",
+     re.compile(r'Authentication failed.*user.*"([^"]+)".*client.*"([\d.a-fA-F:]+)"')),
+    ("mongo", "accepted",
+     re.compile(r'Successfully authenticated.*user.*"([^"]+)".*client.*"([\d.a-fA-F:]+)"')),
+    # ── Webmin ───────────────────────────────────────────────────────────────
+    ("webmin", "auth_failed",
+     re.compile(r'Failed login as (\S+) from ([\d.a-fA-F:]+)')),
+    ("webmin", "accepted",
+     re.compile(r'Successful login as (\S+) from ([\d.a-fA-F:]+)')),
+]
+
+_AUTH_LOG_CMD = (
+    "tail -n 80 /var/log/auth.log 2>/dev/null || "
+    "journalctl -u ssh -u sshd -u sudo -n 80 --no-pager -o short-iso 2>/dev/null"
+)
+_MAIL_AUTH_CMD = "tail -n 40 /var/log/mail.log 2>/dev/null"
+_WHO_CMD       = "who -u 2>/dev/null"
+_QUEUE_CMD     = "postqueue -p 2>/dev/null | wc -l"
+
+_AUTH_SEVERITY_COLOR = {
+    "P0":       "bold red",
+    "CRITICAL": "red",
+    "HIGH":     "dark_orange",
+    "MEDIUM":   "yellow",
+    "LOW":      "dim",
+}
+
+_DANGEROUS_CMDS = re.compile(
+    r'\b(curl|wget|nc|ncat|nmap|socat|python[23]?\s+-c|perl\s+-e|bash\s+-i|'
+    r'chmod\s+\+x|base64\s+-d|/dev/tcp|mkfifo|crontab\s+-e|passwd)\b',
+    re.I,
+)
+
+
+class AuthSentinelEngine:
+    """
+    Parses authentication events from multiple log sources and detects threats.
+    One instance per HostAgent, driven by _auth_sentinel_loop().
+    Results are accessed by AuthSentinelScreen via pool facade.
+    """
+
+    def __init__(self, pool: "ConnectionPool", cfg: "SecurityMonitoringConfig",
+                 host_username: str = ""):
+        self._pool          = pool
+        self._cfg           = cfg
+        self._host_username = host_username   # SSH user Deflect connects as (e.g. "root")
+        # Circular buffers - accessed read-only from UI thread
+        self._events:  deque[AuthEvent]       = deque(maxlen=500)
+        self._threats: deque[AuthThreatEvent] = deque(maxlen=200)
+        self._sessions: list[AuthSession]     = []
+        # Failure tracking for anomaly detection
+        # {(username, src_ip): [epoch_float, ...]}
+        self._fail_win: dict[tuple, list[float]] = defaultdict(list)
+        # Per-user geo history for impossible travel: {user: [(epoch, ip, country)]}
+        self._geo_hist: dict[str, list]           = defaultdict(list)
+        # Dedup: set of raw_line[-120:] seen in last poll
+        self._seen_lines: set[str] = set()
+        self._last_who:   float    = 0.0
+        self._queue_prev: int      = 0
+        # AbuseIPDB enrichment cache: {ip: (epoch_cached, score, detail_str)}
+        self._abuseipdb_cache: dict[str, tuple[float, int, str]] = {}
+        self._abuseipdb_pending: set[str] = set()   # IPs currently being looked up
+        # GeoIP: IPs queued for country lookup (separate from SecurityRadar's _GEO_CACHE)
+        self._geo_pending: set[str] = set()
+
+    # ── Public accessors (thread-safe reads; deque/list are GIL-protected) ───
+
+    @property
+    def events(self) -> list[AuthEvent]:
+        return list(self._events)
+
+    @property
+    def threats(self) -> list[AuthThreatEvent]:
+        return list(self._threats)
+
+    @property
+    def sessions(self) -> list[AuthSession]:
+        return list(self._sessions)
+
+    @property
+    def breach_active(self) -> bool:
+        """True if there is an unresolved P0 event in the last 30 min."""
+        cutoff = time.time() - 1800
+        return any(
+            t.severity == "P0" and
+            time.mktime(time.strptime(t.ts, "%Y-%m-%dT%H:%M:%SZ")) > cutoff
+            for t in self._threats
+        )
+
+    def abuseipdb_score(self, ip: str) -> tuple[int, str] | None:
+        """Return (score, detail) if cached, else None.  UI reads this; poll enriches it."""
+        entry = self._abuseipdb_cache.get(ip)
+        if entry:
+            return entry[1], entry[2]
+        return None
+
+    async def _enrich_ip(self, ip: str, api_key: str) -> None:
+        """Async AbuseIPDB v2 /check lookup. Caches result for 24h."""
+        if not ip or not api_key or ip in self._abuseipdb_pending:
+            return
+        cached = self._abuseipdb_cache.get(ip)
+        if cached and time.time() - cached[0] < 86400:
+            return  # still fresh
+        self._abuseipdb_pending.add(ip)
+        try:
+            import urllib.request, json as _json, urllib.parse
+            url = (
+                "https://api.abuseipdb.com/api/v2/check?"
+                + urllib.parse.urlencode({"ipAddress": ip, "maxAgeInDays": 90})
+            )
+            req = urllib.request.Request(
+                url,
+                headers={"Key": api_key, "Accept": "application/json"},
+            )
+            loop = asyncio.get_running_loop()
+            raw  = await loop.run_in_executor(
+                None,
+                lambda: urllib.request.urlopen(req, timeout=6).read().decode()
+            )
+            data  = _json.loads(raw).get("data", {})
+            score = int(data.get("abuseConfidenceScore", 0))
+            isp   = data.get("isp", "")
+            cc    = data.get("countryCode", "")
+            total = data.get("totalReports", 0)
+            detail = f"AbuseIPDB {score}%  {cc}  {isp}  {total} reports"
+            self._abuseipdb_cache[ip] = (time.time(), score, detail)
+            _log_auth.info("[AbuseIPDB] %s  score=%d  %s", ip, score, detail)
+            if score >= 75:
+                _log_auth.warning(
+                    "[AbuseIPDB HIGH RISK] %s  score=%d  - auto-ban candidate", ip, score)
+        except Exception as e:
+            _log.debug("AbuseIPDB lookup failed for %s: %s", ip, e)
+        finally:
+            self._abuseipdb_pending.discard(ip)
+
+    async def _enrich_geo(self, ip: str) -> None:
+        """Country lookup via _GEO_PROVIDERS fallback chain. Writes into _GEO_CACHE.
+        Handles IPv6 and IPv4-mapped IPv6 (::ffff:x.x.x.x) transparently."""
+        import re as _re
+        mapped = _re.match(r'^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$', ip, _re.I)
+        lookup_ip = mapped.group(1) if mapped else ip
+        if not ip or (ip in _GEO_CACHE and lookup_ip in _GEO_CACHE) or ip in self._geo_pending:
+            return
+        self._geo_pending.add(ip)
+        try:
+            cc = await _geo_fetch(lookup_ip)
+            _GEO_CACHE[ip] = cc or "??"
+            if mapped:
+                _GEO_CACHE[lookup_ip] = cc or "??"
+        except Exception as e:
+            _log.debug("GeoIP lookup failed for %s: %s", ip, e)
+            _GEO_CACHE[ip] = "??"
+        finally:
+            self._geo_pending.discard(ip)
+
+    # ── Main poll (called from _auth_sentinel_loop) ───────────────────────────
+
+    async def poll(self, host_id: str) -> list[AuthThreatEvent]:
+        """Fetch logs, parse events, run anomaly detection. Returns new threats."""
+        new_threats: list[AuthThreatEvent] = []
+
+        # Auth log (SSH, sudo, PAM)
+        r = await self._pool.run(host_id, _AUTH_LOG_CMD)
+        if r.ok:
+            new_threats += self._ingest(host_id, r.stdout.splitlines(),
+                                        protocols=None)
+
+        # Mail log (Dovecot, Postfix SASL)
+        rm = await self._pool.run(host_id, _MAIL_AUTH_CMD)
+        if rm.ok:
+            new_threats += self._ingest(host_id, rm.stdout.splitlines(),
+                                        protocols={"dovecot", "postfix"})
+
+        # Active sessions (every 30 s)
+        now = time.time()
+        if now - self._last_who >= 30:
+            rw = await self._pool.run(host_id, _WHO_CMD)
+            if rw.ok:
+                self._sessions = self._parse_who(host_id, rw.stdout)
+            self._last_who = now
+
+        # Mail queue spike
+        rq = await self._pool.run(host_id, _QUEUE_CMD)
+        if rq.ok:
+            try:
+                q = int(rq.stdout.strip())
+                delta = q - self._queue_prev
+                if delta > 200 and q > 500:
+                    _log_auth.warning(
+                        "[MAIL_FLOOD] host=%s  queue_depth=%d  delta=+%d  - possible spam relay",
+                        host_id, q, delta)
+                    new_threats.append(AuthThreatEvent(
+                        ts=_now_utc(), host_id=host_id,
+                        kind="MAIL_FLOOD", severity="HIGH",
+                        username="(postfix)", src_ip="",
+                        detail=f"Queue jumped +{delta} → {q} messages",
+                    ))
+                self._queue_prev = q
+            except ValueError:
+                pass
+
+        for t in new_threats:
+            self._threats.appendleft(t)
+
+        # AbuseIPDB enrichment: fire-and-forget for new attacking IPs
+        api_key = getattr(self._cfg, "abuseipdb_key", "") or ""
+        if api_key:
+            attacking_ips = {
+                t.src_ip for t in new_threats if t.src_ip
+            } | {
+                e.src_ip for e in list(self._events)[-20:]
+                if e.src_ip and not e.success and not e.is_own
+            }
+            for ip in attacking_ips:
+                if ip and ip not in self._abuseipdb_cache:
+                    asyncio.create_task(self._enrich_ip(ip, api_key))
+
+        return new_threats
+
+    # ── Parsing ───────────────────────────────────────────────────────────────
+
+    def _ingest(self, host_id: str, lines: list[str],
+                protocols: "set[str] | None") -> list[AuthThreatEvent]:
+        new_threats: list[AuthThreatEvent] = []
+        new_seen: set[str] = set()
+
+        for raw in lines:
+            raw = raw.strip()
+            if not raw:
+                continue
+            key = raw[-120:]   # dedup key (tail of line avoids log timestamp diff)
+            if key in self._seen_lines:
+                continue
+            new_seen.add(key)
+
+            ev = self._match(host_id, raw, protocols)
+            if ev is None:
+                continue
+
+            self._events.append(ev)
+            threats = self._detect(ev)
+            new_threats.extend(threats)
+
+        self._seen_lines = new_seen   # replace with freshest window
+        if new_threats:
+            kinds = ", ".join(f"{t.kind}({t.severity})" for t in new_threats)
+            _log_auth.warning(
+                "[THREATS DETECTED] host=%s  count=%d  %s",
+                host_id if new_threats else "?", len(new_threats), kinds)
+        return new_threats
+
+    def _match(self, host_id: str, raw: str,
+               protocols: "set[str] | None") -> "AuthEvent | None":
+        for protocol, event_type, pat in _AUTH_PATTERNS:
+            if protocols and protocol not in protocols:
+                continue
+            m = pat.search(raw)
+            if not m:
+                continue
+            g = m.groups()
+            username = g[0].strip() if len(g) >= 1 else ""
+            src_ip   = g[1].strip() if len(g) >= 2 else ""
+            # Sudo escalation: group(1) is USER (target), group(2) is COMMAND
+            if protocol == "sudo" and event_type == "escalation":
+                username = g[0].strip()
+                src_ip   = ""
+            success = event_type in (
+                "accepted_password", "accepted_key", "accepted",
+                "sasl_ok", "auth_ok", "session_open",
+            )
+            method = "publickey" if "key" in event_type else (
+                "sasl" if protocol in ("postfix", "dovecot") else "password"
+            )
+            # Mark the event as the script's own connection so detection is skipped.
+            # Condition: src_ip is one of our operator IPs AND username matches
+            # the configured SSH user for this host (e.g. "root").
+            # SafetyGuard.all_our_ips() is checked lazily here - it may grow over
+            # time as new connections are registered, but that is fine.
+            own_ips  = SafetyGuard.get().all_our_ips()
+            is_own   = bool(
+                src_ip and src_ip in own_ips
+                and username == self._host_username
+            )
+            # Country from shared GeoIP cache (instant if already resolved)
+            country = _GEO_CACHE.get(src_ip, "") if src_ip else ""
+            # Fire async geo lookup for unknown IPs (no-op if already in cache)
+            if src_ip and src_ip not in _GEO_CACHE and not is_own:
+                asyncio.create_task(self._enrich_geo(src_ip))
+            ev = AuthEvent(
+                ts=_now_utc(), host_id=host_id,
+                protocol=protocol, event_type=event_type,
+                username=username, src_ip=src_ip,
+                success=success, auth_method=method, raw_line=raw,
+                is_own=is_own, country=country,
+            )
+            # Log externally-sourced notable events for audit trail
+            if not is_own:
+                if success:
+                    _log_auth.info(
+                        "[AUTH SUCCESS] host=%s proto=%s/%s  user=%s  ip=%s  cc=%s",
+                        host_id, protocol, method, username, src_ip, country or "?")
+                elif event_type == "invalid_user":
+                    _log_auth.debug(
+                        "[AUTH FAIL invalid_user] host=%s proto=%s  user=%s  ip=%s",
+                        host_id, protocol, username, src_ip)
+            return ev
+        return None
+
+    # ── Anomaly detection ─────────────────────────────────────────────────────
+
+    def _detect(self, ev: AuthEvent) -> list[AuthThreatEvent]:
+        # Skip anomaly detection entirely for the script's own SSH connections.
+        # is_own is set in _match() when src_ip ∈ SafetyGuard.all_our_ips()
+        # and username == self._host_username (the configured SSH user).
+        if ev.is_own:
+            return []
+
+        threats: list[AuthThreatEvent] = []
+        cfg = self._cfg
+        now = time.time()
+        win5  = now - 300           # 5-minute window
+        win_lb = now - cfg.breach_lookback_minutes * 60
+
+        # Prune stale failure entries
+        for k in list(self._fail_win.keys()):
+            self._fail_win[k] = [t for t in self._fail_win[k] if t > win_lb]
+            if not self._fail_win[k]:
+                del self._fail_win[k]
+
+        cc = ev.country or _GEO_CACHE.get(ev.src_ip, "") if ev.src_ip else ""
+
+        # ── HONEYPOT ──────────────────────────────────────────────────────────
+        if ev.username in (cfg.honeypot_accounts or []):
+            _log_auth.critical(
+                "[HONEYPOT] host=%s ip=%s cc=%s user=%s proto=%s  - honeypot account triggered",
+                ev.host_id, ev.src_ip, cc, ev.username, ev.protocol)
+            threats.append(AuthThreatEvent(
+                ts=ev.ts, host_id=ev.host_id,
+                kind="HONEYPOT", severity="CRITICAL",
+                username=ev.username, src_ip=ev.src_ip, country=cc,
+                detail=f"Honeypot account '{ev.username}' triggered via {ev.protocol}",
+            ))
+
+        if not ev.success:
+            self._fail_win[(ev.username, ev.src_ip)].append(now)
+
+            # ── BRUTE_FORCE ───────────────────────────────────────────────────
+            ip_5min = sum(
+                len([t for t in ts if t > win5])
+                for (u, ip), ts in self._fail_win.items()
+                if ip == ev.src_ip
+            )
+            if ip_5min == cfg.auth_brute_threshold:   # fire only on exact threshold (once)
+                _log_auth.warning(
+                    "[BRUTE_FORCE] host=%s ip=%s cc=%s user=%s proto=%s  failures_5min=%d",
+                    ev.host_id, ev.src_ip, cc, ev.username, ev.protocol, ip_5min)
+                threats.append(AuthThreatEvent(
+                    ts=ev.ts, host_id=ev.host_id,
+                    kind="BRUTE_FORCE", severity="HIGH",
+                    username=ev.username, src_ip=ev.src_ip, country=cc,
+                    detail=f"{ip_5min} failures in 5 min from {ev.src_ip} ({cc})",
+                    failure_count=ip_5min,
+                ))
+
+            # ── PASSWORD_SPRAY (one IP, many users) ───────────────────────────
+            distinct_users = {u for (u, ip), _ in self._fail_win.items()
+                              if ip == ev.src_ip}
+            if len(distinct_users) == cfg.auth_spray_users:
+                _log_auth.warning(
+                    "[PASSWORD_SPRAY] host=%s ip=%s cc=%s  distinct_users=%d users=%s",
+                    ev.host_id, ev.src_ip, cc, len(distinct_users),
+                    ", ".join(sorted(distinct_users)[:10]))
+                threats.append(AuthThreatEvent(
+                    ts=ev.ts, host_id=ev.host_id,
+                    kind="PASSWORD_SPRAY", severity="HIGH",
+                    username="(multiple)", src_ip=ev.src_ip, country=cc,
+                    detail=f"Spray: {len(distinct_users)} users from {ev.src_ip} ({cc})",
+                ))
+
+            # ── CREDENTIAL_STUFFING (many IPs, same user) ─────────────────────
+            distinct_ips = {ip for (u, ip), _ in self._fail_win.items()
+                            if u == ev.username}
+            if len(distinct_ips) == cfg.auth_stuffing_ips:
+                _log_auth.warning(
+                    "[CREDENTIAL_STUFFING] host=%s user=%s cc=%s  distinct_ips=%d",
+                    ev.host_id, ev.username, cc, len(distinct_ips))
+                threats.append(AuthThreatEvent(
+                    ts=ev.ts, host_id=ev.host_id,
+                    kind="CREDENTIAL_STUFFING", severity="HIGH",
+                    username=ev.username, src_ip=ev.src_ip, country=cc,
+                    detail=f"Stuffing: {len(distinct_ips)} IPs targeting '{ev.username}' ({cc})",
+                ))
+
+        else:
+            # ── BREACH_CONFIRMED (P0) ─────────────────────────────────────────
+            user_failures = sum(
+                len(ts) for (u, ip), ts in self._fail_win.items()
+                if u == ev.username
+            )
+            whitelisted = ev.src_ip in (cfg.known_ips or {}).get(ev.username, [])
+            # Key FP guard: publickey success after password failures ≠ breach
+            key_after_pw = (ev.auth_method == "publickey")
+
+            if (user_failures >= cfg.breach_failure_threshold
+                    and not whitelisted and not key_after_pw):
+                all_ts = [t for (u, ip), ts in self._fail_win.items()
+                          if u == ev.username for t in ts]
+                elapsed = now - min(all_ts) if all_ts else 0
+                _log_auth.critical(
+                    "[BREACH_CONFIRMED P0] host=%s ip=%s cc=%s user=%s proto=%s/%s  "
+                    "failures=%d elapsed=%.0fs - IMMEDIATE RESPONSE REQUIRED",
+                    ev.host_id, ev.src_ip, cc, ev.username,
+                    ev.protocol, ev.auth_method, user_failures, elapsed)
+                threats.append(AuthThreatEvent(
+                    ts=ev.ts, host_id=ev.host_id,
+                    kind="BREACH_CONFIRMED", severity="P0",
+                    username=ev.username, src_ip=ev.src_ip, country=cc,
+                    detail=(
+                        f"{user_failures} failures then success ({cc}) - "
+                        f"{elapsed:.0f}s elapsed - {ev.protocol}/{ev.auth_method}"
+                    ),
+                    failure_count=user_failures,
+                    elapsed_seconds=elapsed,
+                ))
+
+            # ── ROOT_SSH ──────────────────────────────────────────────────────
+            if ev.username == "root" and ev.protocol == "ssh":
+                _log_auth.warning(
+                    "[ROOT_SSH] host=%s ip=%s cc=%s method=%s  - direct root login",
+                    ev.host_id, ev.src_ip, cc, ev.auth_method)
+                threats.append(AuthThreatEvent(
+                    ts=ev.ts, host_id=ev.host_id,
+                    kind="ROOT_SSH", severity="HIGH",
+                    username="root", src_ip=ev.src_ip, country=cc,
+                    detail=f"Root SSH login via {ev.auth_method} from {ev.src_ip} ({cc})",
+                ))
+
+            # ── IMPOSSIBLE_TRAVEL (geo check deferred - IP → country via GeoIP) ──
+            # Store for future geo correlation (GeoIP lookup runs in SecurityRadar)
+            self._geo_hist[ev.username].append((now, ev.src_ip, ev.country))
+            self._geo_hist[ev.username] = self._geo_hist[ev.username][-20:]
+
+        return threats
+
+    # ── Session parsing ───────────────────────────────────────────────────────
+
+    def _parse_who(self, host_id: str, output: str) -> list[AuthSession]:
+        sessions: list[AuthSession] = []
+        breach_ips = {t.src_ip for t in self._threats
+                      if t.severity in ("P0", "CRITICAL") and t.src_ip}
+        for line in output.splitlines():
+            parts = line.split()
+            if len(parts) < 4:
+                continue
+            user  = parts[0]
+            tty   = parts[1]
+            login = f"{parts[2]} {parts[3]}"
+            idle  = parts[4] if len(parts) > 4 else ""
+            src   = ""
+            if parts[-1].startswith("(") and parts[-1].endswith(")"):
+                src = parts[-1][1:-1]
+            sessions.append(AuthSession(
+                user=user, tty=tty, login_time=login, src_ip=src,
+                idle=idle, host_id=host_id,
+                flagged=(src in breach_ips or user in {
+                    t.username for t in self._threats
+                    if t.severity in ("P0", "CRITICAL")
+                }),
+            ))
+        return sessions
+
+
+def _now_utc() -> str:
+    return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+
+
+def _format_ts_local(utc_ts: str, short: bool = True) -> str:
+    """Convert UTC timestamp to local time display.
+
+    Handles both formats:
+    - "2026-04-25T14:32:45Z" (from AuthThreatEvent._now_utc())
+    - "Apr 25 14:32:45" (from AttackEvent creation)
+
+    Args:
+        utc_ts: UTC timestamp string
+        short: True → "HH:MM" (last 5 chars), False → "HH:MM:SS" (last 8 chars)
+
+    Returns:
+        Local time display string (same 5 or 8 char format, adjusted for local tz)
+    """
+    import datetime
+    try:
+        if 'T' in utc_ts:
+            dt_utc = datetime.datetime.fromisoformat(utc_ts.replace('Z', '+00:00'))
+        elif len(utc_ts.split()) == 3:
+            dt_utc = datetime.datetime.strptime(utc_ts, "%b %d %H:%M:%S").replace(
+                tzinfo=datetime.timezone.utc)
+        else:
+            return utc_ts[-8:] if len(utc_ts) > 8 else utc_ts
+
+        dt_local = dt_utc.astimezone()
+
+        if short:
+            return dt_local.strftime("%H:%M")
+        else:
+            return dt_local.strftime("%H:%M:%S")
+    except Exception:
+        return utc_ts[-8:] if len(utc_ts) > 8 else utc_ts
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -3711,7 +4989,16 @@ class EventKind(Enum):
     RAM_CRITICAL      = "ram_critical"
     DISK_WARN         = "disk_warn"
     DISK_CRITICAL     = "disk_critical"
-    AI_NOTIFICATION   = "ai_notification"   # fired by _ai_managed_loop send_notification actions
+    AI_NOTIFICATION         = "ai_notification"          # fired by _ai_managed_loop send_notification actions
+    # v0.78 - AuthSentinel threat events
+    AUTH_BREACH_CONFIRMED   = "auth_breach_confirmed"    # P0: success after ≥N failures
+    AUTH_BRUTE_FORCE        = "auth_brute_force"         # HIGH: ≥N failures/5min same IP
+    AUTH_PASSWORD_SPRAY     = "auth_password_spray"      # HIGH: one IP, many users
+    AUTH_STUFFING           = "auth_credential_stuffing" # HIGH: many IPs, same user
+    AUTH_HONEYPOT           = "auth_honeypot"            # CRITICAL: honeypot account touched
+    AUTH_ROOT_SSH           = "auth_root_ssh"            # HIGH: root SSH login succeeded
+    AUTH_IMPOSSIBLE_TRAVEL  = "auth_impossible_travel"   # HIGH: same user, two far geos
+    AUTH_MAIL_FLOOD         = "auth_mail_flood"          # HIGH: SASL user flooding outbound mail
 
 
 @dataclass
@@ -3782,17 +5069,23 @@ class HostAgent:
         # Alert recovery tracking: maps EventKind → bool (True = currently in alert state)
         self._alert_active: dict[EventKind, bool] = {}
 
-        # AI Managed — action history (10 entries ≈ 10 min at 60s/cycle).
+        # AI Managed - action history (10 entries ≈ 10 min at 60s/cycle).
         # Each entry is a one-line string: "[HH:MM] kind target → result".
         # Passed verbatim into the next AI call so the model can detect restart
         # loops, count consecutive failures, and avoid duplicate work across cycles.
         self._ai_action_history: deque = deque(maxlen=10)
 
-        # AI Managed — per-service restart cooldown.
+        # AI Managed - per-service restart cooldown.
         # Maps service name → monotonic deadline before which restart is blocked.
         # Default cooldown: 600 s (10 min) set after each successful restart.
         # Prevents a feedback loop where AI restarts a struggling service every 60 s.
         self._ai_restart_cooldown: dict[str, float] = {}
+
+        # v0.78 - AuthSentinel engine (multi-protocol auth intelligence)
+        # host_username = the SSH user Deflect itself connects as → own-login filter
+        self._auth_sentinel = AuthSentinelEngine(
+            self._mini_pool, cfg.monitoring, host_username=cfg.username
+        )
 
     # ── Public properties ─────────────────────────────────────────────────
 
@@ -3845,6 +5138,7 @@ class HostAgent:
             asyncio.create_task(self._alert_loop()),
             asyncio.create_task(self._ai_defense_loop()),
             asyncio.create_task(self._ai_managed_loop()),
+            asyncio.create_task(self._auth_sentinel_loop()),
         ]
 
     async def stop(self):
@@ -3900,6 +5194,40 @@ class HostAgent:
             except Exception as e:
                 _log_sec.error("security_loop %s: %s", self._cfg.id, e)
             await asyncio.sleep(8)
+
+    async def _auth_sentinel_loop(self):
+        """Poll multi-protocol auth logs every 12 s; fire events on anomalies."""
+        await asyncio.sleep(6)   # stagger vs _security_loop (starts at 0)
+        while True:
+            try:
+                if (self._host_state.state == ConnState.CONNECTED
+                        and self._cfg.monitoring.auth_sentinel):
+                    new_threats = await self._auth_sentinel.poll(self._cfg.id)
+                    for threat in new_threats:
+                        kind_map = {
+                            "BREACH_CONFIRMED":    EventKind.AUTH_BREACH_CONFIRMED,
+                            "BRUTE_FORCE":         EventKind.AUTH_BRUTE_FORCE,
+                            "PASSWORD_SPRAY":      EventKind.AUTH_PASSWORD_SPRAY,
+                            "CREDENTIAL_STUFFING": EventKind.AUTH_STUFFING,
+                            "HONEYPOT":            EventKind.AUTH_HONEYPOT,
+                            "ROOT_SSH":            EventKind.AUTH_ROOT_SSH,
+                            "IMPOSSIBLE_TRAVEL":   EventKind.AUTH_IMPOSSIBLE_TRAVEL,
+                            "MAIL_FLOOD":          EventKind.AUTH_MAIL_FLOOD,
+                        }
+                        ev_kind = kind_map.get(threat.kind)
+                        if ev_kind:
+                            await self._fire(AgentEvent(
+                                kind=ev_kind, host_id=self._cfg.id,
+                                payload={
+                                    "detail":   threat.detail,
+                                    "severity": threat.severity,
+                                    "username": threat.username,
+                                    "src_ip":   threat.src_ip,
+                                },
+                            ))
+            except Exception as e:
+                _log_auth.error("auth_sentinel_loop %s: %s", self._cfg.id, e)
+            await asyncio.sleep(12)
 
     async def _heartbeat_loop(self):
         """Persist uptime counter to deflect.json every 30 s."""
@@ -4033,7 +5361,7 @@ class HostAgent:
                     last_err = f"port {port} refused"
                     continue
                 except OSError as e:
-                    # Network unreachable, timed out, etc. — stop trying other ports
+                    # Network unreachable, timed out, etc. - stop trying other ports
                     _log.debug("Failed to fetch SSL cert expiry for %s: %s: %s", domain, type(e).__name__, e)
                     return -1
                 except Exception as e:
@@ -5591,7 +6919,7 @@ class HostAgent:
         """
         _RESTART_COOLDOWN_S = 600  # 10 min between restarts of the same service
 
-        await asyncio.sleep(90)   # initial delay — let metrics settle first
+        await asyncio.sleep(90)   # initial delay - let metrics settle first
         while True:
             await asyncio.sleep(60)
             try:
@@ -6096,6 +7424,121 @@ class SshKeyManager:
 
     # ── Public API ────────────────────────────────────────────────────────
 
+    async def generate_and_deploy_key(
+        self,
+        host_id: str,
+        username: str,
+    ):
+        """
+        Generate a new SSH key locally and deploy it to a user's authorized_keys.
+        Works for ANY user (not just the primary login user).
+
+        Async generator yielding (step_label, ok: bool, detail: str).
+        Steps: generate, push_pubkey, verify, backup, done.
+        """
+        _log.info("[generate_and_deploy_key] START host=%s user=%s", host_id, username)
+        agent = self._pool._agents.get(host_id)
+        if not agent:
+            yield ("init", False, f"unknown host: {host_id}")
+            return
+
+        cfg = agent._cfg
+        ts  = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
+        safe_label = "".join(c if c.isalnum() or c in "-_" else "_"
+                             for c in (cfg.label or host_id)).strip("_") or host_id
+        safe_user  = "".join(c if c.isalnum() or c in "-_" else "_"
+                             for c in username).strip("_") or "user"
+        new_priv = self.KEYS_DIR / f"{safe_label}_{safe_user}_{ts}"
+        new_pub  = Path(str(new_priv) + ".pub")
+
+        # ── Step 1: generate new keypair locally ──────────────────────────
+        _log.info("[generate_and_deploy_key] step 1/generate: new_priv=%s", new_priv)
+        yield ("generate", None, f"Generating ed25519 key → {new_priv}")
+        try:
+            loop = asyncio.get_running_loop()
+            await loop.run_in_executor(None, self._gen_keypair, new_priv)
+        except Exception as e:
+            _log.error("[generate_and_deploy_key] step generate FAILED: %s", e)
+            yield ("generate", False, str(e))
+            return
+        _log.info("[generate_and_deploy_key] step generate OK: %s", new_priv.name)
+        yield ("generate", True, f"Key generated: {new_priv.name}")
+
+        # ── Step 2: read new pubkey ───────────────────────────────────────
+        try:
+            pubkey_text = new_pub.read_text().strip()
+            _log.debug("[generate_and_deploy_key] pubkey read OK len=%d", len(pubkey_text))
+        except Exception as e:
+            _log.error("[generate_and_deploy_key] read pubkey FAILED: %s", e)
+            yield ("read_pub", False, str(e))
+            return
+
+        # ── Step 3: append to remote authorized_keys ─────────────────────
+        _log.info("[generate_and_deploy_key] step 3/push_pubkey: host=%s user=%s", host_id, username)
+        yield ("push_pubkey", None, f"Appending pubkey to {username}'s authorized_keys…")
+        escaped_pubkey = pubkey_text.replace("'", "'\\''")
+        cmd_push = (
+            f"sudo -u {username} mkdir -p ~{username}/.ssh && "
+            f"sudo -u {username} chmod 700 ~{username}/.ssh && "
+            f"echo '{escaped_pubkey}' | sudo -u {username} tee -a ~{username}/.ssh/authorized_keys > /dev/null && "
+            f"sudo -u {username} chmod 600 ~{username}/.ssh/authorized_keys && "
+            f"echo OK"
+        )
+        res = await self._pool.run(host_id, cmd_push)
+        _log.debug("[generate_and_deploy_key] push_pubkey res: ok=%s stdout=%r stderr=%r",
+                   res.ok, res.stdout[:80] if res.stdout else "", res.stderr[:80] if res.stderr else "")
+        if not res.ok or "OK" not in res.stdout:
+            _log.error("[generate_and_deploy_key] push_pubkey FAILED: %s", res.stderr or res.stdout)
+            yield ("push_pubkey", False,
+                   (res.stderr or res.stdout or "push failed")[:120])
+            return
+        yield ("push_pubkey", True, f"Pubkey appended to {username}'s authorized_keys")
+
+        # ── Step 4: verify new key works ─────────────────────────────────
+        _log.info("[generate_and_deploy_key] step 4/verify: connecting with new key %s", new_priv)
+        yield ("verify", None, f"Verifying new key connects as {username}…")
+        try:
+            # Create a modified config for test connection as this user
+            test_cfg = HostConfig(
+                id=cfg.id, label=cfg.label, address=cfg.address, port=cfg.port,
+                username=username, auth="key", key_path=str(new_priv), password=""
+            )
+            ok = await loop.run_in_executor(
+                None, self._test_connect, test_cfg, str(new_priv))
+            _log.debug("[generate_and_deploy_key] _test_connect returned: %s", ok)
+            if not ok:
+                raise RuntimeError("test connect returned False")
+        except Exception as e:
+            _log.error("[generate_and_deploy_key] verify FAILED: %s", e)
+            # Roll back: remove the key we just added
+            rollback_line = pubkey_text.replace("'", "'\\''")
+            rb_cmd = (
+                f"sed -i '/{rollback_line[:40]}/d' ~{username}/.ssh/authorized_keys 2>/dev/null || true"
+            )
+            await self._pool.run(host_id, rb_cmd)
+            yield ("verify", False, f"New key auth failed ({e}) - rolled back")
+            return
+        yield ("verify", True, f"New key authenticated successfully as {username}")
+
+        # ── Step 5: backup new key locally ───────────────────────────────
+        _log.info("[generate_and_deploy_key] step 5/backup: user=%s", username)
+        yield ("backup", None, "Backing up new key locally…")
+        try:
+            safe_user_dir = "".join(c if c.isalnum() or c in "-_" else "_" for c in username).strip("_")
+            backup_dir = _BACKUP_DIR / f"{safe_label}_{safe_user_dir}_{ts}"
+            backup_dir.mkdir(parents=True, exist_ok=True)
+            _shutil.copy2(new_priv, backup_dir / f"new_{new_priv.name}")
+            if new_pub.exists():
+                _shutil.copy2(new_pub, backup_dir / f"new_{new_pub.name}")
+            yield ("backup", True, f"Backed up to {backup_dir}")
+        except Exception as e:
+            _log.warning("[generate_and_deploy_key] backup failed: %s", e)
+            yield ("backup", False, f"Backup failed: {e}")
+            # Don't return - backup failure is not fatal
+
+        _log.info("[generate_and_deploy_key] DONE host=%s user=%s", host_id, username)
+        yield ("done", True, f"Key generated and deployed for {username} ✓")
+
     async def rotate_key(
         self,
         host_id: str,
@@ -6118,7 +7561,15 @@ class SshKeyManager:
         ts  = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
         safe_label = "".join(c if c.isalnum() or c in "-_" else "_"
                              for c in cfg.label).strip("_") or host_id
-        new_priv = self.KEYS_DIR / f"{safe_label}_{ts}"
+        # Write new key to the same directory as the original key so other programs
+        # (ssh, git, etc.) that reference the same ~/.ssh subfolder keep working.
+        key_dir = self.KEYS_DIR
+        if cfg.key_path:
+            orig_dir = Path(os.path.expanduser(cfg.key_path)).parent
+            if orig_dir.exists() and orig_dir.resolve() != self.KEYS_DIR.resolve():
+                key_dir = orig_dir
+                _log.info("[rotate_key] writing new key to original dir: %s", key_dir)
+        new_priv = key_dir / f"{safe_label}_{ts}"
         new_pub  = Path(str(new_priv) + ".pub")
 
         # ── Step 1: generate new keypair locally ──────────────────────────
@@ -6198,7 +7649,10 @@ class SshKeyManager:
         if old_pubkey:
             yield ("remove_old", None, "Removing old pubkey from authorized_keys…")
             # Use a unique substring of the pubkey comment/fingerprint
-            old_snippet = old_pubkey.split()[-1][:30].replace("/", r"\/")
+            # Use the key blob (base64 material, field [1]) not the comment (field [-1]).
+            # Comment is often user@host which the new key shares - causing both to be deleted.
+            old_blob = old_pubkey.split()[1] if len(old_pubkey.split()) >= 2 else old_pubkey
+            old_snippet = old_blob[:40].replace("/", r"\/").replace("+", r"\+")
             rm_cmd = f"sed -i '/{old_snippet}/d' {remote_akf} 2>/dev/null && echo OK"
             res2 = await self._pool.run(host_id, rm_cmd)
             _log.debug("[rotate_key] remove_old res: ok=%s stdout=%r", res2.ok, res2.stdout[:60])
@@ -6417,6 +7871,120 @@ class SshKeyManager:
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# SECTION: ssh_config_sync  (v0.78)
+# Manages ~/.ssh/deflect_hosts so that every host in Deflect is immediately
+# usable via `ssh <label>` in the user's terminal.  Also handles the one-time
+# Include injection into ~/.ssh/config.
+# ══════════════════════════════════════════════════════════════════════════════
+
+_SSH_DIR          = Path.home() / ".ssh"
+_SSH_CONFIG_FILE  = _SSH_DIR / "config"
+_DEFLECT_HOSTS_FILE = _SSH_DIR / "deflect_hosts"
+_INCLUDE_LINE     = "Include ~/.ssh/deflect_hosts"
+_DEFLECT_HOSTS_HEADER = (
+    "# ── Deflect One managed SSH hosts ────────────────────────────────────\n"
+    "# Auto-generated - edit hosts via Deflect One (deflect.py).\n"
+    "# Manual edits here will be overwritten on next host change.\n"
+    "# ──────────────────────────────────────────────────────────────────────\n\n"
+)
+
+
+class SSHConfigSyncManager:
+    """
+    Keeps ~/.ssh/deflect_hosts in sync with Deflect's host list.
+
+    Call sync_from_raw(raw_hosts) after any add/edit/delete operation,
+    passing self._data["hosts"] directly from ConfigManager - no HostConfig
+    deserialization needed.
+
+    On the very first sync, also injects an Include line into ~/.ssh/config
+    (backs up the original first) so that terminal `ssh <label>` works.
+
+    Disabled entirely when AppConfig.ssh_config_sync is False.
+    """
+
+    def __init__(self, enabled: bool = True):
+        self._enabled = enabled
+
+    # ── Public API ────────────────────────────────────────────────────────
+
+    def sync_from_raw(self, raw_hosts: "list[dict]") -> None:
+        """Rewrite ~/.ssh/deflect_hosts from raw JSON host dicts."""
+        if not self._enabled:
+            return
+        try:
+            _SSH_DIR.mkdir(parents=True, exist_ok=True)
+            self._write_deflect_hosts(raw_hosts)
+            self._ensure_include()
+        except Exception as exc:
+            _log.warning("[SSHConfigSyncManager] sync failed: %s", exc)
+
+    def remove_include(self) -> None:
+        """Remove the Include line from ~/.ssh/config (called on opt-out or uninstall)."""
+        if not _SSH_CONFIG_FILE.exists():
+            return
+        try:
+            lines = _SSH_CONFIG_FILE.read_text(encoding="utf-8").splitlines(keepends=True)
+            filtered = [l for l in lines if _INCLUDE_LINE not in l]
+            if len(filtered) != len(lines):
+                _SSH_CONFIG_FILE.write_text("".join(filtered), encoding="utf-8")
+        except Exception as exc:
+            _log.warning("[SSHConfigSyncManager] remove_include failed: %s", exc)
+
+    # ── Internals ─────────────────────────────────────────────────────────
+
+    def _write_deflect_hosts(self, raw_hosts: "list[dict]") -> None:
+        blocks: list[str] = [_DEFLECT_HOSTS_HEADER]
+        for h in raw_hosts:
+            if h.get("import_source") == "demo":
+                continue  # never write demo stubs to SSH config
+            label    = h.get("label") or h.get("id", "unknown")
+            address  = h.get("address", "")
+            username = h.get("username", "root")
+            port     = h.get("port", 22)
+            auth     = h.get("auth", "key")
+            key_path = h.get("key_path") or "~/.ssh/id_rsa"
+            if not address:
+                continue
+            block = f"Host {label}\n"
+            block += f"    HostName {address}\n"
+            block += f"    User {username}\n"
+            if port != 22:
+                block += f"    Port {port}\n"
+            if auth in ("key", "vault_key"):
+                block += f"    IdentityFile {key_path}\n"
+            block += "\n"
+            blocks.append(block)
+        _DEFLECT_HOSTS_FILE.write_text("".join(blocks), encoding="utf-8")
+        _log.debug("[SSHConfigSyncManager] wrote %d hosts to %s",
+                   len(raw_hosts), _DEFLECT_HOSTS_FILE)
+
+    def _ensure_include(self) -> None:
+        """Prepend Include line to ~/.ssh/config if not already present."""
+        if not _SSH_CONFIG_FILE.exists():
+            # Create a minimal config with just the Include
+            _SSH_CONFIG_FILE.write_text(_INCLUDE_LINE + "\n", encoding="utf-8")
+            _log.info("[SSHConfigSyncManager] created %s with Include line", _SSH_CONFIG_FILE)
+            return
+
+        existing = _SSH_CONFIG_FILE.read_text(encoding="utf-8")
+        if _INCLUDE_LINE in existing:
+            return  # already present
+
+        # Back up before modifying
+        import datetime as _dt
+        backup = _SSH_CONFIG_FILE.with_suffix(
+            f".bak.{_dt.date.today().isoformat()}"
+        )
+        if not backup.exists():
+            backup.write_text(existing, encoding="utf-8")
+            _log.info("[SSHConfigSyncManager] backed up %s → %s", _SSH_CONFIG_FILE, backup)
+
+        _SSH_CONFIG_FILE.write_text(_INCLUDE_LINE + "\n\n" + existing, encoding="utf-8")
+        _log.info("[SSHConfigSyncManager] injected Include line into %s", _SSH_CONFIG_FILE)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # SECTION: render / braille
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -6607,6 +8175,42 @@ class _HostActionScreen(ModalScreen):
         self.dismiss(None)
 
 
+class CardMoveRequest(Message):
+    """Posted by ServerCard when the user presses Ctrl+arrow to reorder the card."""
+    def __init__(self, host_id: str, direction: str) -> None:
+        super().__init__()
+        self.host_id   = host_id
+        self.direction = direction  # "left" | "right" | "up" | "down"
+
+
+def _health_score(metrics: "HostMetrics", services: list) -> tuple[int, str]:
+    """Weighted health score 0–100 with colour name (green/yellow/red)."""
+    score = 100.0
+    if metrics:
+        score -= metrics.cpu_pct  * 0.30
+        score -= metrics.ram_pct  * 0.30
+        score -= metrics.disk_pct * 0.20
+    for svc in services:
+        if getattr(svc, "active", None) == "failed":
+            score -= 5
+    score = max(0, min(100, int(score)))
+    color = "green" if score >= 80 else ("yellow" if score >= 60 else "red")
+    return score, color
+
+
+def _trend_arrow(history) -> str:
+    """Return ↑↑ / ↑  / spaces / ↓  / ↓↓ based on last two history samples."""
+    if len(history) < 2:
+        return "  "
+    vals  = list(history)
+    delta = vals[-1] - vals[-2]
+    if delta >= 15:  return "↑↑"
+    if delta >=  5:  return "↑ "
+    if delta <= -15: return "↓↓"
+    if delta <=  -5: return "↓ "
+    return "  "
+
+
 class ServerCard(Panel):
     DEFAULT_CSS = """
     ServerCard {
@@ -6618,6 +8222,7 @@ class ServerCard(Panel):
     ServerCard.online  { border: solid $success-darken-1; }  /* green = all good */
     ServerCard.warn    { border: solid $warning-darken-1; }  /* yellow = "we're watching you" */
     ServerCard.offline { border: solid $error-darken-1; }    /* red = oh no */
+    ServerCard:hover   { border: solid $accent-darken-1; }
     ServerCard:focus   { border: double $accent; }
     """
 
@@ -6628,6 +8233,14 @@ class ServerCard(Panel):
         self._label  = label
         self._addr   = address
         self._cfg    = cfg
+        self._docker_idx:        int  = -1   # -1 = not in docker-nav mode
+        self._docker_containers: list = []
+        self._cached_state             = None
+        self._cached_metrics           = None
+        self._cached_services: list    = []
+
+    def on_mount(self) -> None:
+        self.border_title = self._label
 
     def on_resize(self, event) -> None:
         # re-render when the card is resized so bars fill correctly
@@ -6635,14 +8248,22 @@ class ServerCard(Panel):
 
     def on_focus(self) -> None:
         super().on_focus()
-        self.border_subtitle = "\\[o]pen \\[a]i \\[m]aint  \\[F2]SSH  \\[f]iles  Enter:menu"
+        self.border_subtitle = (
+            "\\[o]pen \\[a]i \\[m]aint  \\[p]roc  \\[d]ocker"
+            "  F2:SSH  \\[f]iles  Ctrl+←→↑↓:move"
+        )
 
     def on_blur(self) -> None:
         self.border_subtitle = ""
+        self._docker_idx = -1
 
     def on_click(self, event: events.Click) -> None:
-        # _show_host_action() disabled — use F2 (SSH) or Ctrl+F (FM) shortcuts instead
-        # self._show_host_action()
+        self.focus()
+        if event.chain >= 2:
+            if self._docker_containers:
+                self._open_docker()
+            else:
+                self._open_processes()
         event.stop()
 
     def on_key(self, event: events.Key) -> None:
@@ -6661,9 +8282,29 @@ class ServerCard(Panel):
             if callable(action):
                 action()
             event.stop()
+        elif event.key == "p":
+            self._open_processes()
+            event.stop()
+        elif event.key == "d":
+            if self._docker_containers:
+                self._docker_idx = 0
+                self._refresh_card()
+            event.stop()
+        elif event.key == "escape" and self._docker_idx >= 0:
+            self._docker_idx = -1
+            self._refresh_card()
+            event.stop()
+        elif self._docker_idx >= 0 and event.key == "up":
+            self._docker_idx = max(0, self._docker_idx - 1)
+            self._refresh_card()
+            event.stop()
+        elif self._docker_idx >= 0 and event.key == "down":
+            self._docker_idx = min(len(self._docker_containers) - 1, self._docker_idx + 1)
+            self._refresh_card()
+            event.stop()
         elif event.key == "enter":
-            # _show_host_action() disabled — use F2 (SSH) or Ctrl+F (FM) shortcuts instead
-            # self._show_host_action()
+            if self._docker_idx >= 0:
+                self._open_docker()
             event.stop()
         elif event.key == "f2":
             self._launch_ssh()
@@ -6671,7 +8312,32 @@ class ServerCard(Panel):
         elif event.key == "ctrl+f" or event.key == "f":
             self._launch_fm()
             event.stop()
+        elif event.key == "ctrl+left":
+            self.post_message(CardMoveRequest(self.host_id, "left"))
+            event.stop()
+        elif event.key == "ctrl+right":
+            self.post_message(CardMoveRequest(self.host_id, "right"))
+            event.stop()
+        elif event.key == "ctrl+up":
+            self.post_message(CardMoveRequest(self.host_id, "up"))
+            event.stop()
+        elif event.key == "ctrl+down":
+            self.post_message(CardMoveRequest(self.host_id, "down"))
+            event.stop()
         # ←→ and other keys bubble up to Panel base handler
+
+    def _open_docker(self) -> None:
+        pool    = getattr(self.app, "_pool",    None)
+        metrics = getattr(self.app, "_metrics", None)
+        if pool and metrics and hasattr(pool, "add_host"):
+            self.app.push_screen(DockerScreen(pool, metrics, host_id=self.host_id))
+
+    def _open_processes(self) -> None:
+        pool    = getattr(self.app, "_pool",    None)
+        metrics = getattr(self.app, "_metrics", None)
+        if pool and metrics and hasattr(pool, "add_host"):
+            self.app.push_screen(
+                ProcessScreen(pool, metrics, focused_host_id=self.host_id))
 
     def _show_host_action(self) -> None:
         pool = getattr(self.app, "_pool", None)
@@ -6688,21 +8354,29 @@ class ServerCard(Panel):
     def _launch_ssh(self) -> None:
         pool = getattr(self.app, "_pool", None)
         if pool:
-            self.app.push_screen(SshShellScreen(pool, self.host_id))
+            hs = pool.state(self.host_id)
+            init_cmd = _get_ssh_init_cmd(hs)
+            self.app.push_screen(SshShellScreen(pool, self.host_id, init_cmd=init_cmd))
 
     def _launch_fm(self) -> None:
         pool = getattr(self.app, "_pool", None)
         if pool:
             self.app.push_screen(FileManagerScreen(pool, initial_host_id=self.host_id))
 
-    def update_data(self, state, metrics: HostMetrics, services: list[ServiceInfo]):
-        # size.width is 0 before first paint; fall back to a safe default
-        raw_w = self.size.width or self.content_size.width or 38
-        w     = max(30, raw_w)
-        bar   = max(10, w - 14)
-        t   = Text()
-        focused = self.has_focus
+    def update_data(self, state, metrics: HostMetrics, services: list[ServiceInfo]) -> None:
+        self._cached_state    = state
+        self._cached_metrics  = metrics
+        self._cached_services = services
+        self._refresh_card()
 
+    def _refresh_card(self) -> None:
+        state    = self._cached_state
+        metrics  = self._cached_metrics
+        services = self._cached_services
+        if state is None:
+            return
+
+        # Connection state → border colour class
         if state.state == ConnState.CONNECTED:
             dot, col = "●", "green"
             self.remove_class("offline", "warn"); self.add_class("online")
@@ -6713,30 +8387,52 @@ class ServerCard(Panel):
             dot, col = "✗", "red"
             self.remove_class("online", "warn"); self.add_class("offline")
 
-        cursor = "▶ " if focused else "  "
-        tag    = f" [{'+'.join(state.config.tags[:2])}]" if state.config.tags else ""
+        # Health score badge + hostname in border title
+        # Use \\[ to escape literal [ in Rich markup used by border_title
+        score, scol = _health_score(metrics, services)
+        tag    = f" \\[{'+'.join(state.config.tags[:2])}]" if state.config.tags else ""
         maint  = " 🔧" if state.config.maintenance else ""
         ai_ctl = " 🤖" if state.config.ai_controlled else ""
-        t.append(cursor, style=f"bold {CLR_CURSOR}" if focused else "grey50")
-        t.append(f"{dot} ", style=col)
-        t.append(f"{self._label}{tag}{maint}{ai_ctl}\n", style="bold white")
-        t.append(f"   {self._addr}  {fmt_uptime(metrics.uptime_s)}\n", style="grey50")
+        self.border_title = f"{self._label}{tag}{maint}{ai_ctl}  \\[{score}]"
+
+        # size.width is 0 before first paint; fall back to a safe default
+        raw_w = self.size.width or self.content_size.width or 38
+        w     = max(30, raw_w)
+        bar   = max(10, w - 14)
+        t       = Text()
+        focused = self.has_focus
+
+        cursor = "▶" if focused else " "
+        uptime = fmt_uptime(metrics.uptime_s) if metrics else ""
+        t.append(f"{cursor} {dot} ", style=f"bold {CLR_CURSOR}" if focused else "grey50")
+        t.append(f"{self._addr}", style="grey50")
+        t.append(f"  {uptime}\n", style="grey70")
 
         if state.state != ConnState.CONNECTED:
-            t.append(f"   {(state.error or state.state.value)[:w-4]}\n", style="red")
-            self.update(t); return
+            t.append(f"  {(state.error or state.state.value)[:w-4]}\n", style="red")
+            self.update(t)
+            return
+        if not metrics:
+            t.append("  (no metrics yet)\n", style="grey50")
+            self.update(t)
+            return
         if metrics.error:
-            t.append(f"   {metrics.error}\n", style="yellow")
+            t.append(f"  {metrics.error}\n", style="yellow")
             self.update(t); return
 
+        # CPU with trend arrow
+        cpu_trend = _trend_arrow(metrics.cpu_history)
         t.append(" CPU ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.cpu_pct, bar))
-        t.append(f" {metrics.cpu_pct:4.1f}%  L{metrics.load1:.2f}\n",
+        t.append(f" {metrics.cpu_pct:4.1f}% {cpu_trend} L{metrics.load1:.2f}\n",
                  style=pct_color(metrics.cpu_pct))
 
+        # RAM with trend arrow
+        ram_trend = _trend_arrow(metrics.ram_history)
         t.append(" RAM ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.ram_pct, bar))
-        t.append(f" {metrics.ram_pct:4.1f}%\n", style=pct_color(metrics.ram_pct))
+        t.append(f" {metrics.ram_pct:4.1f}% {ram_trend}\n",
+                 style=pct_color(metrics.ram_pct))
 
         t.append("Disk ", style=CLR_METRIC)
         t.append_text(gradient_bar(metrics.disk_pct, bar))
@@ -6752,11 +8448,10 @@ class ServerCard(Panel):
             mta_name = "📧" if metrics.mail_mta_type == "exim4" else "📮"
             t.append(" mta ", style=CLR_METRIC)
             t.append_text(braille_sparkline(metrics.mail_queue_hist, bar // 2))
-            # Dynamic coloring: red if > 8 msgs/min (~500/h), yellow if trending up
             if metrics.mail_throughput_mpm > 8:
                 status_color = "red"
             elif len(metrics.mail_queue_hist) > 1 and metrics.mail_throughput_mpm > metrics.mail_queue_hist[-2]:
-                status_color = "yellow"  # throughput increasing
+                status_color = "yellow"
             else:
                 status_color = "green"
             t.append(f" {mta_name} {metrics.mail_throughput_mpm:5.1f}msgs/m\n",
@@ -6799,17 +8494,50 @@ class ServerCard(Panel):
                 t.append("✓upd", style="green")
             t.append("\n")
 
+        # Docker - all containers with status icons, health badge, keyboard nav
         if metrics.docker_containers:
-            running = [c for c in metrics.docker_containers if "Up" in c.status]
-            total   = len(metrics.docker_containers)
+            containers = metrics.docker_containers
+            self._docker_containers = containers
+            # Clamp selection index in case containers disappeared
+            if self._docker_idx >= len(containers):
+                self._docker_idx = len(containers) - 1
+
+            running = [c for c in containers if "Up" in c.status]
+            total   = len(containers)
+            dkr_pct = int(len(running) / total * 100) if total else 0
+            dkr_col = "green" if dkr_pct == 100 else ("yellow" if dkr_pct > 0 else "red")
+
             t.append(" dkr ", style=CLR_METRIC)
-            t.append(f"[D] {len(running)}/{total} ", style="cyan" if running else "grey50")
-            for c in running[:3]:
-                short_name = c.name[:10]
-                t.append(f"{short_name} ", style="cyan")
-            if len(running) > 3:
-                t.append(f"+{len(running)-3}", style="grey50")
+            t.append(f"[{dkr_pct}%] ", style=f"bold {dkr_col}")
+            t.append(f"{len(running)}/{total}", style="grey50")
+            if focused and self._docker_idx >= 0:
+                t.append("  ↑↓:nav  Enter:open  Esc:exit", style="grey50")
+            elif focused:
+                t.append("  d:select", style="grey50")
             t.append("\n")
+
+            for i, c in enumerate(containers[:6]):
+                sel   = focused and self._docker_idx == i
+                is_up = "Up" in c.status
+                icon  = "▶" if is_up else "■"
+                icol  = "green" if is_up else "grey50"
+                name  = c.name[:12]
+                if sel:
+                    t.append(f"  → {icon}", style=f"bold {icol}")
+                    t.append(f" {name}", style="bold white")
+                    if is_up:
+                        t.append(f"  {c.cpu_pct:.1f}%cpu {c.mem_pct:.1f}%mem",
+                                 style="grey70")
+                else:
+                    t.append(f"     {icon}", style=icol)
+                    t.append(f" {name}", style="cyan" if is_up else "grey50")
+                t.append("\n")
+
+            if len(containers) > 6:
+                t.append(f"     +{len(containers)-6} more\n", style="grey50")
+        else:
+            self._docker_containers = []
+            self._docker_idx = -1
 
         self.update(t)
 
@@ -6936,7 +8664,13 @@ class AttackRadarPanel(Panel):
         self._ddos_info:   str  = ""
         self._port_warnings: list = []
         self._ip_hosts: dict[str, set] = {}   # ip → set of host_ids where detected
-        # (useful for spotting coordinated attacks across multiple servers)
+        self._auth_threats: list[AuthThreatEvent] = []
+        self._sentinel_breach_count: int = 0
+        self._sel_auth: int = -1          # selected auth threat row (-1 = none)
+        self._auth_row_start: int = -1    # absolute row where auth section begins
+        self._last_click_row: int = -1    # track row of last click for double-click detection
+        self._last_click_time: float = 0  # timestamp of last click
+        self._physical_row_to_logical: dict[int, tuple[str, int]] = {}  # phys_y → (type, idx)
 
     def on_mount(self) -> None:
         self._redraw()
@@ -6948,7 +8682,8 @@ class AttackRadarPanel(Panel):
                     host_labels: dict[str, str] | None = None,
                     ddos_active: bool = False, ddos_info: str = "",
                     port_warnings: list | None = None,
-                    ip_hosts: dict[str, set] | None = None):
+                    ip_hosts: dict[str, set] | None = None,
+                    auth_threats: list | None = None):
         self._events = list(events)
         self._rate   = rate
         if ip_hosts is not None:
@@ -6960,6 +8695,12 @@ class AttackRadarPanel(Panel):
             self._port_warnings = port_warnings
         if host_labels is not None:
             self._host_labels = host_labels
+        if auth_threats is not None:
+            self._auth_threats = list(auth_threats)
+            self._sentinel_breach_count = sum(
+                1 for t in self._auth_threats
+                if getattr(t, "kind", "") == "BREACH_CONFIRMED"
+            )
         # Build grouped view: one entry per source IP (newest-first by kind/time)
         groups: dict[str, dict] = {}
         for ev in self._events:
@@ -6986,40 +8727,122 @@ class AttackRadarPanel(Panel):
         self._grouped = sorted(groups.items(), key=lambda x: x[1]['last_ts'], reverse=True)
         if self._grouped:
             self.selected = min(self.selected, len(self._grouped) - 1)
+        self._update_border()
         self._redraw()
 
     def watch_selected(self, _: int) -> None:
         self._redraw()
 
-    # Header occupies: border-top(1) + title line(1) + separator line(1) = 3 rows
-    _HEADER_ROWS = 3
+    # border-top only (title moved to border_title)
+    _HEADER_ROWS = 1
 
     def on_click(self, event: events.Click) -> None:
-        row = event.y - self._HEADER_ROWS  # rows are now always 1 line each (content is trimmed)
-        if not self._grouped or row < 0:
+        import time
+        phys_row = event.y - self._HEADER_ROWS
+        if phys_row < 0:
             return
-        if row < min(len(self._grouped), 16):
-            self.selected = row
-            self.focus()   # focus after selected so on_focus redraws with correct row
-            event.stop()
+        self.focus()
+
+        # Map physical row to logical row using stored mapping
+        logical_info = self._physical_row_to_logical.get(phys_row)
+        if not logical_info:
+            return
+
+        typ, idx = logical_info
+
+        # Detect double-click: same row clicked within 300ms
+        now = time.time()
+        is_double_click = (self._last_click_row == phys_row and
+                          (now - self._last_click_time) < 0.3)
+        self._last_click_row = phys_row
+        self._last_click_time = now
+
+        # Auth threat click
+        if typ == "auth":
+            shown = self._auth_threats[-6:]
+            if 0 <= idx < len(shown):
+                self._sel_auth = idx
+                self.selected = -1  # deselect IP list
+                if is_double_click:
+                    self._ban_selected()
+                else:
+                    self._redraw()
+                event.stop()
+            return
+
+        # IP list click
+        if typ == "ip":
+            visible = self._grouped[:16]
+            if 0 <= idx < len(visible):
+                self.selected = idx
+                self._sel_auth = -1
+                if is_double_click:
+                    self._ban_selected()
+                else:
+                    self._redraw()
+                event.stop()
 
     def on_focus(self) -> None:
         super().on_focus()
-        self.border_subtitle = "\\[b]an  \\[a]i  \\[l]ogs  \\[1-4]mitigate"
+        self.app.notify_panel_focus("radar-panel")
+        self.border_subtitle = "↑↓:nav  a:analyze  b:ban  d:docker  e:email  h:sentinel  s:hardening"
+        self._update_border()
         self._redraw()
 
     def on_blur(self) -> None:
         self.border_subtitle = ""
+        self._update_border()
         self._redraw()
 
+    def _update_border(self) -> None:
+        """Update border title with attack radar stats."""
+        title = f"⚡ ATTACK RADAR  {self._rate:.0f}/min  🛡{self._banned}"
+        if self._sentinel_breach_count:
+            title += f"  ★ BREACH×{self._sentinel_breach_count}"
+        elif self._auth_threats:
+            title += f"  ★ auth:{len(self._auth_threats)}"
+        self.border_title = title
+
     def on_key(self, event: events.Key) -> None:
+        in_auth = self._sel_auth >= 0 and self._auth_threats
         if event.key == "up":
-            self.selected = max(0, self.selected - 1)
+            if in_auth:
+                if self._sel_auth > 0:
+                    self._sel_auth -= 1
+                elif self._grouped:
+                    self._sel_auth = -1
+                    self.selected = min(len(self._grouped), 16) - 1
+                self._redraw()
+            else:
+                if self.selected > 0:
+                    self.selected -= 1
+                elif self._auth_threats:
+                    self.selected = -1
+                    self._sel_auth = len(self._auth_threats[-6:]) - 1
+                self._redraw()
             event.stop()
         elif event.key == "down":
-            max_idx = min(len(self._grouped), 16) - 1 if self._grouped else 0
-            self.selected = min(max_idx, self.selected + 1) if self._grouped else 0
+            if in_auth:
+                max_auth = len(self._auth_threats[-6:]) - 1
+                if self._sel_auth < max_auth:
+                    self._sel_auth += 1
+                elif self._grouped:
+                    self._sel_auth = -1
+                    self.selected = 0
+                self._redraw()
+            else:
+                max_idx = min(len(self._grouped), 16) - 1 if self._grouped else -1
+                if self.selected < max_idx:
+                    self.selected += 1
+                elif self._auth_threats:
+                    self.selected = -1
+                    self._sel_auth = 0
+                self._redraw()
             event.stop()
+        elif event.key == "tab":
+            # Tab passes focus to next panel (ServicesPanel)
+            # Don't stop the event - let it bubble up for default tab behavior
+            pass
         elif event.key in ("enter", "b"):
             self._ban_selected(); event.stop()
         elif event.key == "1":
@@ -7030,26 +8853,46 @@ class AttackRadarPanel(Panel):
             self._ban_top_ip(); event.stop()
         elif event.key == "4":
             self._ban_top_subnet24(); event.stop()
+        elif event.key == "h":
+            self._open_auth_sentinel(); event.stop()
         elif event.key == "a":
             asyncio.create_task(self._ai_analyze_selected()); event.stop()
         elif event.key == "l":
             asyncio.create_task(self._show_log_lines_selected()); event.stop()
+        elif event.key == "s":
+            self._open_security_wizard(); event.stop()
         # ←→ bubbles to base Panel → app nav
 
     def _ban_selected(self):
-        if not self._grouped: return
-        visible = self._grouped[:16]
-        if 0 <= self.selected < len(visible):
-            ip = visible[self.selected][0]
-            detected = sorted(self._ip_hosts.get(ip, set()))
-            all_hosts = sorted(self.app._pool.host_ids())
-            def _do_ban(result):
-                if result:
-                    target, host_ids = result
-                    self.app.trigger_ban(target, host_ids=host_ids)
-            self.app.push_screen(
-                BanSelectScreen(ip, detected_hosts=detected, all_hosts=all_hosts),
-                _do_ban)
+        ip = ""
+        detected = []
+        # Check if Auth Sentinel threat is selected
+        if self._sel_auth >= 0 and self._auth_threats:
+            shown = self._auth_threats[-6:]
+            if 0 <= self._sel_auth < len(shown):
+                th = shown[self._sel_auth]
+                ip = getattr(th, "src_ip", "")
+                host_id = getattr(th, "host_id", "")
+                if host_id:
+                    detected = [host_id]
+        # Otherwise check IP list
+        elif self._grouped:
+            visible = self._grouped[:16]
+            if 0 <= self.selected < len(visible):
+                ip = visible[self.selected][0]
+                detected = sorted(self._ip_hosts.get(ip, set()))
+
+        if not ip:
+            return
+
+        all_hosts = sorted(self.app._pool.host_ids())
+        def _do_ban(result):
+            if result:
+                target, host_ids = result
+                self.app.trigger_ban(target, host_ids=host_ids)
+        self.app.push_screen(
+            BanSelectScreen(ip, detected_hosts=detected, all_hosts=all_hosts),
+            _do_ban)
 
     async def _mitigate_iptables(self):
         try:
@@ -7130,24 +8973,57 @@ class AttackRadarPanel(Panel):
         if not (0 <= self.selected < len(visible)):
             return
         ip, info = visible[self.selected]
-        host_id = info.get("host_id", "")
+        host_id  = info.get("host_id", "")
+        kind     = info.get("kind", "")
         self.app.notify(f"⟳ Loading logs for {ip}…")
-        cmd = (
-            f"grep -F '{ip}' "
-            "/var/log/auth.log /var/log/fail2ban.log /var/log/ufw.log "
-            "/var/log/nginx/access.log /var/log/nginx/error.log "
-            "/var/log/syslog 2>/dev/null | tail -50"
+
+        # Build a grep command tuned to the attack kind so we hit the right logs.
+        # grep -rH: recursive + always show filename (helps identify the service).
+        # zgrep covers rotated .gz files - count mismatch between radar and L often
+        # happens because older hits are in compressed rotated logs grep-r can't read.
+        # Each section falls back gracefully with 2>/dev/null.
+        ssh_logs = (
+            f"grep -H -F '{ip}' /var/log/auth.log /var/log/auth.log.1 "
+            f"/var/log/secure /var/log/fail2ban.log /var/log/ufw.log 2>/dev/null ; "
+            f"zgrep -H -F '{ip}' /var/log/auth.log*.gz 2>/dev/null | tail -20 ; "
+            f"journalctl -q --no-pager --since '7d ago' 2>/dev/null "
+            f"| grep -F '{ip}' | tail -20"
         )
+        http_logs = (
+            # current + .1 rotated (uncompressed)
+            f"grep -rH -F '{ip}' /var/log/nginx/ /var/log/apache2/ "
+            f"/var/log/httpd/ /var/log/caddy/ 2>/dev/null | grep -v '\\.gz:' ; "
+            # compressed rotated logs
+            f"zgrep -rH -F '{ip}' /var/log/nginx/ /var/log/apache2/ "
+            f"/var/log/httpd/ /var/log/caddy/ 2>/dev/null | tail -30"
+        )
+        email_logs = (
+            f"grep -H -F '{ip}' /var/log/exim4/mainlog /var/log/mail.log "
+            f"/var/log/mail.info /var/log/postfix.log 2>/dev/null ; "
+            f"zgrep -H -F '{ip}' /var/log/mail.log*.gz /var/log/exim4/*.gz 2>/dev/null | tail -20"
+        )
+        syslog_grep = (
+            f"grep -H -F '{ip}' /var/log/syslog /var/log/messages 2>/dev/null | tail -10"
+        )
+
+        if kind in ("bot", "exploit_scan", "http_brute", "http_flood", "ddos", "conn_flood"):
+            cmd = f"( {http_logs} ; {ssh_logs} ; {syslog_grep} ) | sort | tail -80"
+        elif kind in ("email_brute", "email_scan"):
+            cmd = f"( {email_logs} ; {ssh_logs} ; {syslog_grep} ) | sort | tail -80"
+        else:
+            # SSH/scan/brute/breakin - auth logs primary, also check http in case
+            cmd = f"( {ssh_logs} ; {http_logs} ; {syslog_grep} ) | sort | tail -80"
+
         try:
             res = await self.app._pool.run(host_id, cmd)
         except Exception as e:
             self.app.notify(f"Log fetch failed: {e}", severity="error")
             return
         raw_lines = res.stdout.strip() if res.ok and res.stdout.strip() else "(no log lines found)"
-        # Escape Rich markup brackets so log lines render literally
         body = raw_lines.replace("[", "\\[")
         host_lbl = self._host_labels.get(host_id, host_id)
-        title = f"📋 Logs for {ip}  ({info.get('cc','?')})  [{host_lbl}]"
+        kind_lbl = f"  kind:{kind}" if kind else ""
+        title = f"📋 Logs: {ip}  ({info.get('cc','?')}){kind_lbl}  [{host_lbl}]"
         self.app.push_screen(AiAnalysisPopup(title, body))
 
     def _ban_top_subnet24(self):
@@ -7163,25 +9039,56 @@ class AttackRadarPanel(Panel):
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
 
+    def _open_auth_sentinel(self):
+        """'h' key - open AuthSentinelScreen, pre-filtered to selected attack's host."""
+        host_id = ""
+        if self._grouped:
+            visible = self._grouped[:16]
+            if 0 <= self.selected < len(visible):
+                host_id = visible[self.selected][1].get("host_id", "")
+        self.app.push_screen(
+            AuthSentinelScreen(self.app._pool, self.app._cfg,
+                               initial_host=host_id or None))
+
+    def _open_security_wizard(self):
+        """Open SecurityWizardScreen for the host of the selected attack event."""
+        if not hasattr(self.app, "_pool") or not hasattr(self.app._pool, "add_host"):
+            self.app.notify("Security Wizard not available in demo mode", severity="warning")
+            return
+        host_id = ""
+        if self._grouped:
+            visible = self._grouped[:16]
+            if 0 <= self.selected < len(visible):
+                host_id = visible[self.selected][1].get("host_id", "")
+        if not host_id:
+            ids = list(self.app._pool.host_ids())
+            host_id = ids[0] if ids else ""
+        if not host_id:
+            self.app.notify("No host selected", severity="warning")
+            return
+        self.app.push_screen(SecurityWizardScreen(self.app._pool, host_id))
+
     def _redraw(self):
         focused  = self.has_focus
         rate_col = "red" if self._rate > 10 else "yellow" if self._rate > 3 else "green"
         # Available width: panel width minus border (2) and padding (2)
         avail_w = max(30, self.size.width - 4) if self.size.width else 60
         t = Text()
+        _row = 0   # track current text row to record auth section start
+        self._physical_row_to_logical = {}  # reset mapping: physical row y → (type, index)
 
-        cursor = "▶ " if focused else "  "
-        t.append(f"{cursor}⚡ ATTACK RADAR  ", style="bold red")
-        t.append(f"{self._rate:.0f}/min", style=rate_col)
-        t.append(f"  banned:{self._banned}", style="grey50")
-        if focused:
-            t.append("  ↑↓:select  b/Enter:ban IP", style="grey35")
-        t.append("\n─" + "─" * (avail_w - 1) + "\n", style="grey23")
+        def _record_row(typ: str, idx: int) -> None:
+            """Record mapping of all physical rows for this logical row."""
+            # Count newlines to find which line we're on (after adjustment for wrapping)
+            lines_in_text = t.plain.count('\n') - 1
+            self._physical_row_to_logical[lines_in_text] = (typ, idx)
+
 
         if self._ddos_active:
             t.append(f"  ⚠ DDoS: {self._ddos_info}\n", style="bold red")
             t.append("  [1]iptables  [2]nginx-limit  [3]ban-top  [4]+/24\n",
                      style="grey50")
+            _row += 2
 
         _KIND_COLOR = {
             "brute": "red", "breakin": "red", "http_brute": "red", "syn_flood": "red",
@@ -7189,16 +9096,17 @@ class AttackRadarPanel(Panel):
             "exploit_scan": "magenta", "bot": "cyan",
             "scan": "yellow",
             "email_brute": "bold red", "email_scan": "magenta",
+            "db_brute": "bold magenta",
         }
 
         if not self._grouped:
             t.append("  No events yet...\n", style="grey50 italic")
+            _row += 1
         else:
             visible = self._grouped[:16]
             for i, (ip, info) in enumerate(visible):
                 sel  = focused and i == self.selected
-                ts   = info['last_ts'].split()[-1] if " " in info['last_ts'] else info['last_ts']
-                ts   = ts[-8:] if len(ts) > 8 else ts
+                ts   = _format_ts_local(info['last_ts'], short=False)
                 kc   = _KIND_COLOR.get(info['kind'], "yellow")
                 camp = "⚡" if info['campaign'] else " "
                 live_flag = info.get('live', False)
@@ -7226,6 +9134,51 @@ class AttackRadarPanel(Panel):
                 t.append(f"{cnt:>3}×  ", style="bold white" if sel else "grey85")
                 t.append(host_lbl + " ", style=f"bold {CLR_HOST_SEL}" if sel else CLR_HOST_LBL)
                 t.append(f"{ts}\n", style="grey50")
+                _record_row("ip", i)
+                _row += 1
+
+        if self._auth_threats:
+            t.append("\n─ Auth Sentinel ─\n", style="grey23")
+            _row += 2  # "\n" (blank line) + header line + trailing \n moves to next
+            self._auth_row_start = _row
+            _AUTH_SEVERITY_COLOR = {
+                "critical": "bold red", "high": "red", "medium": "yellow", "low": "grey70",
+            }
+            _AUTH_KIND_GLYPH = {
+                "BREACH_CONFIRMED":   ("★", "bold red"),
+                "BRUTE_FORCE":        ("★", "red"),
+                "HONEYPOT":           ("★", "bold magenta"),
+                "ROOT_SSH":           ("★", "bold red"),
+                "PASSWORD_SPRAY":     ("★", "yellow"),
+                "CREDENTIAL_STUFFING":("★", "yellow"),
+                "MAIL_FLOOD":         ("★", "cyan"),
+                "IMPOSSIBLE_TRAVEL":  ("★", "magenta"),
+            }
+            shown = self._auth_threats[-6:]  # newest 6
+            for auth_i, th in enumerate(reversed(shown)):
+                sel_auth = focused and auth_i == self._sel_auth
+                glyph, gc = _AUTH_KIND_GLYPH.get(th.kind, ("★", "yellow"))
+                sev_col = _AUTH_SEVERITY_COLOR.get(getattr(th, "severity", "HIGH").lower(), "yellow")
+                ts = _format_ts_local(getattr(th, "ts", ""), short=False)
+                host_lbl = self._host_labels.get(getattr(th, "host_id", ""), getattr(th, "host_id", ""))
+                ip = getattr(th, "src_ip", "")
+                cc = (getattr(th, "country", "") or "")[:2]
+                kind_short = th.kind[:12]
+                row_style = "reverse" if sel_auth else ""
+                t.append(f"  {glyph} ", style=f"{gc} {row_style}".strip())
+                t.append(f"{kind_short:<12} ", style=f"{sev_col} {row_style}".strip())
+                t.append(f"{ip:<15} ", style=f"{CLR_ACCENT} {row_style}".strip())
+                t.append(f"{cc:<2} ", style=f"dim {row_style}".strip())
+                t.append(f"{host_lbl[:8]:<8} ", style=f"{CLR_HOST_LBL} {row_style}".strip())
+                t.append(f"{ts}\n", style=f"grey50 {row_style}".strip())
+                _record_row("auth", auth_i)
+                _row += 1
+            if len(self._auth_threats) > 6:
+                t.append(f"  … {len(self._auth_threats) - 6} more  [h] Auth Sentinel\n", style="grey35")
+            else:
+                t.append("  [h] Auth Sentinel for details\n", style="grey35")
+        else:
+            self._auth_row_start = -1
 
         if self._port_warnings:
             t.append("\n─ Port Audit ─\n", style="grey23")
@@ -7233,6 +9186,25 @@ class AttackRadarPanel(Panel):
                 t.append(f"  ⚠ :{w['port']} {w['service']} on {w['bind']}\n",
                          style="yellow")
                 t.append(f"    Fix: {w['fix']}\n", style="grey50")
+
+        # Security hardening hint - shown when active attacks suggest a specific fix
+        if self._grouped:
+            active_kinds = {info['kind'] for _, info in self._grouped[:16]}
+            hints = []
+            if active_kinds & {"brute", "scan", "breakin"}:
+                hints.append("SSH brute → harden MaxAuthTries/LoginGraceTime")
+            elif active_kinds & {"http_flood", "http_brute", "exploit_scan", "bot"}:
+                hints.append("HTTP attack → add nginx rate-limit")
+            elif active_kinds & {"syn_flood"}:
+                hints.append("SYN flood → enable tcp_syncookies")
+            elif active_kinds & {"db_brute"}:
+                hints.append("DB brute → bind MySQL/PG to 127.0.0.1")
+            elif active_kinds & {"email_brute", "email_scan"}:
+                hints.append("SMTP attack → harden Postfix rate-limit")
+            elif self._port_warnings:
+                hints.append("dangerous open ports → bind to localhost")
+            if hints:
+                t.append(f"\n  [s] Security Wizard → {hints[0]}\n", style="yellow")
 
         self.update(t)
 
@@ -7359,6 +9331,7 @@ class ServicesPanel(Panel):
 
     def on_focus(self) -> None:
         super().on_focus()
+        self.app.notify_panel_focus("services-panel")
         self.border_subtitle = "\\[r]estart  \\[s]top  \\[l]ogs  \\[e]nable  \\[d]isable"
 
     def on_blur(self) -> None:
@@ -7431,6 +9404,9 @@ class ServicesPanel(Panel):
         elif event.key == "d":
             host, name, _ = self._rows[self.selected]
             self.app.trigger_service_action(host, name, "disable"); event.stop()
+
+        elif event.key == "tab":
+            self.app.action_next_panel(); event.stop()
 
     def _set_selected(self, idx: int):
         """Update scroll offset first, then set reactive - so watch fires with correct offset.
@@ -7553,13 +9529,13 @@ class StatsBar(Static):
     StatsBar { background: $surface; padding: 0 1; height: 1; dock: top; }
     """
     def __init__(self, **kwargs):
-        super().__init__("⚔ DEFLECT  starting...", **kwargs)
+        super().__init__(f"⚔ DEFLECT v{APP_VERSION}  starting...", **kwargs)
 
     def update_data(self, hosts_on: int, hosts_off: int, warn: int,
                     atk_min: float, banned: int, svc_fail: int, panel: str,
                     security_updates: int = 0, docker_running: int = 0):
         t = Text()
-        t.append("⚔ DEFLECT  ", style="bold red")
+        t.append(f"⚔ DEFLECT v{APP_VERSION}  ", style="bold red")
         t.append(f"● {hosts_on}  ", style="green")
         if hosts_off: t.append(f"✗ {hosts_off}  ", style="red bold")
         if warn:      t.append(f"⚠ {warn}  ",      style="yellow")
@@ -7598,7 +9574,7 @@ class FKeyBar(Static):
         ("^G","Git"),    ("^O","EditHost"),("^K","Vault"),  ("^L","LogAgg"),
         ("^X","Mail"),   ("^N","NewHost"), ("^P","Procs"),  ("^R","Recon"),
         ("^S","Scripts"),("^T","Cron"),   ("^U","Backup"),  ("^W","FW"),
-        ("^Y","DB"),
+        ("^Y","DB"),     ("^H","AuthSentinel"),
     ]
 
     def __init__(self, **kwargs):
@@ -7713,6 +9689,9 @@ class HelpScreen(ModalScreen):
         ("email",    "^X  Email",        "email_monitor"),
         ("db",       "^Y  DB Monitor",   "show_db"),
         ("ai_stats", "^I  AI Stats",     "ai_stats"),
+        ("auth",     "^H  Auth Sentinel","auth_sentinel"),
+        ("useradm",  "^J  User Admin",   "user_admin"),
+        ("secwiz",   "🔍 Sec Wizard",    "security_wizard"),
     ]
 
     def compose(self) -> ComposeResult:
@@ -7832,6 +9811,7 @@ class DeflectApp(App):
         self._watcher = watcher
         self._cfg     = cfg
         self._cards:        dict[str, ServerCard] = {}
+        self._card_order:   list[str]             = []
         self._panel_order:  list[str]             = []
         self._focus_idx:    int                   = 0
         self._focused_panel: str                  = ""
@@ -7854,8 +9834,18 @@ class DeflectApp(App):
         yield FKeyBar()
 
     def on_mount(self):
+        # Load card order from config, or use current order
+        if self._cfg.host_order:
+            # Preserve saved order, but ensure all current cards are included
+            card_ids = set(self._cards.keys())
+            self._card_order = [h for h in self._cfg.host_order if h in card_ids]
+            # Add any new cards not in saved order
+            self._card_order.extend([h for h in card_ids if h not in self._card_order])
+        else:
+            self._card_order = list(self._cards.keys())
+
         self._panel_order = (
-            [f"card-{hid}" for hid in self._cards]
+            [f"card-{hid}" for hid in self._card_order]
             + ["radar-panel", "services-panel"]
         )
         self.call_after_refresh(self._focus_panel, 0)
@@ -7884,24 +9874,50 @@ class DeflectApp(App):
             self._focus_idx = self._panel_order.index(wid)
 
     def action_next_panel(self):
-        # Don't switch panels if ServicesPanel is in focus (it handles ← → itself)
-        try:
-            svc_panel = self.query_one("#services-panel", ServicesPanel)
-            if svc_panel.has_focus:
-                return
-        except:
-            pass
         self._focus_panel(self._focus_idx + 1)
 
     def action_prev_panel(self):
-        # Don't switch panels if ServicesPanel is in focus (it handles ← → itself)
-        try:
-            svc_panel = self.query_one("#services-panel", ServicesPanel)
-            if svc_panel.has_focus:
-                return
-        except:
-            pass
         self._focus_panel(self._focus_idx - 1)
+
+    def on_card_move_request(self, msg: CardMoveRequest) -> None:
+        hid = msg.host_id
+        if hid not in self._card_order:
+            return
+        idx = self._card_order.index(hid)
+        n   = len(self._card_order)
+        try:
+            cols = int(self.query_one("#grid-hosts").styles.grid_size_columns or 2)
+        except Exception:
+            cols = 2
+
+        # Calculate new index based on direction
+        offsets = {"left": -1, "right": 1, "up": -cols, "down": cols}
+        new_idx = idx + offsets.get(msg.direction, 0)
+
+        # Validate bounds
+        if new_idx == idx or new_idx < 0 or new_idx >= n:
+            return
+
+        # Swap in the order list (simple and predictable)
+        other_hid = self._card_order[new_idx]
+        self._card_order[idx], self._card_order[new_idx] = (
+            self._card_order[new_idx], self._card_order[idx]
+        )
+
+        # Move in the grid UI
+        card_a = self._cards[hid]
+        card_b = self._cards[other_hid]
+        grid = self.query_one("#grid-hosts")
+
+        if new_idx < idx:
+            grid.move_child(card_a, before=card_b)
+        else:
+            grid.move_child(card_a, after=card_b)
+
+        # Sync Tab-navigation order
+        non_cards = [p for p in self._panel_order if not p.startswith("card-")]
+        self._panel_order = [f"card-{h}" for h in self._card_order] + non_cards
+        card_a.focus()
 
     # ── tick / update ─────────────────────────────────────────────────────
 
@@ -7928,6 +9944,7 @@ class DeflectApp(App):
                               hs.config.address, self._cfg,
                               id=f"card-{hs.config.id}")
             self._cards[hid] = card
+            self._card_order.append(hid)
             radar_idx = self._panel_order.index("radar-panel") if "radar-panel" in self._panel_order else len(self._panel_order)
             self._panel_order.insert(radar_idx, f"card-{hid}")
             await self.query_one("#grid-hosts").mount(card)
@@ -7935,6 +9952,8 @@ class DeflectApp(App):
         for hid in set(self._cards) - set(states):
             card = self._cards.pop(hid)
             pid  = f"card-{hid}"
+            if hid in self._card_order:
+                self._card_order.remove(hid)
             if pid in self._panel_order:
                 self._panel_order.remove(pid)
             card.remove()
@@ -7977,11 +9996,20 @@ class DeflectApp(App):
                        for hid in self._pool.host_ids()
                        if self._pool.state(hid) is not None}
 
+        # Aggregate auth threats from all active agents for radar overlay
+        all_auth_threats: list = []
+        for agent in self._pool.all_agents():
+            sentinel = getattr(agent, "_auth_sentinel", None)
+            if sentinel is not None:
+                all_auth_threats.extend(sentinel.threats)
+        all_auth_threats.sort(key=lambda t: getattr(t, "ts", ""))
+
         self.query_one("#radar-panel", AttackRadarPanel).update_data(
             list(radar_s.events), radar_s.atk_per_min, radar_s.banned_count, host_labels,
             ddos_active=radar_s.ddos_active, ddos_info=radar_s.ddos_info,
             port_warnings=radar_s.port_warnings,
-            ip_hosts=self._radar.ip_hosts)
+            ip_hosts=self._radar.ip_hosts,
+            auth_threats=all_auth_threats)
 
         self.query_one("#services-panel", ServicesPanel).update_data(all_svcs, host_labels)
 
@@ -8022,6 +10050,7 @@ class DeflectApp(App):
                 ddos_active=radar_s.ddos_active, ddos_info=radar_s.ddos_info,
                 port_warnings=radar_s.port_warnings,
                 ip_hosts=self._radar.ip_hosts)
+            # Note: auth_threats not passed here (optimistic ban update - not critical)
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
@@ -8152,6 +10181,12 @@ class DeflectApp(App):
             if not getattr(self, "_quit_confirmed", False):
                 self._quit_confirmed = True
                 return
+        # Save host order before exiting
+        self._cfg.host_order = self._card_order
+        if "ui" not in self._cfgman._data:
+            self._cfgman._data["ui"] = {}
+        self._cfgman._data["ui"]["host_order"] = self._card_order
+        self._cfgman._save()
         self.exit()
 
     # reset confirm flag whenever user does anything else (navigation, etc.)
@@ -8194,6 +10229,2270 @@ import urllib.request
 from email.mime.text import MIMEText
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION: auth_sentinel_screens   (v0.78)
+# ══════════════════════════════════════════════════════════════════════════════
+
+_SENTINEL_CSS = """
+AuthSentinelScreen {
+    align: center middle;
+}
+#sentinel-outer {
+    width: 100%;
+    height: 100%;
+    border: double $error;
+    background: $surface;
+}
+#sentinel-title {
+    background: $error-darken-2;
+    color: $text;
+    text-align: center;
+    height: 1;
+    padding: 0 1;
+}
+#sentinel-tab-bar {
+    height: 1;
+    background: $panel;
+}
+#sentinel-tab-0,
+#sentinel-tab-1,
+#sentinel-tab-2,
+#sentinel-tab-3,
+#sentinel-tab-4 {
+    padding: 0 2;
+    color: $text;
+    border: none;
+    height: 2;
+    min-width: 0;
+    background: $panel;
+}
+#sentinel-tab-0:hover,
+#sentinel-tab-1:hover,
+#sentinel-tab-2:hover,
+#sentinel-tab-3:hover,
+#sentinel-tab-4:hover {
+    background: $panel-lighten-1;
+    color: $text;
+}
+#sentinel-tab-0.active,
+#sentinel-tab-1.active,
+#sentinel-tab-2.active,
+#sentinel-tab-3.active,
+#sentinel-tab-4.active {
+    background: $error-darken-1;
+    color: $text;
+    text-style: bold;
+}
+#sentinel-body {
+    height: 1fr;
+}
+#sentinel-feed-col {
+    width: 2fr;
+    border-right: solid $panel-lighten-1;
+}
+#sentinel-right-col {
+    width: 1fr;
+}
+#sentinel-sessions-box {
+    height: 1fr;
+    border-bottom: solid $panel-lighten-1;
+}
+#sentinel-threats-box {
+    height: 1fr;
+}
+.sentinel-col-title {
+    background: $panel;
+    color: $text-muted;
+    height: 1;
+    padding: 0 1;
+    text-style: bold;
+}
+#sentinel-feed {
+    height: 1fr;
+    background: $surface;
+}
+#sentinel-feed > ListItem {
+    padding: 0;
+    height: 1;
+    background: $surface;
+}
+#sentinel-feed > ListItem.--highlight {
+    background: $primary 25%;
+}
+#sentinel-feed > ListItem.breach-row {
+    background: $error-darken-3;
+}
+#sentinel-feed > ListItem.breach-row.--highlight {
+    background: $error-darken-2;
+}
+#sentinel-sessions {
+    height: 1fr;
+    background: $surface;
+}
+#sentinel-sessions > ListItem {
+    padding: 0;
+    height: 1;
+    background: $surface;
+}
+#sentinel-sessions > ListItem.--highlight {
+    background: $primary 25%;
+}
+#sentinel-sessions > ListItem.flagged-session {
+    background: $error-darken-3;
+}
+#sentinel-threats {
+    height: 1fr;
+    background: $surface;
+}
+#sentinel-threats > ListItem {
+    padding: 0 0 0 0;
+    height: auto;
+    min-height: 2;
+    background: $surface;
+}
+#sentinel-threats > ListItem.--highlight {
+    background: $primary 25%;
+}
+#sentinel-threats > ListItem.p0-threat {
+    background: $error-darken-3;
+}
+#sentinel-footer {
+    height: 1;
+    background: $panel;
+    color: $text-muted;
+    padding: 0 1;
+}
+#sentinel-breach-badge {
+    background: $error;
+    color: $text;
+    text-style: bold;
+    padding: 0 1;
+    display: none;
+}
+#sentinel-breach-badge.visible {
+    display: block;
+}
+#sentinel-rate-badge {
+    color: $text-muted;
+    padding: 0 1;
+}
+"""
+
+_PROTO_ICONS = {
+    "ssh":        "🔐",
+    "sudo":       "⚡",
+    "dovecot":    "📧",
+    "postfix":    "📮",
+    "mysql":      "🗄",
+    "postgresql": "🐘",
+    "ftp":        "📁",
+    "redis":      "🔴",
+    "mongo":      "🍃",
+    "webmin":     "🌐",
+    "pam":        "🔑",
+}
+
+_SEVERITY_STYLE = {
+    "P0":       "bold white on red",
+    "CRITICAL": "bold red",
+    "HIGH":     "dark_orange",
+    "MEDIUM":   "yellow",
+    "LOW":      "dim",
+}
+
+_SENTINEL_TABS = ["Feed", "Statistics", "SSH Audit", "Mail Abuse", "Heatmap"]
+
+# ── Braille spark helpers ─────────────────────────────────────────────────────
+# Each braille char encodes a 2×4 dot grid. We use the bottom 4 rows of the
+# left column only → 5 levels: ⠀ ⣀ ⣤ ⣶ ⣿  (empty → full)
+_BRAILLE_LEVELS = " ⣀⣤⣶⣿"
+
+def _braille_spark(values: list[float], width: int = 10) -> str:
+    """
+    Render a list of floats as a braille sparkline of `width` chars.
+    values are normalised internally; 0 = lowest, max = highest dot.
+    Returns a string of `width` braille characters.
+    """
+    if not values:
+        return _BRAILLE_LEVELS[0] * width
+    # Resample to `width` buckets by averaging
+    n = len(values)
+    buckets: list[float] = []
+    for i in range(width):
+        lo = int(i * n / width)
+        hi = int((i + 1) * n / width)
+        hi = max(hi, lo + 1)
+        buckets.append(sum(values[lo:hi]) / max(1, hi - lo))
+    mx = max(buckets) or 1
+    chars = []
+    for v in buckets:
+        idx = min(4, int(v / mx * 4 + 0.5))
+        chars.append(_BRAILLE_LEVELS[idx])
+    return "".join(chars)
+
+
+def _braille_bar(ratio: float, width: int = 8) -> str:
+    """
+    Single horizontal bar: ratio 0.0–1.0 → partial braille fill.
+    Uses block chars ░▒▓█ for coarser fill.
+    """
+    ratio = max(0.0, min(1.0, ratio))
+    filled = int(ratio * width)
+    partial_idx = int((ratio * width - filled) * 4)
+    partial = [" ", "░", "▒", "▓"][partial_idx] if filled < width else ""
+    return "█" * filled + partial + " " * max(0, width - filled - len(partial))
+
+
+class AuthSentinelScreen(ModalScreen):
+    """
+    v0.78 - Multi-protocol authentication intelligence dashboard.
+    Ctrl+H to open. Escape to close.
+    """
+
+    DEFAULT_CSS = _SENTINEL_CSS
+
+    BINDINGS = [
+        Binding("escape",     "close",         "Close",       show=False),
+        Binding("ctrl+left",  "prev_tab",      "Prev tab",    show=False),
+        Binding("ctrl+right", "next_tab",      "Next tab",    show=False),
+        Binding("1",          "tab_0",         "Feed",        show=False),
+        Binding("2",          "tab_1",         "Statistics",  show=False),
+        Binding("3",          "tab_2",         "SSH Audit",   show=False),
+        Binding("4",          "tab_3",         "Mail Abuse",  show=False),
+        Binding("5",          "tab_4",         "Heatmap",     show=False),
+        Binding("s",          "filter_success","Success only", show=False),
+        Binding("f",          "filter_fail",   "Fail only",   show=False),
+        Binding("x",          "clear_filter",  "All events",  show=False),
+        Binding("a",          "ai_intel",      "AI Intel",    show=False),
+        Binding("b",          "ban_ip",        "Ban IP",      show=False),
+        Binding("enter",      "ban_ip",        "Ban IP",      show=False),
+        Binding("v",          "session_view",  "Live View",   show=False),
+        Binding("c",          "containment",   "Containment", show=False),
+        Binding("l",          "raw_logs",      "Raw logs",    show=False),
+        Binding("t",          "timeline",      "Timeline",    show=False),
+        Binding("h",          "next_host",     "Next host",   show=False),
+        Binding("e",          "email_monitor", "Email Monitor", show=False),
+    ]
+
+    def __init__(self, pool: "AgentPool", app_cfg: "AppConfig",
+                 initial_host: str | None = None, **kwargs):
+        super().__init__(**kwargs)
+        self._pool         = pool
+        self._cfg          = app_cfg
+        self._initial_host = initial_host  # pre-select host (from radar drill-down)
+        self._tab     = 0
+        self._filter  = None    # None | "success" | "fail"
+        self._sel_ev  = 0       # selected row in feed
+        self._sel_ses = 0       # selected row in sessions
+        self._sel_audit = 0     # selected row in SSH audit tab
+        # Active host for audit/drill-down actions - None = fleet-wide view
+        agents = list(pool.all_agents()) if pool else []
+        self._active_host: str = (
+            initial_host if initial_host
+            else (agents[0]._cfg.id if agents else "")
+        )
+        self._refresh_task: "asyncio.Task | None" = None
+        self._last_tab_drawn: int = -1       # tab index of last full list rebuild
+        self._last_event_ts: str = ""        # ts of newest event at last rebuild
+
+    # ── Compose ──────────────────────────────────────────────────────────────
+
+    def compose(self) -> ComposeResult:
+        with Container(id="sentinel-outer"):
+            yield Static("", id="sentinel-title", markup=False)
+            with Horizontal(id="sentinel-tab-bar"):
+                for i, name in enumerate(_SENTINEL_TABS):
+                    cls = "sentinel-tab active" if i == self._tab else "sentinel-tab"
+                    yield Button(name, id=f"sentinel-tab-{i}", classes=cls)
+                yield Static("", id="sentinel-breach-badge")
+                yield Static("", id="sentinel-rate-badge")
+            with Horizontal(id="sentinel-body"):
+                with Container(id="sentinel-feed-col"):
+                    yield Static("", id="sentinel-feed-title", classes="sentinel-col-title")
+                    yield ListView(id="sentinel-feed")
+                with Container(id="sentinel-right-col"):
+                    with Container(id="sentinel-sessions-box"):
+                        yield Static("", id="sentinel-sessions-title",
+                                     classes="sentinel-col-title")
+                        yield ListView(id="sentinel-sessions")
+                    with Container(id="sentinel-threats-box"):
+                        yield Static("", id="sentinel-threats-title",
+                                     classes="sentinel-col-title")
+                        yield ListView(id="sentinel-threats")
+            yield Static("", id="sentinel-footer")
+
+    # ── Lifecycle ─────────────────────────────────────────────────────────────
+
+    def on_mount(self) -> None:
+        self._redraw()
+        self._refresh_task = self.set_interval(5, self._redraw)
+
+    def on_unmount(self) -> None:
+        if self._refresh_task:
+            self._refresh_task.stop()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        bid = event.button.id or ""
+        if bid.startswith("sentinel-tab-"):
+            try:
+                self._set_tab(int(bid.split("-")[-1]))
+            except ValueError:
+                pass
+            event.stop()
+
+    # ── Drawing ───────────────────────────────────────────────────────────────
+
+    def _redraw(self) -> None:
+        # Lightweight change detection: only rebuild lists when data or active tab changed
+        events = self._all_events()
+        newest_ts = events[0].ts if events else ""
+        tab_changed = self._tab != self._last_tab_drawn
+        data_changed = newest_ts != self._last_event_ts
+        if tab_changed or data_changed:
+            self._last_tab_drawn = self._tab
+            self._last_event_ts = newest_ts
+            with self.app.batch_update():
+                self._update_title()
+                self._update_rate_badge()
+                self._update_footer()
+                if self._tab == 0:
+                    self._draw_feed()
+                    self._draw_sessions()
+                    self._draw_threats()
+                elif self._tab == 1:
+                    self._draw_statistics()
+                elif self._tab == 2:
+                    self._draw_ssh_audit()
+                elif self._tab == 3:
+                    self._draw_mail_abuse()
+                elif self._tab == 4:
+                    self._draw_heatmap()
+                self._update_breach_badge()
+        else:
+            # Data unchanged - still refresh title/badge (rate, spark) cheaply
+            with self.app.batch_update():
+                self._update_title()
+                self._update_rate_badge()
+                self._update_breach_badge()
+
+    def _all_events(self) -> list[AuthEvent]:
+        events: list[AuthEvent] = []
+        for agent in self._pool.all_agents():
+            events.extend(agent._auth_sentinel.events)
+        events.sort(key=lambda e: e.ts, reverse=True)
+        return events
+
+    def _all_threats(self) -> list[AuthThreatEvent]:
+        threats: list[AuthThreatEvent] = []
+        for agent in self._pool.all_agents():
+            threats.extend(agent._auth_sentinel.threats)
+        threats.sort(key=lambda t: (t.severity == "P0", t.ts), reverse=True)
+        return threats
+
+    def _all_sessions(self) -> list[AuthSession]:
+        sessions: list[AuthSession] = []
+        for agent in self._pool.all_agents():
+            sessions.extend(agent._auth_sentinel.sessions)
+        return sessions
+
+    def _abuseipdb_badge(self, ip: str) -> tuple[str, str]:
+        """Return (badge_text, style) for AbuseIPDB score, or ('', '') if not cached."""
+        if not ip:
+            return "", ""
+        for agent in self._pool.all_agents():
+            result = agent._auth_sentinel.abuseipdb_score(ip)
+            if result:
+                score, _ = result
+                if score >= 75:
+                    return f" ⛔{score}%", "bold red"
+                elif score >= 40:
+                    return f" ⚠{score}%", "yellow"
+                elif score > 0:
+                    return f" {score}%", "dim"
+        return "", ""
+
+    def _host_label(self, host_id: str) -> str:
+        for agent in self._pool.all_agents():
+            if agent._cfg.id == host_id:
+                return agent._cfg.label or host_id
+        return host_id
+
+    def _update_title(self) -> None:
+        import datetime as _dt
+        agents = list(self._pool.all_agents())
+        count  = len(agents)
+        all_ev = self._all_events()
+        now    = _dt.datetime.utcnow()
+        # 1-minute buckets for the last 10 minutes → braille sparkline
+        buckets: list[float] = []
+        for m in range(9, -1, -1):
+            ts_lo = (now - _dt.timedelta(minutes=m + 1)).strftime("%Y-%m-%dT%H:%M")
+            ts_hi = (now - _dt.timedelta(minutes=m)).strftime("%Y-%m-%dT%H:%M")
+            buckets.append(float(sum(
+                1 for e in all_ev if not e.is_own and ts_lo <= e.ts < ts_hi
+            )))
+        spark    = _braille_spark(buckets, width=10)
+        recent_n = int(buckets[-1])
+        scope = f"host:{self._host_label(self._active_host)}" if self._active_host \
+                else f"fleet:{count}h"
+        try:
+            self.query_one("#sentinel-title", Static).update(
+                f" ★ AUTH SENTINEL  [{spark}] {recent_n}/min  {scope}  [h]:switch"
+            )
+        except Exception:
+            pass
+
+    def _update_rate_badge(self) -> None:
+        threats = self._all_threats()
+        p0 = sum(1 for t in threats if t.severity == "P0")
+        crit = sum(1 for t in threats if t.severity == "CRITICAL")
+        try:
+            badge = self.query_one("#sentinel-rate-badge", Static)
+            if p0:
+                badge.update(f" P0×{p0} ")
+            elif crit:
+                badge.update(f" C×{crit} ")
+            else:
+                badge.update("")
+        except Exception:
+            pass
+
+    _TAB_FOOTERS = {
+        0: " ↑↓/click:select  s:✓only  f:✗only  x:all  b:ban  l:raw-log  t:timeline  v:session  c:contain  a:AI",
+        1: " Statistics - last 500 events fleet-wide  |  Ctrl+←/→ or 1-5: switch tab  Esc:close",
+        2: " SSH Audit - ↑↓/click:select  Enter:live-fetch  h:switch-host  |  Esc:close",
+        3: " Mail Abuse monitor  |  Ctrl+←/→ or 1-5: switch tab  Esc:close",
+        4: " Auth Heatmap - 24h per protocol  green:ok  red:fail  yellow:mixed  darker=more  |  Esc:close",
+    }
+
+    def _update_footer(self) -> None:
+        text = self._TAB_FOOTERS.get(self._tab, " Esc:close")
+        try:
+            self.query_one("#sentinel-footer", Static).update(text)
+        except Exception:
+            pass
+
+    def action_next_host(self) -> None:
+        agents = list(self._pool.all_agents())
+        if not agents:
+            return
+        ids = [a._cfg.id for a in agents]
+        if self._active_host in ids:
+            idx = (ids.index(self._active_host) + 1) % len(ids)
+        else:
+            idx = 0
+        self._active_host = ids[idx]
+        self._update_title()
+        self._redraw()
+
+    def _ip_spark(self, ip: str, all_events: list) -> str:
+        """5-char braille sparkline of this IP's activity over the last 5 minutes."""
+        import datetime as _dt
+        now = _dt.datetime.utcnow()
+        buckets: list[float] = []
+        for m in range(4, -1, -1):
+            ts_lo = (now - _dt.timedelta(minutes=m + 1)).strftime("%Y-%m-%dT%H:%M")
+            ts_hi = (now - _dt.timedelta(minutes=m)).strftime("%Y-%m-%dT%H:%M")
+            buckets.append(float(sum(
+                1 for e in all_events if e.src_ip == ip and ts_lo <= e.ts < ts_hi
+            )))
+        return _braille_spark(buckets, width=5)
+
+    def _draw_feed(self) -> None:
+        from rich.text import Text as RText
+        all_events = self._all_events()
+        events = all_events
+
+        # Filter by active host if set
+        if self._active_host:
+            events = [e for e in events if e.host_id == self._active_host]
+
+        if self._filter == "success":
+            events = [e for e in events if e.success and not e.is_own]
+        elif self._filter == "fail":
+            events = [e for e in events if not e.success and not e.is_own]
+        else:
+            external = [e for e in events if not e.is_own]
+            own      = [e for e in events if e.is_own]
+            events   = external + own
+        events = events[:120]
+
+        # Dynamic column title
+        flt_tag = {"success": " ✓only", "fail": " ✗only"}.get(self._filter or "", "")
+        n_ext = sum(1 for e in all_events if not e.is_own)
+        try:
+            self.query_one("#sentinel-feed-title", Static).update(
+                f"● FEED{flt_tag}  {n_ext} events  "
+                f"[s]✓  [f]✗  [x]all  [b]ban  [l]log  [t]timeline"
+            )
+        except Exception:
+            pass
+
+        try:
+            lv = self.query_one("#sentinel-feed", ListView)
+        except Exception:
+            return
+        lv.clear()
+        if not events:
+            lv.append(ListItem(Static("  No auth events - waiting for log data…",
+                                      markup=False)))
+            return
+
+        sel_item = None
+        for idx, ev in enumerate(events):
+            ts_short = _format_ts_local(ev.ts, short=True)
+            icon     = _PROTO_ICONS.get(ev.protocol, "·")
+            proto    = ev.protocol[:5].ljust(5)
+            host     = (ev.host_id or "?")[:10].ljust(10)
+            user     = (ev.username or "?")[:12].ljust(12)
+            ip       = (ev.src_ip or "")[:15].ljust(15)
+            cc       = (ev.country or "??")[:2]
+            ok       = "✓" if ev.success else "✗"
+
+            row = RText(no_wrap=True)
+            if ev.is_own:
+                row.append(f" {ts_short} 🤖 {proto} {ok} {user} {ip} [script]",
+                           style="dim")
+            else:
+                if ev.success:
+                    result_style = "bold green"
+                elif ev.event_type == "invalid_user":
+                    result_style = "red"
+                else:
+                    result_style = "dim red"
+                abuse_badge, abuse_style = self._abuseipdb_badge(ev.src_ip)
+                spark = self._ip_spark(ev.src_ip, all_events)
+                row.append(f" {ts_short} ", style="dim")
+                row.append(f"{ok}", style=result_style)
+                row.append(f" {icon}{proto} ", style="")
+                row.append(host, style="blue")
+                row.append(f"{user} ", style="")
+                row.append(ip, style="cyan")
+                row.append(f" {cc} ", style="dim")
+                row.append(spark, style="red" if not ev.success else "green")
+                if abuse_badge:
+                    row.append(abuse_badge, style=f"bold {abuse_style}")
+
+            is_breach = not ev.is_own and ev.success and ev.event_type in (
+                "accepted_password", "accepted_key", "auth_success")
+            item = ListItem(Static(row, markup=False))
+            if is_breach:
+                item.add_class("breach-row")
+            lv.append(item)
+            if idx == self._sel_ev:
+                sel_item = item
+
+        if sel_item is not None:
+            try:
+                lv.index = self._sel_ev
+                sel_item.scroll_visible(animate=False)
+            except Exception:
+                pass
+
+    def _draw_sessions(self) -> None:
+        from rich.text import Text as RText
+        import datetime as _dt
+        sessions = self._all_sessions()
+
+        # Dynamic title
+        n_flagged = sum(1 for s in sessions if s.flagged)
+        title_str = f"● SESSIONS  {len(sessions)} active"
+        if n_flagged:
+            title_str += f"  ⚠{n_flagged} BREACH"
+        title_str += "  [v]inspect  [c]contain"
+        try:
+            self.query_one("#sentinel-sessions-title", Static).update(title_str)
+        except Exception:
+            pass
+
+        try:
+            lv = self.query_one("#sentinel-sessions", ListView)
+        except Exception:
+            return
+        lv.clear()
+        if not sessions:
+            lv.append(ListItem(Static("  No active sessions", markup=False)))
+            return
+
+        now_str = _dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M")
+        sel_item = None
+        for idx, ses in enumerate(sessions):
+            is_breach = ses.flagged
+            user_col  = "bold red" if is_breach else "bold"
+            flag      = "★ " if is_breach else "  "
+            host_lbl  = ses.host_id[:8]
+            ip        = (ses.src_ip or "local")[:15]
+            cc        = (ses.country or "")[:2]
+            idle      = ses.idle[:5] if ses.idle else "-"
+            row = RText(no_wrap=True)
+            row.append(flag, style="bold red" if is_breach else "dim")
+            row.append(f"{ses.user[:10]:<10}", style=user_col)
+            row.append(f" @{host_lbl:<8} ", style="dim")
+            row.append(f"{ip:<15}", style="cyan")
+            row.append(f" {cc:<2} ", style="dim")
+            row.append(f"idle:{idle}", style="dim")
+            item = ListItem(Static(row, markup=False))
+            if is_breach:
+                item.add_class("flagged-session")
+            lv.append(item)
+            if idx == self._sel_ses:
+                sel_item = item
+
+        if sel_item is not None:
+            try:
+                lv.index = self._sel_ses
+                sel_item.scroll_visible(animate=False)
+            except Exception:
+                pass
+
+    def _draw_threats(self) -> None:
+        from rich.text import Text as RText
+        import datetime as _dt
+        threats = self._all_threats()[:20]
+
+        # Threat velocity: events per threat in last 10 min
+        all_ev = self._all_events()
+        now    = _dt.datetime.utcnow()
+
+        n_p0   = sum(1 for t in threats if t.severity == "P0")
+        n_crit = sum(1 for t in threats if t.severity == "CRITICAL")
+        title_str = f"★ THREATS  {len(threats)}"
+        if n_p0:
+            title_str += f"  P0×{n_p0}"
+        elif n_crit:
+            title_str += f"  CRIT×{n_crit}"
+        try:
+            self.query_one("#sentinel-threats-title", Static).update(title_str)
+        except Exception:
+            pass
+
+        try:
+            lv = self.query_one("#sentinel-threats", ListView)
+        except Exception:
+            return
+        lv.clear()
+        if not threats:
+            lv.append(ListItem(Static("  No threats detected", markup=False)))
+            return
+
+        for threat in threats:
+            sev    = threat.severity
+            style  = _SEVERITY_STYLE.get(sev, "")
+            ts_s   = _format_ts_local(threat.ts, short=True)
+            label  = threat.kind.replace("_", " ")
+            abuse_badge, abuse_style = self._abuseipdb_badge(threat.src_ip)
+
+            # Velocity sparkline: how fast failures are coming in from this IP
+            ip = threat.src_ip or ""
+            vel_buckets: list[float] = []
+            for m in range(9, -1, -1):
+                ts_lo = (now - _dt.timedelta(minutes=m + 1)).strftime("%Y-%m-%dT%H:%M")
+                ts_hi = (now - _dt.timedelta(minutes=m)).strftime("%Y-%m-%dT%H:%M")
+                vel_buckets.append(float(sum(
+                    1 for e in all_ev
+                    if e.src_ip == ip and not e.success and ts_lo <= e.ts < ts_hi
+                )))
+            vel_spark = _braille_spark(vel_buckets, width=8)
+
+            cc = (getattr(threat, "country", "") or "")[:2]
+            row = RText()
+            row.append(f" [{sev}] ", style=style)
+            row.append(label, style=style)
+            if abuse_badge:
+                row.append(f" {abuse_badge}", style=f"bold {abuse_style}")
+            row.append("\n")
+            row.append(f"  {ts_s}  ", style="dim")
+            row.append(f"{threat.username or '?'}@{threat.host_id[:8]}  ", style="dim")
+            row.append(f"{ip:<15}", style="cyan")
+            row.append(f" {cc:<2} ", style="dim")
+            row.append(f"[{vel_spark}]", style="red")
+            if threat.detail:
+                row.append(f"\n  {threat.detail[:55]}", style="dim")
+
+            item = ListItem(Static(row, markup=False))
+            if sev == "P0":
+                item.add_class("p0-threat")
+            lv.append(item)
+
+    def _lv_show_lines(self, lines: list) -> None:
+        """
+        Populate #sentinel-feed with one ListItem per element in `lines`.
+        Each element may be a Rich Text or a plain string.
+        Side panels (#sentinel-sessions, #sentinel-threats) are cleared.
+        This gives real per-line scroll + mouse click unlike a single big ListItem.
+        """
+        try:
+            feed = self.query_one("#sentinel-feed", ListView)
+            feed.clear()
+            for line in lines:
+                feed.append(ListItem(Static(line, markup=False)))
+        except Exception:
+            pass
+        for wid in ("#sentinel-sessions-title", "#sentinel-sessions",
+                    "#sentinel-threats-title", "#sentinel-threats"):
+            try:
+                w = self.query_one(wid)
+                if hasattr(w, "clear"):
+                    w.clear()
+                elif hasattr(w, "update"):
+                    w.update("")
+            except Exception:
+                pass
+
+    def _draw_statistics(self) -> None:
+        from rich.text import Text as RText
+        import datetime as _dt
+        events  = self._all_events()
+        threats = self._all_threats()
+        now     = _dt.datetime.utcnow()
+        lines: list = []
+
+        # ── Header ───────────────────────────────────────────────────────────
+        h = RText()
+        h.append("  PROTOCOL BREAKDOWN  (last 500 events - 60-min sparklines)", style="bold")
+        lines.append(h)
+        lines.append(RText(""))
+
+        # Protocol breakdown with 60-min braille sparklines
+        proto_counts: dict[str, int] = defaultdict(int)
+        fail_counts:  dict[str, int] = defaultdict(int)
+        proto_hourly: dict[str, list[float]] = defaultdict(lambda: [0.0] * 60)
+        for ev in events:
+            proto_counts[ev.protocol] += 1
+            if not ev.success:
+                fail_counts[ev.protocol] += 1
+            try:
+                ev_dt   = _dt.datetime.strptime(ev.ts, "%Y-%m-%dT%H:%M:%SZ")
+                min_ago = int((now - ev_dt).total_seconds() // 60)
+                if 0 <= min_ago < 60:
+                    proto_hourly[ev.protocol][59 - min_ago] += 1
+            except Exception:
+                pass
+
+        mx_count = max(proto_counts.values()) if proto_counts else 1
+        for proto, count in sorted(proto_counts.items(), key=lambda x: -x[1]):
+            icon  = _PROTO_ICONS.get(proto, "·")
+            fails = fail_counts.get(proto, 0)
+            spark = _braille_spark(proto_hourly[proto], width=20)
+            bar   = _braille_bar(count / mx_count, width=8)
+            row   = RText(no_wrap=True)
+            row.append(f"  {icon} {proto:<11} ", style="")
+            row.append(f"[{spark}]", style="red" if fails > count * 0.5 else "yellow" if fails > 0 else "green")
+            row.append(f" {bar} ", style="dim")
+            row.append(f"{count:>4} ", style="bold")
+            row.append(f"✗{fails}", style="red" if fails > 0 else "dim")
+            lines.append(row)
+
+        # Top attacking IPs with per-IP sparklines
+        ip_fail_counts: dict[str, int] = defaultdict(int)
+        ip_hourly: dict[str, list[float]] = defaultdict(lambda: [0.0] * 20)
+        for ev in events:
+            if not ev.success and ev.src_ip:
+                ip_fail_counts[ev.src_ip] += 1
+                try:
+                    ev_dt   = _dt.datetime.strptime(ev.ts, "%Y-%m-%dT%H:%M:%SZ")
+                    min_ago = int((now - ev_dt).total_seconds() // 60)
+                    if 0 <= min_ago < 20:
+                        ip_hourly[ev.src_ip][19 - min_ago] += 1
+                except Exception:
+                    pass
+        top_ips = sorted(ip_fail_counts.items(), key=lambda x: -x[1])[:10]
+        if top_ips:
+            lines.append(RText(""))
+            h2 = RText()
+            h2.append("  TOP ATTACKING IPs  (20-min sparkline)", style="bold")
+            lines.append(h2)
+            lines.append(RText(""))
+            for ip, cnt in top_ips:
+                spark   = _braille_spark(ip_hourly[ip], width=12)
+                bar     = _braille_bar(cnt / top_ips[0][1], width=6)
+                abuse_badge, abuse_style = self._abuseipdb_badge(ip)
+                row = RText(no_wrap=True)
+                row.append(f"  {ip:<17} ", style="cyan")
+                row.append(f"[{spark}]", style="red")
+                row.append(f" {bar} ", style="dim")
+                row.append(f"{cnt:>4}", style="bold red")
+                if abuse_badge:
+                    row.append(f" {abuse_badge}", style=f"bold {abuse_style}")
+                lines.append(row)
+
+        # Threat summary
+        by_kind: dict[str, int] = defaultdict(int)
+        for th in threats:
+            by_kind[th.kind] += 1
+        if by_kind:
+            lines.append(RText(""))
+            h3 = RText()
+            h3.append("  THREAT COUNTS", style="bold")
+            lines.append(h3)
+            lines.append(RText(""))
+            for kind, cnt in sorted(by_kind.items(), key=lambda x: -x[1]):
+                is_breach = kind == "BREACH_CONFIRMED"
+                row = RText(no_wrap=True)
+                row.append(f"  {'★ ' if is_breach else '  '}{kind:<28} {cnt}",
+                            style="bold red" if is_breach else "")
+                lines.append(row)
+
+        try:
+            self.query_one("#sentinel-feed-title", Static).update(
+                f"● STATISTICS  {len(events)} events  {len(threats)} threats"
+            )
+        except Exception:
+            pass
+        self._lv_show_lines(lines)
+
+    _SSH_CHECKS = [
+        ("PermitRootLogin",       "no",   "CRITICAL",  "root SSH access enabled"),
+        ("PasswordAuthentication","no",   "HIGH",      "password auth allows brute force"),
+        ("MaxAuthTries",          "≤4",   "MEDIUM",    "limits brute force window"),
+        ("LoginGraceTime",        "≤60",  "MEDIUM",    "unauthenticated connection timeout"),
+        ("X11Forwarding",         "no",   "LOW",       "attack surface reduction"),
+        ("PermitEmptyPasswords",  "no",   "CRITICAL",  "no empty password logins"),
+        ("UsePAM",                "yes",  "LOW",       "required for full audit trail"),
+    ]
+
+    def _draw_ssh_audit(self) -> None:
+        from rich.text import Text as RText
+        try:
+            lv = self.query_one("#sentinel-feed", ListView)
+        except Exception:
+            return
+        lv.clear()
+        for lv2id in ("#sentinel-sessions", "#sentinel-threats"):
+            try:
+                self.query_one(lv2id, ListView).clear()
+            except Exception:
+                pass
+
+        host_lbl = self._host_label(self._active_host) if self._active_host else "fleet"
+        header = RText()
+        header.append(f"  sshd_config HARDENING AUDIT  (CIS Benchmark Level 1)"
+                      f"  -  host: {host_lbl}  (h: switch  Enter: live fetch)\n",
+                      style="bold")
+        lv.append(ListItem(Static(header, markup=False)))
+
+        for idx, (name, expected, severity, note) in enumerate(self._SSH_CHECKS):
+            is_sel = (idx == self._sel_audit)
+            sev_style = {"CRITICAL": "bold red", "HIGH": "red",
+                         "MEDIUM": "yellow", "LOW": "dim"}.get(severity, "")
+            row = RText(no_wrap=True)
+            row.append("  ▶ " if is_sel else "    ")
+            row.append(f"[{severity}] ", style=sev_style)
+            row.append(f"{name:<28} ", style="bold" if is_sel else "")
+            row.append(f"expect: {expected:<6} ", style="dim")
+            row.append(f"- {note}", style="dim")
+            lv.append(ListItem(Static(row, markup=False)))
+
+        hint = RText()
+        hint.append("\n  ↑↓ select check  Enter: fetch live value from host\n", style="dim cyan")
+        lv.append(ListItem(Static(hint, markup=False)))
+
+        try:
+            lv.index = self._sel_audit + 1  # +1 for header item
+        except Exception:
+            pass
+
+    def _draw_mail_abuse(self) -> None:
+        from rich.text import Text as RText
+        mail_threats = [
+            th for th in self._all_threats()
+            if th.kind in ("MAIL_FLOOD", "BRUTE_FORCE")
+            and th.host_id
+        ]
+        lines: list = []
+        lines.append(RText("  MAIL ABUSE MONITOR  [b]ban  [e]email monitor", style="bold"))
+        if not mail_threats:
+            lines.append(RText("  No mail abuse events detected", style="dim green"))
+        else:
+            for th in mail_threats[:20]:
+                style = _SEVERITY_STYLE.get(th.severity, "")
+                row = RText()
+                ts_local = _format_ts_local(th.ts, short=True)
+                row.append(f"  [{th.severity}] {th.kind}  {ts_local}\n", style=style)
+                host = (th.host_id or "?")[:10].ljust(10)
+                ip = (th.src_ip or "?")[:15].ljust(15)
+                row.append(f"  {host} {ip} {th.username or '?'}\n", style="dim cyan")
+                row.append(f"  {th.detail}", style="dim")
+                lines.append(row)
+        self._lv_show_lines(lines)
+
+    def _draw_heatmap(self) -> None:
+        from rich.text import Text as RText
+        from collections import defaultdict
+        import datetime as _dt
+
+        # Braille density blocks: index 0..4 → quiet to busy
+        _DENSITY = [" ", "░", "▒", "▓", "█"]
+        _HOURS = 24
+        _PROTOCOLS = ["ssh", "sudo", "dovecot", "postfix", "mysql", "postgresql", "ftp", "redis", "mongo", "webmin", "pam"]
+
+        events = self._all_events()
+        now = _dt.datetime.utcnow()
+
+        # Build {protocol: {hour_ago: {success_count, fail_count}}}
+        # hour_ago=0 means current hour, 23 means 23 hours ago
+        counts: dict[str, dict[int, dict]] = {
+            p: {h: {"ok": 0, "fail": 0} for h in range(_HOURS)}
+            for p in _PROTOCOLS
+        }
+        for ev in events:
+            try:
+                ev_dt = _dt.datetime.strptime(ev.ts, "%Y-%m-%dT%H:%M:%SZ")
+            except Exception:
+                continue
+            diff_h = int((now - ev_dt).total_seconds() // 3600)
+            if diff_h < 0 or diff_h >= _HOURS:
+                continue
+            proto = ev.protocol if ev.protocol in counts else None
+            if proto is None:
+                continue
+            key = "ok" if ev.success else "fail"
+            counts[proto][diff_h][key] += 1
+
+        lines: list = []
+        lines.append(RText("  AUTH HEATMAP  - last 24 hours per protocol  (← older | newer →)",
+                           style="bold"))
+
+        # Header: hour labels
+        hdr = RText()
+        hdr.append("  " + " " * 14)
+        for h in range(_HOURS - 1, -1, -1):
+            if h % 6 == 0:
+                hdr.append(f"{(now.hour - h) % 24:02d}", style="dim")
+            else:
+                hdr.append(" ", style="dim")
+        lines.append(hdr)
+        lines.append(RText("  " + " " * 14 + "─" * _HOURS, style="dim"))
+
+        for proto in _PROTOCOLS:
+            bucket = counts[proto]
+            total  = sum(bucket[h]["ok"] + bucket[h]["fail"] for h in range(_HOURS))
+            if total == 0:
+                continue
+            icon = _PROTO_ICONS.get(proto, "·")
+            row = RText()
+            row.append(f"  {icon} {proto:<11} │", style="")
+            for h in range(_HOURS - 1, -1, -1):
+                ok   = bucket[h]["ok"]
+                fail = bucket[h]["fail"]
+                vol  = ok + fail
+                if vol == 0:
+                    row.append(_DENSITY[0], style="dim")
+                elif fail == 0:
+                    idx = min(4, 1 + vol // 3)
+                    row.append(_DENSITY[idx], style="green")
+                elif ok == 0:
+                    idx = min(4, 1 + vol // 3)
+                    row.append(_DENSITY[idx], style="red")
+                else:
+                    idx = min(4, 1 + vol // 3)
+                    row.append(_DENSITY[idx], style="yellow")
+            row.append(f"│ {total:>4}", style="")
+            lines.append(row)
+
+        lines.append(RText("  " + " " * 14 + "─" * _HOURS, style="dim"))
+        legend = RText()
+        legend.append("  ")
+        legend.append("█", style="green")
+        legend.append(" success  ", style="dim")
+        legend.append("█", style="red")
+        legend.append(" failures  ", style="dim")
+        legend.append("█", style="yellow")
+        legend.append(" mixed  darker = more volume", style="dim")
+        lines.append(legend)
+
+        self._lv_show_lines(lines)
+
+    def _update_breach_badge(self) -> None:
+        breach = any(
+            agent._auth_sentinel.breach_active
+            for agent in self._pool.all_agents()
+        )
+        try:
+            badge = self.query_one("#sentinel-breach-badge", Static)
+            if breach:
+                badge.update("  ⚠ BREACH ACTIVE ")
+                badge.add_class("visible")
+            else:
+                badge.remove_class("visible")
+        except Exception:
+            pass
+
+    # ── Tab switching ─────────────────────────────────────────────────────────
+
+    def _set_tab(self, idx: int) -> None:
+        self._tab = idx % len(_SENTINEL_TABS)
+        for i in range(len(_SENTINEL_TABS)):
+            try:
+                w = self.query_one(f"#sentinel-tab-{i}", Static)
+                if i == self._tab:
+                    w.add_class("active")
+                else:
+                    w.remove_class("active")
+            except Exception:
+                pass
+        self._redraw()
+
+    def action_prev_tab(self)    -> None: self._set_tab(self._tab - 1)
+    def action_next_tab(self)    -> None: self._set_tab(self._tab + 1)
+    def action_tab_0(self)       -> None: self._set_tab(0)
+    def action_tab_1(self)       -> None: self._set_tab(1)
+    def action_tab_2(self)       -> None: self._set_tab(2)
+    def action_tab_3(self)       -> None: self._set_tab(3)
+    def action_tab_4(self)       -> None: self._set_tab(4)
+
+    # ── Filter ────────────────────────────────────────────────────────────────
+
+    def action_filter_success(self) -> None:
+        self._filter = "success"; self._draw_feed()
+
+    def action_filter_fail(self) -> None:
+        self._filter = "fail"; self._draw_feed()
+
+    def action_clear_filter(self) -> None:
+        self._filter = None; self._draw_feed()
+
+    # ── Actions ───────────────────────────────────────────────────────────────
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+    def action_ban_ip(self) -> None:
+        # Resolve IP from selected feed event
+        events = self._all_events()
+        if self._filter == "success":
+            events = [e for e in events if e.success]
+        elif self._filter == "fail":
+            events = [e for e in events if not e.success]
+        ip = ""
+        if 0 <= self._sel_ev < len(events):
+            ip = events[self._sel_ev].src_ip or ""
+        # Fallback: highest-severity threat IP if feed has no selection
+        if not ip:
+            threats = self._all_threats()
+            if threats:
+                ip = threats[0].src_ip or ""
+        if not ip:
+            self.notify("Select an event or threat with a source IP first",
+                        severity="warning")
+            return
+        # detected_hosts: agents that have events from this IP
+        detected: list[str] = []
+        for agent in self._pool.all_agents():
+            sentinel = getattr(agent, "_auth_sentinel", None)
+            if sentinel and any(e.src_ip == ip for e in sentinel.events):
+                detected.append(agent._cfg.id)
+        if not detected and self._active_host:
+            detected = [self._active_host]
+        all_hosts = list(self._pool.host_ids())
+
+        def _do_ban(result):
+            if result:
+                target, host_ids = result
+                _log_auth.warning(
+                    "[AUTH_SENTINEL BAN] ip=%s  target=%s  hosts=%s",
+                    ip, target, host_ids)
+                self.app.trigger_ban(target, host_ids=host_ids)
+
+        self.app.push_screen(
+            BanSelectScreen(ip, detected_hosts=detected, all_hosts=all_hosts),
+            _do_ban)
+
+    def action_raw_logs(self) -> None:
+        events = self._all_events()
+        if 0 <= self._sel_ev < len(events):
+            ev  = events[self._sel_ev]
+            body = ev.raw_line or "(no raw line)"
+            self.app.push_screen(AiAnalysisPopup(
+                f"Raw log - {ev.protocol} / {ev.host_id}", body
+            ))
+
+    def action_session_view(self) -> None:
+        sessions = self._all_sessions()
+        if 0 <= self._sel_ses < len(sessions):
+            ses = sessions[self._sel_ses]
+            host_id = ses.host_id
+            self.app.push_screen(
+                SessionActivityInspector(self._pool, host_id, ses)
+            )
+        else:
+            self.notify("Select a session first (↑↓ in the Sessions panel)",
+                        severity="information")
+
+    def action_email_monitor(self) -> None:
+        if not self._active_host:
+            self.notify("No host selected", severity="warning")
+            return
+        metrics = getattr(self.app, "_metrics", {})
+        self.app.push_screen(
+            EmailMonitorScreen(self._pool, metrics, focused_host_id=self._active_host)
+        )
+
+    def action_containment(self) -> None:
+        sessions = self._all_sessions()
+        threats  = self._all_threats()
+        # Try to use currently selected session; fall back to first breach session
+        ses = None
+        if 0 <= self._sel_ses < len(sessions):
+            ses = sessions[self._sel_ses]
+        elif sessions:
+            flagged = [s for s in sessions if s.flagged]
+            ses = flagged[0] if flagged else sessions[0]
+        if ses:
+            self.app.push_screen(ContainmentDialog(self._pool, ses, threats))
+        else:
+            self.notify("No active sessions to contain", severity="information")
+
+    def action_timeline(self) -> None:
+        threats = self._all_threats()
+        if not threats:
+            self.notify("No threats to build timeline for", severity="information")
+            return
+        # Use the highest-severity threat as anchor; prefer P0 → CRITICAL → HIGH
+        _rank = {"P0": 6, "CRITICAL": 5, "HIGH": 4, "MEDIUM": 3, "LOW": 2}
+        anchor = max(threats, key=lambda t: _rank.get(t.severity, 0))
+        all_ev = self._all_events()
+        all_th = threats
+        self.app.push_screen(
+            IncidentTimelineView(self._pool, anchor, all_ev, all_th)
+        )
+
+    async def action_ai_intel(self) -> None:
+        """'a' key - AI Auth Intel: fleet-wide authentication threat analysis."""
+        try:
+            engine = self.app._pool.ai_engine
+        except Exception:
+            self.notify("AI engine not available", severity="warning")
+            return
+        if not engine.enabled:
+            self.notify("AI disabled - configure in F6 → 🤖 AI", severity="warning")
+            return
+        # Check that at least one host has auth_intel_ai enabled (opt-in per host)
+        agents = list(self._pool.all_agents())
+        ai_enabled_hosts = [
+            a for a in agents
+            if getattr(getattr(a._cfg, "monitoring", None), "auth_intel_ai", False)
+        ]
+        if not ai_enabled_hosts:
+            self.notify(
+                "AI Auth Intel is disabled - enable auth_intel_ai per host in F6 → Security",
+                severity="warning",
+            )
+            return
+
+        events  = self._all_events()[-50:]
+        threats = self._all_threats()
+        sessions = self._all_sessions()
+
+        if not events and not threats:
+            self.notify("No auth events to analyze", severity="information")
+            return
+
+        # Build fleet summary for system prompt
+        fleet_hosts = ", ".join(
+            getattr(a._cfg, "label", None) or getattr(a._cfg, "id", "?")
+            for a in agents[:8]
+        )
+        fleet_summary = f"{len(agents)} hosts ({len(ai_enabled_hosts)} with AI Intel): {fleet_hosts}"
+
+        # Build compact event table for user prompt
+        ev_lines = []
+        for ev in events:
+            result = "OK" if ev.success else "FAIL"
+            ev_lines.append(
+                f"{ev.ts[11:19]}  {ev.host_id:<12} {ev.protocol:<11} "
+                f"{ev.username:<12} {ev.src_ip:<16} {ev.country:<3} {result}"
+            )
+
+        threat_lines = []
+        for th in threats[:20]:
+            threat_lines.append(
+                f"[{th.severity}] {th.kind}  {th.ts[11:19]}  "
+                f"{th.username}@{th.host_id}  {th.src_ip}  {th.detail[:60]}"
+            )
+
+        session_lines = []
+        for ses in sessions[:10]:
+            badge = " ⚠BREACH" if ses.flagged else ""
+            session_lines.append(
+                f"{ses.user}@{ses.host_id}  {ses.src_ip}  {ses.country}{badge}"
+            )
+
+        prompt = (
+            f"AUTH EVENTS (last {len(ev_lines)}):\n"
+            + "\n".join(ev_lines)
+            + "\n\nDETECTED THREATS:\n"
+            + ("\n".join(threat_lines) if threat_lines else "none")
+            + "\n\nACTIVE SESSIONS:\n"
+            + ("\n".join(session_lines) if session_lines else "none")
+        )
+        system = _AI_PROMPTS["auth_intel"].format(
+            fleet_summary = fleet_summary,
+            event_count   = len(ev_lines),
+            safe_footer   = _SAFE_FOOTER,
+        )
+
+        self.notify("⟳ AI Auth Intel analyzing fleet…")
+        raw = await engine.call(prompt, system=system, tier="smart")
+        if raw == engine.DISABLED:
+            self.notify("AI disabled", severity="warning")
+            return
+        self.app.push_screen(AiAnalysisPopup("🤖 AI Auth Intel - Fleet Analysis", raw))
+
+    # ── List navigation (keyboard + mouse) ───────────────────────────────────
+
+    def on_list_view_highlighted(self, event: ListView.Highlighted) -> None:
+        lv_id = event.list_view.id
+        if lv_id == "sentinel-feed" and event.item is not None:
+            if self._tab == 0:
+                try:
+                    self._sel_ev = event.list_view.index
+                except Exception:
+                    pass
+            elif self._tab == 2:
+                # SSH Audit tab: index 0 = header, checks start at 1
+                try:
+                    raw_idx = event.list_view.index
+                    if 1 <= raw_idx <= len(self._SSH_CHECKS):
+                        self._sel_audit = raw_idx - 1
+                        self._draw_ssh_audit()  # redraw to move ▶ cursor
+                except Exception:
+                    pass
+        elif lv_id == "sentinel-sessions" and event.item is not None:
+            try:
+                self._sel_ses = event.list_view.index
+            except Exception:
+                pass
+
+    def on_list_view_selected(self, event: ListView.Selected) -> None:
+        """Enter / double-click on a list item."""
+        lv_id = event.list_view.id
+        if lv_id == "sentinel-feed" and self._tab == 2:
+            # Enter on SSH Audit check → live fetch
+            try:
+                raw_idx = event.list_view.index
+                if 1 <= raw_idx <= len(self._SSH_CHECKS):
+                    self._sel_audit = raw_idx - 1
+                    asyncio.create_task(self._fetch_ssh_check(self._sel_audit))
+            except Exception:
+                pass
+
+    async def _fetch_ssh_check(self, check_idx: int) -> None:
+        """Fetch live value for the selected CIS check from _active_host."""
+        if not self._active_host:
+            self.notify("No host selected - press 'h' to pick a host", severity="warning")
+            return
+        name, expected, severity, note = self._SSH_CHECKS[check_idx]
+        # grep the directive from sshd_config (handles comments + indentation)
+        cmd = (
+            f"grep -i '^[[:space:]]*{name}' /etc/ssh/sshd_config 2>/dev/null "
+            f"|| echo '(directive not found - default applies)'"
+        )
+        self.notify(f"⟳ Fetching {name} from {self._host_label(self._active_host)}…")
+        try:
+            res = await self._pool.run(self._active_host, cmd)
+            raw = res.stdout.strip() if res.ok and res.stdout.strip() else "(no output)"
+        except Exception as e:
+            raw = f"✗ fetch failed: {e}"
+        body = (
+            f"CIS Check: {name}\n"
+            f"Expected:  {expected}\n"
+            f"Severity:  {severity}  - {note}\n\n"
+            f"Live value on {self._host_label(self._active_host)}:\n"
+            f"  {raw}\n"
+        )
+        self.app.push_screen(AiAnalysisPopup(f"sshd_config - {name}", body))
+
+
+# ── SessionActivityInspector ──────────────────────────────────────────────────
+
+_SAI_TABS = ["SSH Commands", "SQL Live", "SMTP Envelopes", "Files & Net"]
+
+_SAI_CSS = """
+SessionActivityInspector {
+    align: center middle;
+}
+#sai-outer {
+    width: 95%;
+    height: 90%;
+    border: double $warning;
+    background: $surface;
+}
+#sai-title {
+    background: $warning-darken-2;
+    height: 1;
+    text-align: center;
+    padding: 0 1;
+}
+#sai-tab-bar {
+    height: 1;
+    background: $panel;
+}
+.sai-tab       { padding: 0 2; color: $text-muted; }
+.sai-tab.active{ background: $warning-darken-1; color: $text; text-style: bold; }
+#sai-output {
+    height: 1fr;
+    overflow-y: auto;
+    padding: 0 1;
+}
+#sai-footer {
+    height: 1;
+    background: $panel;
+    color: $text-muted;
+    padding: 0 1;
+}
+"""
+
+
+class SessionActivityInspector(ModalScreen):
+    """
+    v0.78 - Live forensic view of a suspicious session.
+    Shows SSH commands (via auditd), SQL queries, SMTP envelopes, file activity.
+    """
+
+    DEFAULT_CSS = _SAI_CSS
+
+    BINDINGS = [
+        Binding("escape",     "close",     "Close",    show=False),
+        Binding("ctrl+left",  "prev_tab",  "Prev tab", show=False),
+        Binding("ctrl+right", "next_tab",  "Next tab", show=False),
+        Binding("1", "tab_0", "", show=False),
+        Binding("2", "tab_1", "", show=False),
+        Binding("3", "tab_2", "", show=False),
+        Binding("4", "tab_3", "", show=False),
+    ]
+
+    def __init__(self, pool: "AgentPool", host_id: str,
+                 session: "AuthSession", **kwargs):
+        super().__init__(**kwargs)
+        self._pool    = pool
+        self._host_id = host_id
+        self._session = session
+        self._tab     = 0
+        self._lines: list[str] = []
+        self._stream_task: "asyncio.Task | None" = None
+        # bash_history live tracking
+        self._history_seen: int = 0          # lines already shown from bash_history
+        self._history_path: str = ""         # resolved path (set on first fetch)
+        self._live_interval: "object | None" = None  # set_interval handle
+
+    def compose(self) -> ComposeResult:
+        user = self._session.user
+        ip   = self._session.src_ip or "local"
+        cc   = _GEO_CACHE.get(ip, "") if ip != "local" else ""
+        geo_disp = f" ({cc})" if cc else ""
+        with Container(id="sai-outer"):
+            yield Static(
+                f" ● SESSION INSPECTOR - {user} @ {self._host_id}  src: {ip}{geo_disp}",
+                id="sai-title",
+            )
+            with Horizontal(id="sai-tab-bar"):
+                for i, name in enumerate(_SAI_TABS):
+                    cls = "sai-tab active" if i == 0 else "sai-tab"
+                    yield Static(f" {name} ", id=f"sai-tab-{i}", classes=cls)
+            yield Static("", id="sai-output", markup=True)
+            yield Static(
+                " Ctrl+←/→: tabs  1-4  Escape: close",
+                id="sai-footer",
+            )
+
+    def on_mount(self) -> None:
+        self._start_stream()
+        ip = self._session.src_ip
+        if ip and ip not in _GEO_CACHE:
+            asyncio.create_task(self._fetch_geo_title(ip))
+
+    async def _fetch_geo_title(self, ip: str) -> None:
+        """Fetch GeoIP via provider fallback chain and update the title bar."""
+        try:
+            cc = await _geo_fetch(ip)
+            if cc:
+                _GEO_CACHE[ip] = cc
+        except Exception:
+            return
+        try:
+            user = self._session.user
+            cc = _GEO_CACHE.get(ip, "")
+            geo_disp = f" ({cc})" if cc else ""
+            self.query_one("#sai-title", Static).update(
+                f" ● SESSION INSPECTOR - {user} @ {self._host_id}  src: {ip}{geo_disp}"
+            )
+        except Exception:
+            pass
+
+    def on_unmount(self) -> None:
+        if self._stream_task and not self._stream_task.done():
+            self._stream_task.cancel()
+        if self._live_interval:
+            try:
+                self._live_interval.stop()
+            except Exception:
+                pass
+
+    def _set_tab(self, idx: int) -> None:
+        self._tab = idx % len(_SAI_TABS)
+        for i in range(len(_SAI_TABS)):
+            try:
+                w = self.query_one(f"#sai-tab-{i}", Static)
+                w.add_class("active") if i == self._tab else w.remove_class("active")
+            except Exception:
+                pass
+        self._lines.clear()
+        # Stop live history polling if switching away from tab 0
+        if self._live_interval:
+            try:
+                self._live_interval.stop()
+            except Exception:
+                pass
+            self._live_interval = None
+        if self._stream_task and not self._stream_task.done():
+            self._stream_task.cancel()
+        self._history_seen = 0
+        self._history_path = ""
+        self._start_stream()
+
+    def _start_stream(self) -> None:
+        ip = self._session.src_ip or ""
+        cc = _GEO_CACHE.get(ip, "") if ip else ""
+        geo_part = f"  country:{cc}" if cc else ""
+        self._push(
+            f"── {self._session.user}@{self._host_id}"
+            f"  ip:{ip}{geo_part}"
+            f"  flagged:{'yes' if self._session.flagged else 'no'}"
+        )
+        if self._tab == 0:
+            self._stream_task = asyncio.create_task(self._stream_history())
+        else:
+            self._stream_task = asyncio.create_task(self._stream())
+
+    # ── bash_history live tracking (tab 0) ───────────────────────────────────
+
+    async def _stream_history(self) -> None:
+        """
+        Tab 0 - three-layer command history strategy:
+
+        Layer 1 - bash_history snapshot: shows commands the user ran before
+                  this session and during it (if HISTFILE is flushed).
+        Layer 2 - auditd EXECVE stream: if auditd is running, tail new EXECVE
+                  records in real time - most accurate, captures every command.
+        Layer 3 - /proc/*/cmdline poll: fallback when auditd absent - polls
+                  all processes owned by the user every 8s for new commands.
+        """
+        user = self._session.user
+        client = self._ssh_client()
+        if client is None:
+            self._push("[red]✗ Host not connected[/red]")
+            return
+
+        # Resolve home dir and history file path
+        home = await self._run_cmd(client, f"eval echo ~{user} 2>/dev/null || echo /home/{user}")
+        home = home.strip() or f"/home/{user}"
+        hist = await self._run_cmd(
+            client,
+            f"su - {user} -s /bin/sh -c 'echo ${{HISTFILE:-{home}/.bash_history}}' 2>/dev/null "
+            f"|| echo {home}/.bash_history"
+        )
+        hist = hist.strip() or f"{home}/.bash_history"
+        self._history_path = hist
+
+        # ── Layer 1: initial bash_history dump ───────────────────────────────
+        self._push_section("BASH HISTORY  (most recent commands)")
+        raw = await self._run_cmd(client, f"cat {hist} 2>/dev/null | tail -200")
+        if raw.strip():
+            lines = [l.rstrip() for l in raw.splitlines() if l.strip()]
+            self._history_seen = len(lines)
+            for ln in lines:
+                self._push(ln)
+        else:
+            self._push("  (history file empty or not readable)", style="dim")
+            self._history_seen = 0
+
+        # ── Check if auditd is running ────────────────────────────────────────
+        auditd_ok = await self._run_cmd(client, "systemctl is-active auditd 2>/dev/null || "
+                                                 "service auditd status 2>/dev/null | grep -c running || "
+                                                 "echo no")
+        auditd_ok = auditd_ok.strip().lower() not in ("", "no", "0", "inactive", "failed", "unknown")
+
+        if auditd_ok:
+            # ── Layer 2: auditd EXECVE tail ───────────────────────────────────
+            self._push_section("AUDITD LIVE STREAM  (real-time execve)")
+            await self._stream_auditd(client, user)
+        else:
+            # ── Layer 3: /proc poll every 8s + history diff ───────────────────
+            self._push_section("LIVE POLL  (/proc cmdline + history diff  every 8s)")
+            self._push("  auditd not running - using process poll fallback", style="dim yellow")
+            self._live_interval = self.set_interval(8, self._poll_history_and_proc)
+
+    async def _stream_auditd(self, client: "paramiko.SSHClient", user: str) -> None:
+        """Tail auditd log for EXECVE records belonging to this user."""
+        uid_raw = await self._run_cmd(client, f"id -u {user} 2>/dev/null")
+        uid = uid_raw.strip()
+        if not uid.isdigit():
+            self._push(f"  Could not resolve UID for {user}", style="dim red")
+            return
+        # tail -F keeps streaming even if log rotates; grep filters to this uid
+        cmd = (
+            f"tail -F /var/log/audit/audit.log 2>/dev/null | "
+            f"grep --line-buffered 'auid={uid}\\|uid={uid}' | "
+            f"grep --line-buffered -E 'EXECVE|USER_CMD|USER_AUTH'"
+        )
+        loop = asyncio.get_running_loop()
+        try:
+            transport = client.get_transport()
+            if not transport or not transport.is_active():
+                self._push("[red]✗ SSH transport not active[/red]")
+                return
+            chan = await loop.run_in_executor(None, transport.open_session)
+            chan.setblocking(False)
+            await loop.run_in_executor(None, chan.exec_command, cmd)
+            buf = b""
+            while not chan.closed:
+                await asyncio.sleep(0.3)
+                try:
+                    chunk = chan.recv(8192)
+                    if not chunk:
+                        break
+                    buf += chunk
+                    while b"\n" in buf:
+                        raw_line, buf = buf.split(b"\n", 1)
+                        decoded = raw_line.decode(errors="replace").rstrip()
+                        parsed = self._parse_audit_line(decoded)
+                        if parsed:
+                            self._push(parsed)
+                except Exception:
+                    pass
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            self._push(f"[red]✗ auditd stream error: {e}[/red]")
+
+    def _parse_audit_line(self, line: str) -> str:
+        """Convert raw audit log line to human-readable command."""
+        import re as _re
+        # USER_CMD: sudo command - easy to read
+        if "USER_CMD" in line:
+            m = _re.search(r"cmd=([0-9A-Fa-f]+)", line)
+            if m:
+                try:
+                    cmd = bytes.fromhex(m.group(1)).decode(errors="replace")
+                    ts = _re.search(r"msg=audit\([\d.]+:(\d+)\)", line)
+                    return f"  [sudo] {cmd}"
+                except Exception:
+                    pass
+            m2 = _re.search(r'cmd="([^"]+)"', line)
+            if m2:
+                return f"  [sudo] {m2.group(1)}"
+        # EXECVE: a0= a1= a2= hex-encoded arguments
+        if "EXECVE" in line:
+            args = []
+            for m in _re.finditer(r'a\d+="([^"]+)"', line):
+                args.append(m.group(1))
+            if not args:
+                # hex-encoded args
+                for m in _re.finditer(r'a\d+=([0-9A-Fa-f]{4,})', line):
+                    try:
+                        args.append(bytes.fromhex(m.group(1)).decode(errors="replace"))
+                    except Exception:
+                        pass
+            if args:
+                return "  " + " ".join(args)
+        return ""
+
+    async def _poll_history_and_proc(self) -> None:
+        """Called every 8s by set_interval - shows new history lines + live processes."""
+        client = self._ssh_client()
+        if client is None:
+            return
+        user = self._session.user
+        hist = self._history_path or f"/home/{user}/.bash_history"
+
+        # History diff - show only lines added since last check
+        raw = await self._run_cmd(client, f"cat {hist} 2>/dev/null | tail -500")
+        lines = [l.rstrip() for l in raw.splitlines() if l.strip()]
+        if len(lines) > self._history_seen:
+            new_lines = lines[self._history_seen:]
+            self._history_seen = len(lines)
+            self._push_section(f"NEW HISTORY  (+{len(new_lines)} commands)")
+            for ln in new_lines:
+                self._push(ln)
+
+        # /proc cmdline for all user processes - snapshot of what's running now
+        procs_raw = await self._run_cmd(
+            client,
+            f"for p in /proc/[0-9]*/cmdline; do "
+            f"  owner=$(stat -c %U $p 2>/dev/null); "
+            f"  [ \"$owner\" = \"{user}\" ] && tr '\\0' ' ' < $p 2>/dev/null && echo; "
+            f"done | grep -v '^$' | sort -u | head -30"
+        )
+        procs = [l.rstrip() for l in procs_raw.splitlines() if l.strip()]
+        if procs:
+            self._push_section("LIVE PROCESSES")
+            for p in procs:
+                self._push(p)
+
+    # ── Generic SSH one-shot run ──────────────────────────────────────────────
+
+    async def _run_cmd(self, client: "paramiko.SSHClient", cmd: str) -> str:
+        """Run a short command and return stdout as a string."""
+        loop = asyncio.get_running_loop()
+        try:
+            def _exec():
+                _, stdout, _ = client.exec_command(cmd, timeout=10)
+                return stdout.read().decode(errors="replace")
+            return await loop.run_in_executor(None, _exec)
+        except Exception:
+            return ""
+
+    def _ssh_client(self) -> "paramiko.SSHClient | None":
+        try:
+            hs = self._pool.state(self._host_id)
+            return hs.client
+        except Exception:
+            return None
+
+    def _push_section(self, title: str) -> None:
+        """Insert a visual section separator into the output."""
+        self._lines.append("")
+        self._lines.append(f"── {title} " + "─" * max(0, 56 - len(title)))
+        self._render_output()
+
+    # ── Generic one-shot stream for tabs 1-3 ─────────────────────────────────
+
+    async def _stream(self) -> None:
+        cmd = self._build_cmd()
+        if not cmd:
+            self._push("(not supported on this tab yet)", style="dim")
+            return
+        try:
+            client = self._ssh_client()
+            if client is None:
+                self._push("[red]✗ Host not connected[/red]")
+                return
+            loop      = asyncio.get_running_loop()
+            transport = client.get_transport()
+            if not transport or not transport.is_active():
+                self._push("[red]✗ SSH transport not active[/red]")
+                return
+            chan = await loop.run_in_executor(None, transport.open_session)
+            chan.setblocking(False)
+            await loop.run_in_executor(None, chan.exec_command, cmd)
+            buf = b""
+            while not chan.closed:
+                await asyncio.sleep(0.2)
+                try:
+                    chunk = chan.recv(4096)
+                    if not chunk:
+                        break
+                    buf += chunk
+                    while b"\n" in buf:
+                        line, buf = buf.split(b"\n", 1)
+                        decoded = line.decode(errors="replace").rstrip()
+                        self._push(decoded)
+                except Exception:
+                    pass
+        except asyncio.CancelledError:
+            pass
+        except Exception as e:
+            self._push(f"[red]✗ Stream error: {e}[/red]")
+
+    def _build_cmd(self) -> str:
+        user = self._session.user
+        if self._tab == 1:
+            # SQL live queries
+            return (
+                "psql -U postgres -t -A -c \""
+                "SELECT to_char(now(),'HH24:MI:SS'), usename, client_addr, state, "
+                "LEFT(query,120) FROM pg_stat_activity WHERE state<>'idle' ORDER BY query_start"
+                "\" 2>/dev/null || "
+                "mysql -e 'SHOW FULL PROCESSLIST\\G' 2>/dev/null || "
+                "echo 'No SQL service accessible'"
+            )
+        elif self._tab == 2:
+            # Full SMTP envelope inspection: queue summary + postcat per message
+            return (
+                "TOTAL=$(postqueue -p 2>/dev/null | tail -1 2>/dev/null); "
+                "echo \"── Postfix mail queue: $TOTAL\"; echo; "
+                "QIDS=$(postqueue -p 2>/dev/null"
+                " | awk 'NF>=4 && /^[A-Za-z0-9]/{gsub(/[!*]/,\"\",$1); print $1}'"
+                " | head -20); "
+                "if [ -z \"$QIDS\" ]; then "
+                "  mailq 2>/dev/null | head -40 2>/dev/null"
+                "  || echo 'Queue empty or Postfix not accessible'; "
+                "else "
+                "  echo \"$QIDS\" | while read QID; do "
+                "    echo \"── $QID ──────────────────────────────────────────────\"; "
+                "    postcat -q \"$QID\" 2>/dev/null"
+                "    | grep -iE '^(Subject|From|To|Reply-To|X-Mailer|Return-Path|Message-ID|X-Spam-Status):'; "
+                "    echo; "
+                "  done; "
+                "fi"
+            )
+        elif self._tab == 3:
+            # File and network activity
+            return (
+                f"ss -tnp 2>/dev/null | grep -i '{user}' || echo 'No connections'; "
+                f"ls -la /proc/$(pgrep -u {user} -n 2>/dev/null)/fd 2>/dev/null | "
+                f"tail -20 || echo 'No process found'"
+            )
+        return ""
+
+    def _push(self, line: str, style: str = "") -> None:
+        self._lines.append(line)
+        if len(self._lines) > 500:
+            self._lines = self._lines[-500:]
+        self._render_output()
+
+    @staticmethod
+    def _geo_annotate(line: str) -> str:
+        """Append country codes for any IPs (v4 or v6) already in _GEO_CACHE."""
+        import re as _re
+        _IPV4 = r'\b(\d{1,3}(?:\.\d{1,3}){3})\b'
+        # Matches compressed and full IPv6, including bracket-wrapped [::1] form from ss
+        _IPV6 = r'\[?([0-9a-fA-F]{1,4}(?::[0-9a-fA-F]{0,4}){2,7})\]?'
+        added: list[str] = []
+        seen: set[str] = set()
+        for pat in (_IPV4, _IPV6):
+            for m in _re.finditer(pat, line):
+                ip = m.group(1)
+                if ip in seen:
+                    continue
+                seen.add(ip)
+                # Normalise IPv4-mapped IPv6 (::ffff:1.2.3.4) → look up both forms
+                real_ip = ip
+                mapped = _re.match(r'^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$', ip, _re.I)
+                if mapped:
+                    real_ip = mapped.group(1)
+                cc = _GEO_CACHE.get(real_ip, "") or _GEO_CACHE.get(ip, "")
+                if cc:
+                    added.append(f"{ip}→{cc}")
+        if added:
+            return line + "  [" + "  ".join(added) + "]"
+        return line
+
+    def _render_output(self) -> None:
+        from rich.text import Text as RText
+        t = RText()
+        for ln in self._lines[-120:]:
+            if ln.startswith("──"):
+                t.append(f"{ln}\n", style="bold cyan")
+            elif ln == "":
+                t.append("\n")
+            else:
+                danger = bool(_DANGEROUS_CMDS.search(ln))
+                annotated = self._geo_annotate(ln) if self._tab == 3 else ln
+                t.append(f"{annotated}\n", style="bold red" if danger else "")
+        try:
+            self.query_one("#sai-output", Static).update(t)
+        except Exception:
+            pass
+
+    def action_close(self)   -> None: self.dismiss(None)
+    def action_prev_tab(self)-> None: self._set_tab(self._tab - 1)
+    def action_next_tab(self)-> None: self._set_tab(self._tab + 1)
+    def action_tab_0(self)   -> None: self._set_tab(0)
+    def action_tab_1(self)   -> None: self._set_tab(1)
+    def action_tab_2(self)   -> None: self._set_tab(2)
+    def action_tab_3(self)   -> None: self._set_tab(3)
+
+
+# ── ContainmentDialog ─────────────────────────────────────────────────────────
+
+_CDL_CSS = """
+ContainmentDialog {
+    align: center middle;
+}
+#cdl-box {
+    width: 70;
+    height: auto;
+    max-height: 38;
+    border: double $error;
+    background: $surface;
+    padding: 1 2;
+}
+#cdl-title {
+    text-style: bold;
+    color: $error;
+    text-align: center;
+    margin-bottom: 1;
+}
+.cdl-step {
+    margin: 0 0 1 0;
+    padding: 0 1;
+    border-left: solid $panel-lighten-2;
+    color: $text-muted;
+}
+.cdl-step.active {
+    border-left: solid $error;
+    color: $text;
+}
+.cdl-step.done {
+    border-left: solid $success;
+    color: $success;
+}
+#cdl-status {
+    height: 2;
+    margin-top: 1;
+    color: $text-muted;
+}
+#cdl-buttons {
+    height: 3;
+    align: center middle;
+    margin-top: 1;
+}
+"""
+
+_CONTAINMENT_STEPS = [
+    ("Block IP at firewall",
+     "ufw insert 1 deny from {ip} 2>/dev/null || "
+     "iptables -I INPUT 1 -s {ip} -j DROP 2>/dev/null"),
+    ("Kill active session",
+     "loginctl terminate-session $(loginctl list-sessions --no-legend "
+     "| awk '/{user}/{print $1}' | head -1) 2>/dev/null || "
+     "pkill -KILL -u {user} 2>/dev/null"),
+    ("Disable account",
+     "usermod -L -s /sbin/nologin {user} 2>/dev/null"),
+    ("Rotate password",
+     "python3 -c \"import secrets; print(secrets.token_urlsafe(24))\" "
+     "| tee /tmp/_deflect_pw_{user}.tmp | chpasswd <(echo '{user}:'$(cat /tmp/_deflect_pw_{user}.tmp)) "
+     "2>/dev/null; cat /tmp/_deflect_pw_{user}.tmp; rm /tmp/_deflect_pw_{user}.tmp 2>/dev/null"),
+    ("Preserve evidence",
+     "who; last {user} | head -5; ss -tnp 2>/dev/null"),
+]
+
+
+class ContainmentDialog(ModalScreen):
+    """
+    v0.78 - Ordered incident response workflow.
+    Executes containment steps sequentially with per-step confirmation.
+    """
+
+    DEFAULT_CSS = _CDL_CSS
+
+    BINDINGS = [
+        Binding("escape", "cancel", "Cancel", show=False),
+        Binding("enter",  "next_step", "Execute step", show=False),
+    ]
+
+    def __init__(self, pool: "AgentPool", session: "AuthSession",
+                 threats: "list[AuthThreatEvent]", **kwargs):
+        super().__init__(**kwargs)
+        self._pool    = pool
+        self._session = session
+        self._threats = threats
+        self._step    = 0
+        self._results: list[str] = [""] * len(_CONTAINMENT_STEPS)
+        self._done    = [False] * len(_CONTAINMENT_STEPS)
+
+    def compose(self) -> ComposeResult:
+        user = self._session.user
+        ip   = self._session.src_ip or "?"
+        with Container(id="cdl-box"):
+            yield Static(
+                f"⚠ CONTAINMENT WORKFLOW\n{user} @ {self._session.host_id}  IP: {ip}",
+                id="cdl-title",
+            )
+            for i, (name, _) in enumerate(_CONTAINMENT_STEPS):
+                cls = "cdl-step active" if i == 0 else "cdl-step"
+                num = f"Step {i+1}"
+                yield Static(f"{num}: {name}", id=f"cdl-step-{i}", classes=cls)
+            yield Static("", id="cdl-status")
+            with Horizontal(id="cdl-buttons"):
+                yield Button("Execute Step", variant="error",   id="btn-exec")
+                yield Button("Skip",         variant="default", id="btn-skip")
+                yield Button("User Admin",   variant="warning", id="btn-useradm",
+                             disabled=True)   # enabled after step 3 (Disable account)
+                yield Button("Cancel",       variant="default", id="btn-cancel")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "btn-exec":
+            if self._step == 0 and self._session.src_ip:
+                self._open_ban_select()
+            else:
+                asyncio.create_task(self._execute_step())
+        elif event.button.id == "btn-skip":
+            self._advance()
+        elif event.button.id == "btn-useradm":
+            # Open UserAdminScreen focused on the contained user so the operator
+            # can inspect / revoke SSH keys / remove from groups / run further actions.
+            # This is purely additive - it does not change the containment flow.
+            user = self._session.user
+            host = self._session.host_id
+            if host and hasattr(self._pool, "add_host"):
+                self.app.push_screen(
+                    UserAdminScreen(
+                        self._pool,
+                        host_id=host,
+                        initial_user=user,
+                        initial_tab="users",
+                    )
+                )
+            else:
+                self.app.notify(
+                    "User Admin not available (demo mode or no host)",
+                    severity="warning",
+                )
+        elif event.button.id == "btn-cancel":
+            self.dismiss(None)
+
+    def _open_ban_select(self) -> None:
+        """Step 0 - open BanSelectScreen to choose IP/subnet + host scope, then trigger_ban."""
+        ip = self._session.src_ip or ""
+        detected = [self._session.host_id] if self._session.host_id else []
+        all_hosts = list(self._pool.host_ids())
+
+        def _on_ban(result) -> None:
+            if result is None:
+                return  # operator cancelled - stay on step 0
+            target, host_ids = result
+            _log_auth.warning(
+                "[CONTAINMENT step=1/%d] host=%s  action='Block IP via BanSelectScreen'"
+                "  user=%s  target=%s  hosts=%s",
+                len(_CONTAINMENT_STEPS), self._session.host_id,
+                self._session.user, target, host_ids)
+            self.app.trigger_ban(target, host_ids=host_ids)
+            self._results[0] = f"{target} on {len(host_ids)} hosts"
+            self._done[0] = True
+            self._set_status(f"✓ Block IP: {target} banned on {len(host_ids)} host(s)")
+            self._mark_step_done(0)
+            self._advance()
+
+        self.app.push_screen(
+            BanSelectScreen(ip, detected_hosts=detected, all_hosts=all_hosts),
+            _on_ban)
+
+    async def _execute_step(self) -> None:
+        if self._step >= len(_CONTAINMENT_STEPS):
+            return
+        name, cmd_tmpl = _CONTAINMENT_STEPS[self._step]
+        ses   = self._session
+        host  = ses.host_id
+        user  = ses.user
+        ip    = ses.src_ip or ""
+        cmd = cmd_tmpl.format(user=user, ip=ip, host=host)
+        _log_auth.warning(
+            "[CONTAINMENT step=%d/%d] host=%s  action='%s'  user=%s  ip=%s",
+            self._step + 1, len(_CONTAINMENT_STEPS), host, name, user, ip)
+        try:
+            self._set_status(f"Running: {name}…")
+            res = await self._pool.run(host, cmd)
+            out = (res.stdout or res.error or "done").strip()[:200]
+            self._results[self._step] = out[:80]
+            self._done[self._step] = True
+            self._set_status(f"✓ {name}: {out[:80]}")
+            self._mark_step_done(self._step)
+            _log_auth.warning(
+                "[CONTAINMENT OK   step=%d] host=%s  action='%s'  result: %s",
+                self._step + 1, host, name, out[:200])
+        except Exception as e:
+            _log_auth.error(
+                "[CONTAINMENT FAIL step=%d] host=%s  action='%s'  error: %s",
+                self._step + 1, host, name, e)
+            self._set_status(f"✗ {name} failed: {e}")
+        self._advance()
+
+    def _advance(self) -> None:
+        self._step += 1
+        if self._step >= len(_CONTAINMENT_STEPS):
+            _log_auth.warning(
+                "[CONTAINMENT COMPLETE] host=%s user=%s ip=%s  all %d steps done",
+                self._session.host_id, self._session.user,
+                self._session.src_ip or "", len(_CONTAINMENT_STEPS))
+            self._set_status("✓ All containment steps complete")
+            try:
+                self.query_one("#btn-exec", Button).disabled = True
+                self.query_one("#btn-skip", Button).disabled = True
+            except Exception:
+                pass
+            return
+        self._highlight_step(self._step)
+
+    def _mark_step_done(self, idx: int) -> None:
+        try:
+            w = self.query_one(f"#cdl-step-{idx}", Static)
+            w.remove_class("active")
+            w.add_class("done")
+        except Exception:
+            pass
+        # Enable the User Admin button after the "Disable account" step (index 2)
+        # so the operator can immediately open UserAdminScreen for further actions
+        # (remove from sudo groups, revoke SSH keys, etc.).
+        if idx >= 2:
+            try:
+                self.query_one("#btn-useradm", Button).disabled = False
+            except Exception:
+                pass
+
+    def _highlight_step(self, idx: int) -> None:
+        for i in range(len(_CONTAINMENT_STEPS)):
+            try:
+                w = self.query_one(f"#cdl-step-{i}", Static)
+                w.remove_class("active")
+                if i == idx:
+                    w.add_class("active")
+            except Exception:
+                pass
+
+    def _set_status(self, msg: str) -> None:
+        try:
+            self.query_one("#cdl-status", Static).update(msg)
+        except Exception:
+            pass
+
+    def action_next_step(self) -> None:
+        if self._step == 0 and self._session.src_ip:
+            self._open_ban_select()
+        else:
+            asyncio.create_task(self._execute_step())
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+# ── IncidentTimelineView ───────────────────────────────────────────────────────
+
+class IncidentTimelineView(ModalScreen):
+    """
+    v0.78 - Automated attack narrative for a selected threat or attacker IP.
+    Builds a sequential timeline from AuthEvent / AuthThreatEvent data.
+    Accessible via 't' key on selected threat in AuthSentinelScreen.
+    """
+
+    DEFAULT_CSS = """
+    IncidentTimelineView { align: center middle; }
+    #itv-outer {
+        width: 82; height: 85vh;
+        border: double $error;
+        background: $surface;
+        padding: 0 1;
+    }
+    #itv-title { text-style: bold; color: $error; height: 1; padding: 0 1; }
+    #itv-body  { height: 1fr; overflow-y: auto; border-top: solid $panel-lighten-1; }
+    #itv-footer { height: 3; margin-top: 1; }
+    """
+
+    BINDINGS = [
+        Binding("escape", "close", "Close", show=False),
+        Binding("c",      "copy",  "Copy report", show=False),
+    ]
+
+    # Severity P1–P4 based on worst threat present
+    _SEVERITY_MAP = {
+        "P0":       ("P1", "bold white on red"),
+        "CRITICAL": ("P1", "bold red"),
+        "HIGH":     ("P2", "red"),
+        "MEDIUM":   ("P3", "yellow"),
+        "LOW":      ("P4", "dim"),
+    }
+
+    def __init__(self, pool: "AgentPool", threat: "AuthThreatEvent",
+                 all_events: "list[AuthEvent]",
+                 all_threats: "list[AuthThreatEvent]", **kwargs):
+        super().__init__(**kwargs)
+        self._pool       = pool
+        self._threat     = threat
+        self._all_events = all_events
+        self._all_threats = all_threats
+        self._report_text = ""
+
+    def compose(self) -> ComposeResult:
+        with Container(id="itv-outer"):
+            yield Static("", id="itv-title")
+            yield Static("", id="itv-body")
+            with Horizontal(id="itv-footer"):
+                yield Button("Close [Esc]", variant="default",  id="itv-close")
+                yield Button("[c] Copy as Markdown", variant="primary", id="itv-copy")
+
+    def on_mount(self) -> None:
+        self._build()
+
+    def _build(self) -> None:
+        from rich.text import Text as RText
+        th = self._threat
+        ip = th.src_ip
+        user = th.username
+
+        # Collect related events: same IP or same user (either attacker-perspective)
+        related_ev = [
+            e for e in self._all_events
+            if (ip and e.src_ip == ip) or (user not in ("(multiple)", "") and e.username == user)
+        ]
+        related_ev.sort(key=lambda e: e.ts)
+
+        related_th = [
+            t for t in self._all_threats
+            if (ip and t.src_ip == ip) or (user not in ("(multiple)", "") and t.username == user)
+        ]
+        related_th.sort(key=lambda t: t.ts)
+
+        # Severity rating
+        worst_sev = "LOW"
+        _sev_rank = {"P0": 6, "CRITICAL": 5, "HIGH": 4, "MEDIUM": 3, "LOW": 2}
+        for rt in related_th:
+            if _sev_rank.get(rt.severity, 0) > _sev_rank.get(worst_sev, 0):
+                worst_sev = rt.severity
+        p_rating, sev_style = self._SEVERITY_MAP.get(worst_sev, ("P4", "dim"))
+
+        # Build Rich text timeline
+        cc = (getattr(th, "country", "") or _GEO_CACHE.get(ip, "") if ip else "") or ""
+        cc_disp = f" ({cc})" if cc else ""
+        t = RText()
+        t.append(f"  ★ INCIDENT TIMELINE  - attacker {ip}{cc_disp}  user:{user}  [{p_rating}]\n\n",
+                 style=sev_style)
+
+        # Stats header
+        total_fail = sum(1 for e in related_ev if not e.success)
+        total_ok   = sum(1 for e in related_ev if e.success)
+        protos     = sorted({e.protocol for e in related_ev})
+        hosts      = sorted({e.host_id  for e in related_ev})
+        if related_ev:
+            first_ts = related_ev[0].ts
+            last_ts  = related_ev[-1].ts
+            try:
+                import datetime as _dt
+                t0 = _dt.datetime.fromisoformat(first_ts.replace("Z", "+00:00"))
+                t1 = _dt.datetime.fromisoformat(last_ts.replace("Z",  "+00:00"))
+                elapsed_s = int((t1 - t0).total_seconds())
+                elapsed_str = f"{elapsed_s // 60}m{elapsed_s % 60}s"
+            except Exception:
+                elapsed_str = "?"
+            t.append(f"  Period:   {first_ts[:19]}  →  {last_ts[:19]}  ({elapsed_str})\n",
+                     style="dim")
+        t.append(f"  Failures: {total_fail}    Successes: {total_ok}\n", style="dim")
+        t.append(f"  Protocols:{', '.join(protos) or '?'}    "
+                 f"Hosts: {', '.join(hosts) or '?'}\n", style="dim")
+        t.append("\n  ─── Event stream ───\n\n", style="grey23")
+
+        # Build timeline rows with delta-time
+        prev_ts_epoch: float = 0.0
+        import datetime as _dt
+        for ev in related_ev[-80:]:  # cap at 80 to avoid overflow
+            try:
+                ev_dt    = _dt.datetime.fromisoformat(ev.ts.replace("Z", "+00:00"))
+                ev_epoch = ev_dt.timestamp()
+                delta    = int(ev_epoch - prev_ts_epoch) if prev_ts_epoch else 0
+                delta_s  = f"+{delta}s " if prev_ts_epoch else "      "
+                prev_ts_epoch = ev_epoch
+                ts_s     = ev.ts[11:19] if len(ev.ts) >= 19 else ev.ts
+            except Exception:
+                ts_s, delta_s = ev.ts[:8], "      "
+            icon  = _PROTO_ICONS.get(ev.protocol, "·")
+            ok    = "✓" if ev.success else "✗"
+            style = "green" if ev.success else "red"
+            ev_cc = (getattr(ev, "country", "") or _GEO_CACHE.get(ev.src_ip, "") if ev.src_ip else "") or ""
+            t.append(f"  {ts_s} ", style="dim")
+            t.append(f"{delta_s:>7}", style="grey35")
+            t.append(f" {icon} {ev.protocol:<10} {ok} ", style=style)
+            t.append(f"{ev.username:<12} {ev.src_ip or '':15}", style="")
+            t.append(f" {ev_cc:<2}\n", style="dim")
+
+        # Threat annotations inline
+        if related_th:
+            t.append("\n  ─── Detected threats ───\n\n", style="grey23")
+            for rt in related_th:
+                sty = _SEVERITY_STYLE.get(rt.severity, "")
+                ts_s = rt.ts[11:19] if len(rt.ts) >= 19 else rt.ts
+                rt_cc = (getattr(rt, "country", "") or "")[:2]
+                cc_part = f" ({rt_cc})" if rt_cc else ""
+                t.append(f"  {ts_s}  ", style="dim")
+                t.append(f"[{rt.severity}] {rt.kind}{cc_part}", style=sty)
+                if rt.detail:
+                    t.append(f"  - {rt.detail[:60]}", style="dim")
+                t.append("\n")
+
+        # Conclusion
+        t.append("\n  ─── Conclusion ───\n\n", style="grey23")
+        breach = any(rt.kind == "BREACH_CONFIRMED" for rt in related_th)
+        if breach:
+            t.append("  ⚠ BREACH CONFIRMED - account was successfully accessed after "
+                     "repeated failures.\n", style="bold red")
+            t.append("  Immediate action required: kill session, rotate credentials, "
+                     "block IP.\n", style="red")
+        elif total_ok > 0:
+            t.append(f"  Suspicious: {total_ok} successful auth(s) detected - "
+                     "manual review recommended.\n", style="yellow")
+        else:
+            t.append(f"  Attack contained - {total_fail} failures, no successful auth.\n",
+                     style="green")
+
+        # Store plain-text version for clipboard copy
+        self._report_text = self._build_markdown(
+            ip, user, p_rating, related_ev, related_th)
+        self._report_text_rich = t
+
+        # Update title
+        try:
+            self.query_one("#itv-title", Static).update(
+                f" ★ INCIDENT TIMELINE  [{p_rating}]  ip:{ip}  user:{user}"
+                f"  events:{len(related_ev)}  [c] copy")
+        except Exception:
+            pass
+        try:
+            self.query_one("#itv-body", Static).update(t)
+        except Exception:
+            pass
+
+    def _build_markdown(self, ip, user, p_rating, events, threats) -> str:
+        lines = [
+            f"# Incident Report [{p_rating}]",
+            f"",
+            f"**Attacker IP:** {ip}  **User:** {user}",
+            f"**Events:** {len(events)}  "
+            f"**Failures:** {sum(1 for e in events if not e.success)}  "
+            f"**Successes:** {sum(1 for e in events if e.success)}",
+            f"",
+            f"## Event Stream",
+            f"",
+        ]
+        import datetime as _dt
+        prev_epoch: float = 0.0
+        for ev in events[-80:]:
+            try:
+                ep = _dt.datetime.fromisoformat(ev.ts.replace("Z", "+00:00")).timestamp()
+                delta = f"+{int(ep - prev_epoch)}s" if prev_epoch else ""
+                prev_epoch = ep
+                ts_s = ev.ts[11:19]
+            except Exception:
+                delta, ts_s = "", ev.ts[:8]
+            ok = "SUCCESS" if ev.success else "FAIL"
+            lines.append(
+                f"| {ts_s} | {delta:>6} | {ev.protocol:<10} | {ok} | "
+                f"{ev.username:<12} | {ev.src_ip or ''} |")
+        lines += ["", "## Threats Detected", ""]
+        for rt in threats:
+            ts_s = rt.ts[11:19] if len(rt.ts) >= 19 else rt.ts
+            lines.append(f"- `{ts_s}` **[{rt.severity}] {rt.kind}** - {rt.detail}")
+        breach = any(rt.kind == "BREACH_CONFIRMED" for rt in threats)
+        lines += ["", "## Conclusion", ""]
+        if breach:
+            lines.append("**⚠ BREACH CONFIRMED** - account was successfully accessed "
+                         "after repeated failures.")
+        lines.append("")
+        lines.append("*Generated by Deflect One v0.78 AuthSentinel*")
+        return "\n".join(lines)
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id in ("itv-close",):
+            self.dismiss(None)
+        elif event.button.id == "itv-copy":
+            self.action_copy()
+
+    def action_copy(self) -> None:
+        try:
+            import subprocess
+            proc = subprocess.run(
+                ["clip"] if __import__("sys").platform == "win32" else ["xclip", "-selection", "clipboard"],
+                input=self._report_text.encode(),
+                check=False,
+            )
+            self.notify("Report copied to clipboard", severity="information")
+        except Exception:
+            self.notify(f"Copy failed - report in log", severity="warning")
+            _log.info("INCIDENT REPORT:\n%s", self._report_text)
+
+    def action_close(self) -> None:
+        self.dismiss(None)
+
+
 class NotificationManager:
     """
     Subscribes to AgentPool events and dispatches notifications.
@@ -8208,7 +12507,13 @@ class NotificationManager:
         "CPU_WARN", "CPU_CRITICAL",
         "RAM_WARN", "RAM_CRITICAL",
         "DISK_WARN", "DISK_CRITICAL",
-        "AI_NOTIFICATION",   # send_notification / escalate_to_human from _ai_managed_loop
+        "AI_NOTIFICATION",        # send_notification / escalate_to_human from _ai_managed_loop
+        # v0.78 AuthSentinel - P0 and CRITICAL threats always notify
+        "AUTH_BREACH_CONFIRMED",  # P0: success after ≥N failures - always fires
+        "AUTH_HONEYPOT",          # CRITICAL: honeypot account touched
+        "AUTH_ROOT_SSH",          # HIGH: root SSH login succeeded
+        "AUTH_IMPOSSIBLE_TRAVEL", # HIGH: same user, two distant geos
+        "AUTH_MAIL_FLOOD",        # HIGH: SASL user flooding outbound mail
     }
 
     def __init__(self, app_cfg: AppConfig):
@@ -8491,6 +12796,30 @@ _AI_PROMPTS: dict[str, str] = {
         "· Add a header comment block: # Purpose: ..., "
         "# Author: auto-generated by Deflect AI, # Host: {label}.\n"
         "· Output only the script - no explanation text outside of comments."
+        "{safe_footer}"
+    ),
+
+    # ── AI Auth Intel - smart tier, fleet-wide authentication threat analysis ──
+    "auth_intel": (
+        "You are an authentication threat intelligence analyst embedded in Deflect One.\n"
+        "Fleet: {fleet_summary}\n\n"
+        "You have received the last {event_count} authentication events across all hosts, "
+        "active sessions, and detected threats. Produce a concise threat intelligence report "
+        "using EXACTLY this format:\n\n"
+        "THREAT LEVEL: LOW|MEDIUM|HIGH|CRITICAL\n"
+        "MITRE: <T1110.00X technique name>\n\n"
+        "NARRATIVE:\n<2-4 sentences describing what is happening in plain English>\n\n"
+        "ATTACK CLASSIFICATION: brute_force|password_spray|credential_stuffing|targeted|insider|unknown\n"
+        "CONFIDENCE: <0-100>%  REASONING: <one sentence justifying the confidence score>\n\n"
+        "TOP THREATS (up to 5):\n"
+        "· <IP or user>  <protocol>  <host>  <key indicator>\n\n"
+        "RECOMMENDED ACTIONS:\n"
+        "· <action>  [auto|confirm]  - <brief rationale>\n\n"
+        "Rules:\n"
+        "· Only use data provided - do not invent IPs, usernames, or events.\n"
+        "· Mark actions requiring human confirmation as [confirm].\n"
+        "· Mark safe autonomous actions as [auto].\n"
+        "· Prioritize BREACH_CONFIRMED threats above all others."
         "{safe_footer}"
     ),
 
@@ -9571,6 +13900,11 @@ class AppSettingsScreen(ModalScreen):
         # v0.6 - email attack detection
         ("email_brute",       "📧 Email Brute"),
         ("email_scan",        "📩 Email Scan"),
+        # v0.7 - database attack detection
+        ("db_brute",          "🗄 DB Brute (MySQL/PG)"),
+        # v0.78 - Auth Sentinel
+        ("auth_sentinel",          "★ Auth Sentinel (multi-protocol)"),
+        ("auto_contain_on_breach", "🔒 Auto-Contain on P0 Breach"),
     ]
 
     def __init__(self, cfgman, app_cfg, pool=None, **kwargs):
@@ -9835,6 +14169,39 @@ class AppSettingsScreen(ModalScreen):
             container.mount(Static("Email brute threshold (AUTH failures):", classes="lbl"))
             container.mount(Input(value=str(mon.email_brute_threshold),
                                    placeholder="10", id="sec-inp-email-brute-threshold"))
+            container.mount(Static("DB log path (blank = auto-detect):", classes="lbl"))
+            container.mount(Input(value=mon.db_log,
+                                   placeholder="/var/log/mysql/error.log",
+                                   id="sec-inp-db-log"))
+            container.mount(Static("DB brute threshold (auth failures):", classes="lbl"))
+            container.mount(Input(value=str(mon.db_brute_threshold),
+                                   placeholder="5", id="sec-inp-db-brute-threshold"))
+            # Auth Sentinel thresholds
+            container.mount(Static("─── Auth Sentinel ───", classes="lbl"))
+            container.mount(Static("Breach: failures before success = P0 alert:", classes="lbl"))
+            container.mount(Input(value=str(mon.breach_failure_threshold),
+                                   placeholder="10", id="sec-inp-breach-threshold"))
+            container.mount(Static("Brute force: failures/5min per IP:", classes="lbl"))
+            container.mount(Input(value=str(mon.auth_brute_threshold),
+                                   placeholder="10", id="sec-inp-auth-brute"))
+            container.mount(Static("Password spray: distinct users from one IP:", classes="lbl"))
+            container.mount(Input(value=str(mon.auth_spray_users),
+                                   placeholder="5", id="sec-inp-auth-spray"))
+            container.mount(Static("Credential stuffing: distinct IPs per user:", classes="lbl"))
+            container.mount(Input(value=str(mon.auth_stuffing_ips),
+                                   placeholder="5", id="sec-inp-auth-stuffing"))
+            container.mount(Static("Mail flood: auth attempts/hour:", classes="lbl"))
+            container.mount(Input(value=str(mon.mail_flood_threshold),
+                                   placeholder="50", id="sec-inp-mail-flood"))
+            container.mount(Static("Honeypot accounts (comma-separated usernames):", classes="lbl"))
+            container.mount(Input(value=", ".join(mon.honeypot_accounts or []),
+                                   placeholder="honeypot, fake_admin",
+                                   id="sec-inp-honeypots"))
+            container.mount(Static("AbuseIPDB API key (optional - leave blank to disable):", classes="lbl"))
+            container.mount(Input(value=mon.abuseipdb_key,
+                                   placeholder="paste key from abuseipdb.com",
+                                   password=True,
+                                   id="sec-inp-abuseipdb-key"))
             return
         # Subsequent calls: update existing widgets in-place - no destroy/recreate.
         for field, label in self._SECURITY_TOGGLES:
@@ -9854,6 +14221,15 @@ class AppSettingsScreen(ModalScreen):
             ("sec-inp-apache-log",            mon.apache_log),
             ("sec-inp-email-log",             mon.email_log),
             ("sec-inp-email-brute-threshold", str(mon.email_brute_threshold)),
+            ("sec-inp-db-log",                mon.db_log),
+            ("sec-inp-db-brute-threshold",    str(mon.db_brute_threshold)),
+            ("sec-inp-breach-threshold",      str(mon.breach_failure_threshold)),
+            ("sec-inp-auth-brute",            str(mon.auth_brute_threshold)),
+            ("sec-inp-auth-spray",            str(mon.auth_spray_users)),
+            ("sec-inp-auth-stuffing",         str(mon.auth_stuffing_ips)),
+            ("sec-inp-mail-flood",            str(mon.mail_flood_threshold)),
+            ("sec-inp-honeypots",             ", ".join(mon.honeypot_accounts or [])),
+            ("sec-inp-abuseipdb-key",         mon.abuseipdb_key),
         ):
             try:
                 self.query_one(f"#{wid}", Input).value = attr
@@ -9934,6 +14310,17 @@ class AppSettingsScreen(ModalScreen):
         mon.nginx_log              = _str("#sec-inp-nginx-log",  "/var/log/nginx/access.log")
         mon.apache_log             = _str("#sec-inp-apache-log", "/var/log/apache2/access.log")
         mon.email_log              = _str("#sec-inp-email-log",  "")
+        mon.db_log                 = _str("#sec-inp-db-log",     "")
+        mon.db_brute_threshold     = _int("#sec-inp-db-brute-threshold",    5)
+        # Auth Sentinel
+        mon.breach_failure_threshold = _int("#sec-inp-breach-threshold",    10)
+        mon.auth_brute_threshold     = _int("#sec-inp-auth-brute",          10)
+        mon.auth_spray_users         = _int("#sec-inp-auth-spray",           5)
+        mon.auth_stuffing_ips        = _int("#sec-inp-auth-stuffing",        5)
+        mon.mail_flood_threshold     = _int("#sec-inp-mail-flood",          50)
+        raw_hp = _str("#sec-inp-honeypots", "")
+        mon.honeypot_accounts = [h.strip() for h in raw_hp.split(",") if h.strip()]
+        mon.abuseipdb_key     = _str("#sec-inp-abuseipdb-key", "")
 
     def on_button_pressed(self, event: Button.Pressed) -> None:
         bid = event.button.id or ""
@@ -10318,7 +14705,7 @@ class _ShellOutput(RichLog, can_focus=True):
             lines_store = self._lines          # list[Strip] in Textual's RichLog
             if not lines_store:
                 return ""
-            # offset: RichLog may be scrolled — adjust by scroll_y
+            # offset: RichLog may be scrolled - adjust by scroll_y
             offset = int(self.scroll_y)
             abs_y0 = offset + y0
             abs_y1 = offset + y1
@@ -10659,7 +15046,7 @@ class SshShellScreen(ModalScreen):
         On every update:
           1. Detect how many lines scrolled off the top (shift).
           2. Move those lines from the live viewport into permanent history
-             by keeping them in _lines (they're already written — just stop
+             by keeping them in _lines (they're already written - just stop
              including them in the "live" count).
           3. Replace the live viewport block (last _live_rows lines) with
              the current pyte screen buffer.
@@ -11055,7 +15442,7 @@ class SshShellScreen(ModalScreen):
             # Kept as a safety net in case Textual's priority handling changes.
             return
         # Don't forward keys to shell when AI command mode is active.
-        # Do NOT call event.stop() here — that would swallow the event before
+        # Do NOT call event.stop() here - that would swallow the event before
         # the Input widget can process it (backspace, arrows, etc. would break).
         # Simply returning without forwarding is sufficient.
         if self._ai_mode == "command":
@@ -11166,7 +15553,7 @@ class SshShellScreen(ModalScreen):
                 self._ai_cmd_translated = ""
                 self.action_toggle_ai_cmd()  # close bar, refocus shell
             else:
-                # No translated command yet — if input has text, translate then execute
+                # No translated command yet - if input has text, translate then execute
                 try:
                     input_val = self.query_one("#ai-cmd-input", Input).value.strip()
                 except Exception:
@@ -11214,7 +15601,7 @@ class SshShellScreen(ModalScreen):
                 label=label, address=address, os_info=os_info)
             _log.debug("_translate_and_exec: translate_cmd returned=%r", cmd)
             if cmd == engine.DISABLED:
-                cmd = "# AI disabled — enable in F6 → 🤖 AI"
+                cmd = "# AI disabled - enable in F6 → 🤖 AI"
             if cmd.startswith("#"):
                 _log.debug("_translate_and_exec: got comment/disabled response, not executing")
                 try:
@@ -11240,7 +15627,7 @@ class SshShellScreen(ModalScreen):
                 pass
 
     def action_open_file_manager(self) -> None:
-        """Ctrl+F — open the File Manager pre-navigated to this host and its CWD."""
+        """Ctrl+F - open the File Manager pre-navigated to this host and its CWD."""
         host_id = self._host_id
         pool    = self._pool
 
@@ -11353,7 +15740,7 @@ class AiAnalysisPopup(ModalScreen):
             import json as _json
             data = _json.loads(text)
         except Exception:
-            return raw  # not JSON — show as-is
+            return raw  # not JSON - show as-is
         lines: list[str] = []
         threat = data.get("threat_level", "")
         color = {"HIGH": "red", "MEDIUM": "yellow", "LOW": "green"}.get(threat, "white")
@@ -11663,8 +16050,10 @@ class AiChatScreen(ModalScreen):
             self.notify("No command to run", severity="warning")
             return
         # Push shell on top of chat (don't dismiss) so user can return to chat after
+        hs = self._pool.state(self._host_id)
+        init_cmd = _get_ssh_init_cmd(hs, self._last_cmd)
         self.app.push_screen(SshShellScreen(self._pool, self._host_id,
-                                            init_cmd=self._last_cmd))
+                                            init_cmd=init_cmd))
 
     def action_copy_last(self) -> None:
         """Ctrl+C - copy the last AI response to system clipboard."""
@@ -12280,12 +16669,14 @@ class PortForwardsScreen(ModalScreen):
         self._cfgman.save_host_port_forwards(self._host_id, forwards)
 
     def action_open_ssh(self):
-        """F2 — open SSH shell for this host."""
+        """F2 - open SSH shell for this host."""
         self.dismiss(None)
-        self.app.push_screen(SshShellScreen(self._pool, self._host_id))
+        hs = self._pool.state(self._host_id)
+        init_cmd = _get_ssh_init_cmd(hs)
+        self.app.push_screen(SshShellScreen(self._pool, self._host_id, init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — open File Manager for this host."""
+        """Ctrl+F - open File Manager for this host."""
         self.dismiss(None)
         self.app.push_screen(FileManagerScreen(self._pool, initial_host_id=self._host_id))
 
@@ -12401,6 +16792,57 @@ class _PFRuleEditor(ModalScreen):
 # SECTION: docker_screen  (v0.3)
 # Ctrl+D - Docker container panel for all hosts
 # ══════════════════════════════════════════════════════════════════════════════
+
+class _DockerRenameDialog(ModalScreen):
+    """Small modal to rename a Docker container."""
+
+    DEFAULT_CSS = """
+    _DockerRenameDialog { align: center middle; }
+    #drename-box {
+        width: 54; height: auto;
+        border: double $accent;
+        background: $surface;
+        padding: 1 2;
+    }
+    #drename-title { text-style: bold; color: $accent; margin-bottom: 1; }
+    #drename-input { margin-bottom: 1; }
+    #drename-btns Button { min-width: 10; margin-right: 1; }
+    """
+
+    def __init__(self, current_name: str, **kwargs):
+        super().__init__(**kwargs)
+        self._current = current_name
+
+    def compose(self) -> ComposeResult:
+        with Container(id="drename-box"):
+            yield Static(f"Rename container: [bold]{self._current}[/bold]",
+                         id="drename-title")
+            yield Input(value=self._current, id="drename-input")
+            with Horizontal(id="drename-btns"):
+                yield Button("OK",     variant="primary", id="drename-ok")
+                yield Button("Cancel", variant="error",   id="drename-cancel")
+
+    def on_mount(self):
+        self.query_one("#drename-input", Input).focus()
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "drename-ok":
+            self._confirm()
+        else:
+            self.dismiss(None)
+
+    def on_input_submitted(self, event: Input.Submitted) -> None:
+        # Input widget consumes Enter and emits Submitted instead of bubbling key.
+        self._confirm()
+
+    def on_key(self, event) -> None:
+        if event.key == "escape":
+            self.dismiss(None)
+
+    def _confirm(self):
+        new_name = self.query_one("#drename-input", Input).value.strip()
+        self.dismiss(new_name if new_name and new_name != self._current else None)
+
 
 class DockerScreen(ModalScreen):
     """
@@ -12518,7 +16960,8 @@ class DockerScreen(ModalScreen):
         else:
             pairs = [("↑↓","select"),("←→","host"),("Enter","exec shell"),
                      ("s","stop"),("r","restart"),("l","logs"),
-                     ("p","ports"),("n","new container"),("a","add as host"),("Esc","close")]
+                     ("p","ports"),("n","new container"),("e","rename"),
+                     ("a","add as host"),("Esc","close")]
         try:
             self.query_one("#docker-box").border_subtitle = "".join(
                 f" {k}:{v} " for k, v in pairs)
@@ -12627,6 +17070,8 @@ class DockerScreen(ModalScreen):
             asyncio.create_task(self._docker_cmd(hid, c.id, "restart"))
         elif key == "l" and c and hid:
             self._open_logs_shell(hid, c)
+        elif key == "e" and c and hid:
+            self._rename_container(hid, c)
         elif key == "a" and c and hid:
             self._add_as_host(hid, c)
         elif key == "p" and c and hid:
@@ -12703,20 +17148,61 @@ class DockerScreen(ModalScreen):
             "echo 'Docker installed successfully!' || echo 'Installation failed - check errors above';"
             "bash"
         )
+        hs = self._pool.state(hid)
+        init_cmd = _get_ssh_init_cmd(hs, init_cmd)
         screen = SshShellScreen(self._pool, hid, init_cmd=init_cmd)
         self.app.push_screen(screen)
 
     def _open_exec_shell(self, host_id: str, c: ContainerInfo):
         """Reuse SshShellScreen, pre-seeding it with docker exec command."""
-        screen = SshShellScreen(self._pool, host_id,
-                                init_cmd=f"docker exec -it {c.id} sh -c 'bash || sh'")
+        hs = self._pool.state(host_id)
+        init_cmd = _get_ssh_init_cmd(hs, f"docker exec -it {c.id} sh -c 'bash || sh'")
+        screen = SshShellScreen(self._pool, host_id, init_cmd=init_cmd)
         self.app.push_screen(screen)
 
     def _open_logs_shell(self, host_id: str, c: ContainerInfo):
         """Open SSH shell pre-seeded with docker logs -f."""
-        screen = SshShellScreen(self._pool, host_id,
-                                init_cmd=f"docker logs -f --tail=100 {c.id}")
+        hs = self._pool.state(host_id)
+        init_cmd = _get_ssh_init_cmd(hs, f"docker logs -f --tail=100 {c.id}")
+        screen = SshShellScreen(self._pool, host_id, init_cmd=init_cmd)
         self.app.push_screen(screen)
+
+    def _rename_container(self, host_id: str, c: ContainerInfo):
+        """Show rename dialog and run 'docker rename' on confirmation."""
+        def _on_result(new_name: Optional[str]) -> None:
+            if new_name:
+                asyncio.create_task(self._do_rename(host_id, c, new_name))
+        self.app.push_screen(_DockerRenameDialog(c.name), _on_result)
+
+    async def _do_rename(self, host_id: str, c: ContainerInfo, new_name: str):
+        hs = self._pool.state(host_id)
+        if not hs.client:
+            self.app.notify("Host not connected", severity="error")
+            return
+        loop = asyncio.get_running_loop()
+        def _run():
+            _, stdout, stderr = hs.client.exec_command(
+                f"docker rename {c.name} {new_name}", timeout=10)
+            err = stderr.read().decode(errors="replace").strip()
+            exit_code = stdout.channel.recv_exit_status()
+            return exit_code, err
+        try:
+            exit_code, err = await loop.run_in_executor(None, _run)
+            if exit_code == 0:
+                self.app.notify(f"Renamed '{c.name}' → '{new_name}'",
+                                severity="information")
+                # Force docker metrics refresh so the new name appears immediately
+                # without waiting for the 15-second poll cycle.
+                try:
+                    agent = self._pool.agent(host_id)
+                    await agent._fetch_docker()
+                except Exception as fe:
+                    _log.warning("post-rename docker fetch failed: %s", fe)
+            else:
+                self.app.notify(f"Rename failed: {err[:120]}", severity="error")
+            self._refresh_view()
+        except Exception as e:
+            self.app.notify(f"Rename error: {e}", severity="error")
 
     def _add_as_host(self, parent_host_id: str, c: ContainerInfo):
         """Open HostEditorScreen pre-filled with container info."""
@@ -12745,25 +17231,25 @@ class DockerScreen(ModalScreen):
                 severity="warning",
             )
 
-        # Build a stub HostConfig that HostEditorScreen will receive
+        # Build a prefill stub - passed directly to HostEditorScreen without
+        # adding to the pool first (avoids a spurious auto-connect attempt).
+        stub_id = f"{parent_host_id}-docker-{c.id[:8]}"
         stub = HostConfig(
-            id       = f"{parent_host_id}-docker-{c.id[:8]}",
+            id       = stub_id,
             label    = f"[D] {c.name}",
-            address  = parent_cfg.address,   # same host IP - port forward handles routing
+            address  = parent_cfg.address,
             port     = ssh_port,
             username = parent_cfg.username,
             auth     = parent_cfg.auth,
             key_path = parent_cfg.key_path,
             tags     = ["docker", parent_host_id],
         )
-        # Inject stub into pool temporarily so HostEditorScreen can read it for clone
-        # We use clone_from trick: add a temp host and clone it
-        async def _do_add():
-            await self._pool.add_host(stub)
-            self.app.push_screen(
-                HostEditorScreen(self._pool, clone_from=stub.id))
-            # deploy parent's authorized_keys into the container so SSH works immediately
-            asyncio.create_task(_deploy_ssh_keys(parent_host_id, c.id))
+        # If an orphaned stub from an earlier "add as host" session exists in the
+        # pool (created by old code that called add_host before opening the editor),
+        # remove it now so the editor starts clean and no duplicate remains.
+        if stub_id in self._pool._agents:
+            asyncio.create_task(self._pool.remove_host(stub_id))
+        self.app.push_screen(HostEditorScreen(self._pool, prefill=stub))
 
         async def _deploy_ssh_keys(host_id: str, container_id: str):
             hs = self._pool.state(host_id)
@@ -12773,13 +17259,11 @@ class DockerScreen(ModalScreen):
 
             def _do():
                 import base64 as _b64
-                # read authorized_keys from parent host
                 _, stdout, _ = hs.client.exec_command(
                     "cat ~/.ssh/authorized_keys 2>/dev/null", timeout=10)
                 keys = stdout.read().decode(errors="replace").strip()
                 if not keys:
                     return False, "No ~/.ssh/authorized_keys found on parent host"
-                # encode to base64 to avoid any shell quoting issues
                 b64 = _b64.b64encode(keys.encode()).decode()
                 setup_cmd = (
                     f"docker exec {container_id} sh -c "
@@ -12806,7 +17290,7 @@ class DockerScreen(ModalScreen):
                 _log.warning("deploy_ssh_keys %s: %s", container_id, e)
                 self.app.notify(f"SSH key deploy error: {e}", severity="warning")
 
-        asyncio.create_task(_do_add())
+        asyncio.create_task(_deploy_ssh_keys(parent_host_id, c.id))
 
     async def _docker_cmd(self, host_id: str, container_id: str, action: str):
         self.app.notify(f"docker {action} {container_id[:12]}…", severity="warning")
@@ -12832,15 +17316,17 @@ class DockerScreen(ModalScreen):
         self._refresh_view()
 
     def action_open_ssh(self):
-        """F2 — open SSH shell on the current host."""
+        """F2 - open SSH shell on the current host."""
         hid = self._current_host_id()
         if not hid:
             return
         self.dismiss(None)
-        self.app.push_screen(SshShellScreen(self._pool, hid))
+        hs = self._pool.state(hid)
+        init_cmd = _get_ssh_init_cmd(hs)
+        self.app.push_screen(SshShellScreen(self._pool, hid, init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — open File Manager on the current host."""
+        """Ctrl+F - open File Manager on the current host."""
         hid = self._current_host_id()
         if not hid:
             return
@@ -13652,6 +18138,109 @@ from textual.widgets import Checkbox, DataTable, Label, Select, TextArea
 from textual.reactive import reactive
 
 
+class RestoreHostDialog(ModalScreen):
+    """
+    Lists hosts archived in the deleted_hosts section of deflect.json.
+    Each row shows label, address, and deletion time.
+    [R] / Enter restores the focused host; Esc closes without action.
+    """
+
+    DEFAULT_CSS = """
+    RestoreHostDialog {
+        align: center middle;
+    }
+    #restore-box {
+        width: 80;
+        max-height: 30;
+        border: double $warning;
+        background: $surface;
+        padding: 0 1;
+    }
+    #restore-box { border-title-color: $warning; border-title-style: bold; }
+    #restore-table { height: 1fr; }
+    #restore-footer {
+        height: 1;
+        background: $panel;
+        content-align: left middle;
+        color: $text-muted;
+        padding: 0 1;
+    }
+    #restore-empty {
+        color: $text-muted;
+        content-align: center middle;
+        height: 3;
+    }
+    """
+
+    BINDINGS = [
+        Binding("escape", "cancel", show=False),
+        Binding("r",      "restore", show=False),
+        Binding("enter",  "restore", show=False),
+    ]
+
+    def __init__(self, cfgman: "ConfigManager", pool: "AgentPool", **kwargs):
+        super().__init__(**kwargs)
+        self._cfgman  = cfgman
+        self._pool    = pool
+        self._entries: list[dict] = []  # [{deleted_at, deleted_at_ts, host}]
+
+    def compose(self) -> ComposeResult:
+        with Container(id="restore-box"):
+            yield DataTable(id="restore-table", cursor_type="row", show_cursor=True)
+            yield Static("", id="restore-footer")
+
+    def on_mount(self) -> None:
+        box = self.query_one("#restore-box")
+        box.border_title = "🗑  Restore Deleted Host"
+        tbl = self.query_one("#restore-table", DataTable)
+        tbl.add_columns("Label", "Address", "Port", "Deleted at")
+        self._entries = self._cfgman.get_deleted_hosts()
+        if self._entries:
+            for e in self._entries:
+                h = e["host"]
+                tbl.add_row(
+                    h.get("label", h.get("id", "?")),
+                    h.get("address", ""),
+                    str(h.get("port", 22)),
+                    e.get("deleted_at", ""),
+                )
+            self.query_one("#restore-footer", Static).update(
+                f"[bold]R[/bold] or Enter = restore  ·  Esc = close  "
+                f"·  {len(self._entries)} deleted host(s)"
+            )
+            tbl.focus()
+        else:
+            tbl.display = False
+            box.mount(Static("No deleted hosts in archive", id="restore-empty"))
+            self.query_one("#restore-footer", Static).update("Esc = close")
+
+    def action_restore(self) -> None:
+        tbl = self.query_one("#restore-table", DataTable)
+        try:
+            idx = tbl.cursor_row
+            entry = self._entries[idx]
+            host_id = entry["host"].get("id", "")
+        except (IndexError, KeyError):
+            self.app.notify("Nothing selected", severity="warning")
+            return
+        label = entry["host"].get("label", host_id)
+        ok = self._cfgman.restore_deleted_host(host_id)
+        if ok:
+            # also add to live pool so it appears immediately
+            import asyncio as _asyncio
+            cfg = self._cfgman._build_host_config(entry["host"])
+            _asyncio.create_task(self._pool.add_host(cfg))
+            self.app.notify(f"✓ '{label}' restored", severity="information")
+            self.dismiss(True)
+        else:
+            self.app.notify(f"Could not restore '{label}' - entry may have expired",
+                            severity="error")
+            self.dismiss(False)
+
+    def action_cancel(self) -> None:
+        self.dismiss(False)
+
+
 class FleetManagerScreen(ModalScreen):
     """
     Full-screen fleet overview.  Opened with F9.
@@ -13706,18 +18295,21 @@ class FleetManagerScreen(ModalScreen):
     """
 
     BINDINGS = [
-        Binding("escape",    "close",       "Close",      show=False),
-        Binding("f9",        "close",       "Close",      show=False),
-        Binding("a",         "select_all",  "All",        show=False),
-        Binding("c",         "clone_host",  "Clone",      show=False),
-        Binding("e",         "edit_host",   "Edit",       show=False),
-        Binding("b",         "bulk_ops",    "Bulk Ops",   show=False),
-        Binding("k",         "rotate_key",  "Rotate Key", show=False),
-        Binding("n",         "new_host",    "New",        show=False),
-        Binding("delete",    "del_host",    "Delete",     show=False),
-        Binding("h",         "ai_audit",    "AI Audit",   show=False),
-        Binding("f2",        "open_ssh",    "SSH",        show=False),
-        Binding("ctrl+f",    "open_fm",     "Files",      show=False),
+        Binding("escape",    "close",         "Close",      show=False),
+        Binding("f9",        "close",         "Close",      show=False),
+        Binding("a",         "select_all",    "All",        show=False),
+        Binding("c",         "clone_host",    "Clone",      show=False),
+        Binding("e",         "edit_host",     "Edit",       show=False),
+        Binding("b",         "bulk_ops",      "Bulk Ops",   show=False),
+        Binding("k",         "rotate_key",    "Rotate Key", show=False),
+        Binding("n",         "new_host",      "New",        show=False),
+        Binding("delete",    "del_host",      "Delete",     show=False),
+        Binding("r",         "restore_host",  "Restore",    show=False),
+        Binding("h",         "ai_audit",      "AI Audit",   show=False),
+        Binding("f2",        "open_ssh",      "SSH",        show=False),
+        Binding("ctrl+f",    "open_fm",       "Files",      show=False),
+        Binding("ctrl+up",   "move_up",       "Move Up",    show=False),
+        Binding("ctrl+down", "move_down",     "Move Down",  show=False),
     ]
 
     def on_key(self, event: events.Key) -> None:
@@ -13726,6 +18318,9 @@ class FleetManagerScreen(ModalScreen):
             event.prevent_default()
             event.stop()
             self.action_toggle_row()
+        elif event.key == "u" and self._undo_host is not None:
+            event.stop()
+            asyncio.create_task(self._do_undo())
         elif event.key == "escape":
             # Cancel pending delete confirmation (if any)
             self._pending_delete = None
@@ -13740,6 +18335,9 @@ class FleetManagerScreen(ModalScreen):
         self._checked: dict[str, bool] = {}
         # host_id waiting for delete confirmation (second Del press)
         self._pending_delete: Optional[str] = None
+        # 5-second undo buffer for last deleted host
+        self._undo_host:  Optional[HostConfig] = None
+        self._undo_timer = None
 
     def compose(self) -> ComposeResult:
         with Container(id="fleet-box"):
@@ -13752,11 +18350,11 @@ class FleetManagerScreen(ModalScreen):
         box.border_title = "⊞  Fleet Manager"
         box.border_subtitle = (
             " Space:toggle  a:all  c:clone  e:edit"
-            "  b:bulk-ops  k:rotate-key  n:new  Del:delete  Esc:close"
+            "  b:bulk-ops  k:rotate-key  n:new  Del:delete  r:restore  Esc:close"
         )
         tbl = self.query_one("#fleet-table", DataTable)
         tbl.add_columns("✓", "#", "Label", "Address", "Port",
-                         "User", "Auth", "Tags", "Status", "CPU", "RAM")
+                         "User", "Auth", "Tags", "Status", "CPU", "RAM", "Source")
         self._refresh_table()
         tbl.focus()
         self.set_interval(3, lambda: self._refresh_table(keep_cursor=True))
@@ -13779,14 +18377,28 @@ class FleetManagerScreen(ModalScreen):
 
     def _refresh_table(self, keep_cursor: bool = False):
         tbl  = self.query_one("#fleet-table", DataTable)
-        saved_cursor = tbl.cursor_row if keep_cursor else 0
+        # Save the host ID at cursor, not the row number
+        saved_hid = None
+        if keep_cursor:
+            try:
+                saved_hid = self._host_id_at_cursor()
+            except:
+                pass
+
         tbl.clear()
         states = {hs.config.id: hs for hs in self._pool.all_states()}
-        for i, hid in enumerate(self._pool.host_ids(), 1):
+        # Use order from main window if available, otherwise use pool order
+        host_order = self.app._card_order if hasattr(self.app, "_card_order") else list(self._pool.host_ids())
+        cursor_row = 0
+        for i, hid in enumerate(host_order, 1):
             hs  = states.get(hid)
             cfg = hs.config if hs else None
             if not cfg:
                 continue
+            # Track which row has the saved host
+            if hid == saved_hid:
+                cursor_row = i - 1  # -1 because enumerate starts at 1
+
             chk  = "☑" if self._checked.get(hid) else "☐"
             conn = hs.state if hs else ConnState.ERROR
             status_sym = (
@@ -13799,15 +18411,16 @@ class FleetManagerScreen(ModalScreen):
             tags_s = ", ".join(cfg.tags) if cfg.tags else ""
             auth_s = cfg.auth or "key"
 
+            src_s = cfg.import_source if cfg.import_source != "manual" else ""
             tbl.add_row(
                 chk, str(i), cfg.label, cfg.address,
                 str(cfg.port), cfg.username, auth_s,
-                tags_s, status_sym, cpu_s, ram_s,
+                tags_s, status_sym, cpu_s, ram_s, src_s,
                 key=hid,
             )
         row_count = tbl.row_count
-        if row_count > 0:
-            tbl.move_cursor(row=min(saved_cursor, row_count - 1))
+        if row_count > 0 and keep_cursor:
+            tbl.move_cursor(row=min(cursor_row, row_count - 1))
         self._update_footer()
 
     def _update_footer(self):
@@ -13912,23 +18525,61 @@ class FleetManagerScreen(ModalScreen):
         hid = self._host_id_at_cursor()
         if not hid:
             return
-        label = self._pool.state(hid).config.label
+        try:
+            label = self._pool.state(hid).config.label
+        except Exception:
+            label = hid
         if self._pending_delete == hid:
-            # Second Del press on the same host - confirmed
+            # Second Del press - confirmed, proceed with delete
             self._pending_delete = None
             asyncio.create_task(self._do_delete(hid, label))
         else:
-            # First press - ask for confirmation
+            # First press - show warning, ask for second press
             self._pending_delete = hid
             self.app.notify(
                 f"Delete '{label}'? Press Del again to confirm or Esc to cancel.",
                 severity="warning", timeout=5)
 
     async def _do_delete(self, hid: str, label: str):
+        # Save config for 5-second undo before removing
+        try:
+            self._undo_host = self._pool.state(hid).config
+        except Exception:
+            self._undo_host = None
+        if self._undo_timer:
+            self._undo_timer.cancel()
+
         await self._pool.remove_host(hid)
         self._checked.pop(hid, None)
-        self.app.notify(f"✓ Host '{label}' removed", severity="information")
         self._refresh_table()
+        self.app.notify(
+            f"'{label}' deleted  ·  press [bold]U[/bold] within 5s to undo",
+            severity="warning", timeout=5,
+        )
+        self._undo_timer = self.set_timer(5.0, self._undo_expired)
+
+    def _undo_expired(self) -> None:
+        self._undo_host  = None
+        self._undo_timer = None
+
+    async def _do_undo(self) -> None:
+        if self._undo_host is None:
+            self.app.notify("Nothing to undo", severity="warning")
+            return
+        cfg = self._undo_host
+        self._undo_host  = None
+        self._undo_timer = None
+        await self._pool.add_host(cfg)
+        self._refresh_table(keep_cursor=True)
+        self.app.notify(f"✓ '{cfg.label}' restored", severity="information")
+
+    def action_restore_host(self) -> None:
+        """Open RestoreHostDialog to recover a host from the 7-day archive."""
+        def _on_done(restored: bool) -> None:
+            if restored:
+                self._refresh_table()
+        self.app.push_screen(
+            RestoreHostDialog(self._cfgman, self._pool), _on_done)
 
     def action_ai_audit(self):
         engine = self._pool.ai_engine
@@ -13944,22 +18595,80 @@ class FleetManagerScreen(ModalScreen):
         self.app.push_screen(AiHealthAuditScreen(self._pool, host_ids))
 
     def action_open_ssh(self):
-        """F2 — open SSH shell for the host at cursor."""
+        """F2 - open SSH shell for the host at cursor."""
         hid = self._host_id_at_cursor()
         if not hid:
             self.app.notify("Select a host first", severity="warning")
             return
         self.dismiss(None)
-        self.app.push_screen(SshShellScreen(self._pool, hid))
+        hs = self._pool.state(hid)
+        init_cmd = _get_ssh_init_cmd(hs)
+        self.app.push_screen(SshShellScreen(self._pool, hid, init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — open File Manager for the host at cursor."""
+        """Ctrl+F - open File Manager for the host at cursor."""
         hid = self._host_id_at_cursor()
         if not hid:
             self.app.notify("Select a host first", severity="warning")
             return
         self.dismiss(None)
         self.app.push_screen(FileManagerScreen(self._pool, initial_host_id=hid))
+
+    def action_move_up(self):
+        """Ctrl+Up - move selected host up (syncs with main window)."""
+        hid = self._host_id_at_cursor()
+        if not hid:
+            return
+        # Sync with main screen's _card_order and move cards in grid
+        if hasattr(self.app, "_card_order"):
+            card_order = self.app._card_order
+            if hid not in card_order:
+                return
+            idx = card_order.index(hid)
+            if idx <= 0:
+                return
+            # Move up (swap with previous)
+            other_hid = card_order[idx - 1]
+            card_order[idx], card_order[idx - 1] = card_order[idx - 1], card_order[idx]
+            self.app._panel_order = [f"card-{h}" for h in card_order] + [p for p in self.app._panel_order if not p.startswith("card-")]
+
+            # Also move cards in the main window's grid
+            try:
+                grid = self.app.query_one("#grid-hosts")
+                card_a = self.app._cards[hid]
+                card_b = self.app._cards[other_hid]
+                grid.move_child(card_a, before=card_b)
+            except Exception:
+                pass
+        self._refresh_table(keep_cursor=True)
+
+    def action_move_down(self):
+        """Ctrl+Down - move selected host down (syncs with main window)."""
+        hid = self._host_id_at_cursor()
+        if not hid:
+            return
+        # Sync with main screen's _card_order and move cards in grid
+        if hasattr(self.app, "_card_order"):
+            card_order = self.app._card_order
+            if hid not in card_order:
+                return
+            idx = card_order.index(hid)
+            if idx >= len(card_order) - 1:
+                return
+            # Move down (swap with next)
+            other_hid = card_order[idx + 1]
+            card_order[idx], card_order[idx + 1] = card_order[idx + 1], card_order[idx]
+            self.app._panel_order = [f"card-{h}" for h in card_order] + [p for p in self.app._panel_order if not p.startswith("card-")]
+
+            # Also move cards in the main window's grid
+            try:
+                grid = self.app.query_one("#grid-hosts")
+                card_a = self.app._cards[hid]
+                card_b = self.app._cards[other_hid]
+                grid.move_child(card_a, after=card_b)
+            except Exception:
+                pass
+        self._refresh_table(keep_cursor=True)
 
     def action_close(self):
         self.dismiss(None)
@@ -14490,9 +19199,9 @@ class BulkOpsScreen(ModalScreen):
 
             ok_n  = sum(1 for s in self._status.values() if s == "done")
             err_n = sum(1 for s in self._status.values() if s == "error")
-            _log.info("BulkOps: [%s] finished — %d ok, %d error(s)", name, ok_n, err_n)
+            _log.info("BulkOps: [%s] finished - %d ok, %d error(s)", name, ok_n, err_n)
             self.app.notify(
-                f"✓ {ok_n} ok  ✗ {err_n} error(s)  —  Enter to view output",
+                f"✓ {ok_n} ok  ✗ {err_n} error(s)  -  Enter to view output",
                 severity="information" if err_n == 0 else "warning")
 
             # Build result list for the output screen
@@ -14666,11 +19375,12 @@ class RotateKeyScreen(ModalScreen):
     ]
 
     def __init__(self, pool: "AgentPool", cfgman: "ConfigManager",
-                 host_ids: list[str], **kwargs):
+                 host_ids: list[str], username: Optional[str] = None, **kwargs):
         super().__init__(**kwargs)
         self._pool     = pool
         self._cfgman   = cfgman
         self._host_ids = host_ids
+        self._username = username  # If set, rotate this user's key (generate_and_deploy_key workflow)
         self._keymgr          = SshKeyManager(pool, cfgman)
         self._rotation_active = False   # True while _do_rotate is running
         self._disable_pw: bool = False
@@ -14693,24 +19403,35 @@ class RotateKeyScreen(ModalScreen):
         ]
         with Container(id="rk-box"):
             with Container(id="rk-options"):
-                yield Static(
-                    f"[bold {CLR_WARNING}]What this does:[/]\n"
-                    "  1. Generate new ed25519 keypair locally\n"
-                    "  2. Push new pubkey to remote authorized_keys\n"
-                    "  3. Verify new key works (test connect)\n"
-                    "  4. Remove old pubkey from remote\n"
-                    "  5. Backup old + new keys → key_backups/<host>_<ts>/\n"
-                    "  6. Update deflect.json with new key path",
-                    id="rk-info")
-                yield Static("", id="rk-spacer")
-                yield Static(
-                    "Also disable PasswordAuthentication in sshd_config:",
-                    id="rk-pw-label")
-                with Horizontal(id="rk-pw-btns"):
-                    yield Button("No  (safe default)",
-                                 id="btn-pw-no",  variant="primary")
-                    yield Button("Yes (more secure)",
-                                 id="btn-pw-yes", variant="default")
+                if self._username:
+                    # Generate + deploy for arbitrary user (from SshKeysDialog)
+                    yield Static(
+                        f"[bold {CLR_WARNING}]Generating SSH key for {self._username}:[/]\n"
+                        "  1. Generate new ed25519 keypair locally\n"
+                        "  2. Push new pubkey to remote authorized_keys\n"
+                        "  3. Verify new key works (test connect)\n"
+                        "  4. Backup new key → key_backups/<host>_<user>_<ts>/",
+                        id="rk-info")
+                else:
+                    # Full rotation for primary login user (original workflow)
+                    yield Static(
+                        f"[bold {CLR_WARNING}]What this does:[/]\n"
+                        "  1. Generate new ed25519 keypair locally\n"
+                        "  2. Push new pubkey to remote authorized_keys\n"
+                        "  3. Verify new key works (test connect)\n"
+                        "  4. Remove old pubkey from remote\n"
+                        "  5. Backup old + new keys → key_backups/<host>_<ts>/\n"
+                        "  6. Update deflect.json with new key path",
+                        id="rk-info")
+                    yield Static("", id="rk-spacer")
+                    yield Static(
+                        "Also disable PasswordAuthentication in sshd_config:",
+                        id="rk-pw-label")
+                    with Horizontal(id="rk-pw-btns"):
+                        yield Button("No  (safe default)",
+                                     id="btn-pw-no",  variant="primary")
+                        yield Button("Yes (more secure)",
+                                     id="btn-pw-yes", variant="default")
             with Container(id="rk-progress"):
                 for hid in self._host_ids:
                     try:
@@ -14740,11 +19461,25 @@ class RotateKeyScreen(ModalScreen):
             for h in self._host_ids
         ]
         box = self.query_one("#rk-box")
-        box.border_title = (
-            f"🔑  Rotate SSH Keys  -  {n} host{'s' if n!=1 else ''}: "
-            + ", ".join(labels[:3]) + ("…" if n > 3 else "")
-        )
+        if self._username:
+            box.border_title = (
+                f"🔑  Generate SSH Key - {self._username}  -  {n} host{'s' if n!=1 else ''}: "
+                + ", ".join(labels[:3]) + ("…" if n > 3 else "")
+            )
+        else:
+            box.border_title = (
+                f"🔑  Rotate SSH Keys  -  {n} host{'s' if n!=1 else ''}: "
+                + ", ".join(labels[:3]) + ("…" if n > 3 else "")
+            )
         box.border_subtitle = " Esc:close"
+        # Hide password buttons if doing generate+deploy (only needed for full rotation)
+        if self._username:
+            try:
+                self.query_one("#rk-pw-btns").styles.display = "none"
+                self.query_one("#rk-spacer").styles.display = "none"
+                self.query_one("#rk-pw-label").styles.display = "none"
+            except Exception:
+                pass
 
     def on_button_pressed(self, event: Button.Pressed):
         bid = event.button.id
@@ -14775,12 +19510,23 @@ class RotateKeyScreen(ModalScreen):
             _log.debug("[RotateKeyScreen] run_worker called")
 
     async def _do_rotate(self, disable_pw: bool):
-        _log.info("[RotateKeyScreen._do_rotate] started: disable_pw=%s", disable_pw)
+        _log.info("[RotateKeyScreen._do_rotate] started: username=%s disable_pw=%s",
+                  self._username, disable_pw)
         self._rotation_active = True
 
         try:
-            if len(self._host_ids) == 1:
-                # single host - sequential
+            if self._username:
+                # Generate + deploy for arbitrary user (from SshKeysDialog)
+                _log.info("[RotateKeyScreen._do_rotate] generate+deploy mode: user=%s hosts=%s",
+                          self._username, self._host_ids)
+                for hid in self._host_ids:
+                    async for step, ok, detail in self._keymgr.generate_and_deploy_key(
+                            hid, self._username):
+                        _log.debug("[generate_and_deploy_key] %s  step=%-20s ok=%s  %s",
+                                   hid, step, ok, detail)
+                        self._update_host_progress(hid, step, ok, detail)
+            elif len(self._host_ids) == 1:
+                # single host - sequential (full rotation)
                 hid = self._host_ids[0]
                 _log.info("[RotateKeyScreen._do_rotate] single-host mode: %s", hid)
                 async for step, ok, detail in self._keymgr.rotate_key(
@@ -14789,7 +19535,7 @@ class RotateKeyScreen(ModalScreen):
                                hid, step, ok, detail)
                     self._update_host_progress(hid, step, ok, detail)
             else:
-                # multiple hosts - parallel via bulk generator
+                # multiple hosts - parallel via bulk generator (full rotation)
                 _log.info("[RotateKeyScreen._do_rotate] bulk mode: %s", self._host_ids)
                 async for hid, step, ok, detail in self._keymgr.rotate_keys_bulk(
                         self._host_ids, disable_pw):
@@ -14873,6 +19619,2490 @@ class RotateKeyScreen(ModalScreen):
             self.app.notify("Rotation in progress - please wait…",
                             severity="warning")
             return
+        self.dismiss(None)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SECTION: user_admin_screen  (v0.78)
+# Ctrl+J - Linux user & group administration for any host or container.
+#
+# Architecture:
+#   UserAdminService  - command execution + audit log (no UI state).
+#                       Single class used by both UserAdminScreen and
+#                       ContainmentDialog so containment commands are never
+#                       duplicated between the two screens.
+#   _UserDangerGuard  - safety analysis before any mutating operation.
+#                       Prevents accidental self-lockout and warns about
+#                       root / privileged-group targets.
+#   _UaConfirmDialog  - multi-level confirmation ModalScreen:
+#                         warn      → single Yes/No
+#                         dangerous → Yes/No + type username
+#                         critical  → type username + lockout phrase
+#   UserAdminScreen   - main ModalScreen (DockerScreen-pattern):
+#                         host tabs (←→), 5 content tabs (U/G/K/S/D),
+#                         keyboard-first navigation
+#   UserEditDialog    - create / edit user properties
+#   GroupEditDialog   - create / edit group
+#   SshKeysDialog     - view/append/remove authorized_keys per user;
+#                       full rotation delegates to existing RotateKeyScreen
+#                       to avoid duplicating that logic
+# ══════════════════════════════════════════════════════════════════════════════
+
+import datetime as _uadm_dt
+import base64   as _uadm_b64
+
+# Privileged groups - membership in any of these warrants extra warnings.
+# docker and lxd provide near-root access via container escape paths.
+_PRIVILEGED_GROUPS = frozenset({
+    "root", "sudo", "admin", "wheel", "docker", "lxd", "adm"
+})
+
+# Shells that indicate a locked/disabled account (no interactive login allowed).
+_DISABLED_SHELLS = frozenset({
+    "/usr/sbin/nologin", "/sbin/nologin",
+    "/bin/false", "/bin/nologin", "/usr/bin/false",
+})
+
+# Audit logger for all user/group administration actions.
+# Goes to admin.log (separate from deflect.log so it can be monitored by
+# external SIEM tools without noise from the main application log).
+_log_admin = logging.getLogger("deflect.admin")
+_log_admin.setLevel(logging.DEBUG)
+if not _log_admin.handlers:
+    _log_admin.addHandler(_make_rot("admin.log", logging.INFO))
+
+
+# ── Data model ────────────────────────────────────────────────────────────────
+
+@dataclass
+class UserInfo:
+    """One Linux user parsed from /etc/passwd + shadow lock status."""
+    username:        str
+    uid:             int
+    gid:             int
+    home:            str
+    shell:           str
+    is_system:       bool       = False   # uid < 1000 → service/system account
+    is_locked:       bool       = False   # nologin shell or '!' in shadow
+    groups:          list[str]  = field(default_factory=list)
+    active_sessions: int        = 0
+
+
+@dataclass
+class GroupInfo:
+    """One Linux group parsed from /etc/group."""
+    name:          str
+    gid:           int
+    members:       list[str] = field(default_factory=list)
+    is_privileged: bool      = False   # name in _PRIVILEGED_GROUPS
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# UserAdminService - command execution layer (no UI state)
+# ══════════════════════════════════════════════════════════════════════════════
+
+class UserAdminService:
+    """
+    Executes Linux user/group administration commands via the existing SSH pool.
+
+    All operations:
+      • run through the existing paramiko connection (no new SSH sessions)
+      • support both direct-host and docker-exec execution paths
+      • write a structured audit entry to admin.log on every mutation
+      • never perform destructive operations without explicit caller intent
+
+    This class is intentionally UI-free so ContainmentDialog can import its
+    containment methods without pulling in the full screen stack.
+    """
+
+    def __init__(self, pool: "AgentPool"):
+        self._pool = pool
+
+    # ── Execution helpers ─────────────────────────────────────────────────────
+
+    def _wrap(self, cmd: str, container_id: Optional[str]) -> str:
+        """Wrap cmd in 'docker exec' when a container target is specified."""
+        if container_id:
+            safe = cmd.replace("'", "'\\''")
+            return f"docker exec {container_id} sh -c '{safe}'"
+        return cmd
+
+    async def run(
+        self,
+        host_id: str,
+        cmd: str,
+        container_id: Optional[str] = None,
+        timeout: int = 10,
+    ) -> tuple[bool, str]:
+        """
+        Execute cmd on host (or inside a container via docker exec).
+        Delegates to pool.run() so connection-state checks, reconnect logic,
+        and the 10-second SSH timeout are all handled by the existing
+        _SingleHostPool._exec() path - matching every other screen in this app.
+        """
+        full_cmd = self._wrap(cmd, container_id)
+        try:
+            result = await self._pool.run(host_id, full_cmd)
+            if result.error:
+                return False, result.error
+            output = (result.stdout or result.stderr or "(no output)").strip()
+            return result.exit_code == 0, output
+        except Exception as e:
+            return False, str(e)
+
+    # ── Inspection ────────────────────────────────────────────────────────────
+
+    async def detect_current_user(self, host_id: str) -> str:
+        """
+        Return the username currently authenticated on the host.
+        Reads from HostConfig (SSH auth username) - this is the account
+        that would be locked out if we applied actions to it.
+        """
+        try:
+            return self._pool.state(host_id).config.username
+        except Exception:
+            ok, out = await self.run(host_id, "id -un 2>/dev/null || whoami")
+            return out.strip().split("\n")[0] if ok and out.strip() else "unknown"
+
+    async def list_users(
+        self,
+        host_id: str,
+        container_id: Optional[str] = None,
+    ) -> list[UserInfo]:
+        """
+        Build list of UserInfo from /etc/passwd + shadow lock detection.
+        /etc/shadow requires root; failure means is_locked may be incomplete.
+        """
+        # Run all four enumeration commands in parallel - reduces wall time from
+        # 4×timeout to 1×timeout on slow or distant hosts.
+        (ok, passwd_out), (ok2, shadow_out), (ok3, who_out), (ok4, grp_out) = (
+            await asyncio.gather(
+                self.run(host_id, "cat /etc/passwd 2>/dev/null", container_id),
+                self.run(host_id, "awk -F: '$2 ~ /^[!*]/ {print $1}' /etc/shadow 2>/dev/null", container_id),
+                self.run(host_id, "who 2>/dev/null", container_id),
+                self.run(host_id,
+                    "getent group 2>/dev/null | awk -F: '{split($4,m,\",\"); for(i in m) if(m[i]) print m[i],\"|\",$1}'",
+                    container_id),
+            )
+        )
+        if not ok or not passwd_out:
+            return []
+
+        shadow_locked: set[str] = set()
+        if ok2 and shadow_out:
+            shadow_locked = {l.strip() for l in shadow_out.splitlines() if l.strip()}
+
+        active_users: dict[str, int] = {}
+        if ok3 and who_out:
+            for wline in who_out.splitlines():
+                parts = wline.split()
+                if parts:
+                    uname = parts[0]
+                    active_users[uname] = active_users.get(uname, 0) + 1
+
+        user_groups: dict[str, list[str]] = {}
+        if ok4 and grp_out:
+            for gline in grp_out.splitlines():
+                parts = gline.strip().split(" | ")
+                if len(parts) == 2:
+                    uname, gname = parts[0].strip(), parts[1].strip()
+                    user_groups.setdefault(uname, []).append(gname)
+
+        users: list[UserInfo] = []
+        for line in passwd_out.splitlines():
+            parts = line.split(":")
+            if len(parts) < 7:
+                continue
+            try:
+                uname  = parts[0]
+                uid    = int(parts[2])
+                gid    = int(parts[3])
+                home   = parts[5]
+                shell  = parts[6]
+                locked = (shell in _DISABLED_SHELLS) or (uname in shadow_locked)
+                users.append(UserInfo(
+                    username=uname, uid=uid, gid=gid,
+                    home=home, shell=shell,
+                    is_system=(uid < 1000),
+                    is_locked=locked,
+                    groups=user_groups.get(uname, []),
+                    active_sessions=active_users.get(uname, 0),
+                ))
+            except (ValueError, IndexError):
+                continue
+        return sorted(users, key=lambda u: u.uid)
+
+    async def list_groups(
+        self,
+        host_id: str,
+        container_id: Optional[str] = None,
+    ) -> list[GroupInfo]:
+        """Parse /etc/group into GroupInfo list."""
+        ok, out = await self.run(host_id, "cat /etc/group 2>/dev/null", container_id)
+        if not ok or not out:
+            return []
+        groups: list[GroupInfo] = []
+        for line in out.splitlines():
+            parts = line.split(":")
+            if len(parts) < 4:
+                continue
+            try:
+                name    = parts[0]
+                gid     = int(parts[2])
+                members = [m for m in parts[3].split(",") if m.strip()]
+                groups.append(GroupInfo(
+                    name=name, gid=gid, members=members,
+                    is_privileged=(name in _PRIVILEGED_GROUPS),
+                ))
+            except (ValueError, IndexError):
+                continue
+        return sorted(groups, key=lambda g: g.gid)
+
+    async def get_user_details(
+        self,
+        host_id: str,
+        username: str,
+        container_id: Optional[str] = None,
+    ) -> str:
+        """
+        Gather full user profile: identity, password aging, last login,
+        active sessions, running processes, disk usage.
+        Runs several commands in parallel for speed.
+        """
+        cmds = [
+            f"id {username} 2>/dev/null",
+            f"chage -l {username} 2>/dev/null || echo '(chage unavailable - needs root)'",
+            f"lastlog -u {username} 2>/dev/null | tail -1",
+            f"grep '^{username}:' /etc/passwd 2>/dev/null",
+            f"who | grep -w '{username}' 2>/dev/null || echo '(no active sessions)'",
+            f"ps -u {username} --no-headers -o pid,stat,%cpu,%mem,comm 2>/dev/null | head -10 || echo '(none)'",
+            # bash/zsh history - readable only if we are root or the same user
+            (
+                f"HOME=$(getent passwd {username} | cut -d: -f6); "
+                f"for f in \"$HOME/.bash_history\" \"$HOME/.zsh_history\"; do "
+                f"  [ -r \"$f\" ] && tail -20 \"$f\" && break; "
+                f"done 2>/dev/null || echo '(history not readable)'"
+            ),
+        ]
+        results = await asyncio.gather(*[
+            self.run(host_id, c, container_id) for c in cmds
+        ])
+        sections = [
+            ("Identity",        results[0][1] if results[0][0] else "(id failed - user may not exist)"),
+            ("Password aging",  results[1][1]),
+            ("Last login",      results[2][1] if results[2][0] else "(lastlog unavailable)"),
+            ("Passwd entry",    results[3][1] if results[3][0] else "(not in /etc/passwd)"),
+            ("Active sessions", results[4][1]),
+            ("Processes",       results[5][1]),
+            ("Recent history",  results[6][1] if results[6][0] else "(history unavailable)"),
+        ]
+        # Disk usage: extract home dir from passwd, then du -sh
+        home = ""
+        if results[3][0] and results[3][1]:
+            p = results[3][1].split(":")
+            if len(p) >= 6:
+                home = p[5]
+        if home:
+            ok_du, du_out = await self.run(
+                host_id,
+                f"du -sh {home} 2>/dev/null || echo '(unavailable)'",
+                container_id,
+            )
+            sections.append(("Disk usage", du_out if du_out else "(unavailable)"))
+
+        # Quota: optional - only shown if quota tools are installed.
+        # We deliberately don't assume quota support on every Debian host.
+        ok_q, q_out = await self.run(
+            host_id,
+            f"quota -u {username} 2>/dev/null || echo '__NO_QUOTA__'",
+            container_id,
+        )
+        if ok_q and "__NO_QUOTA__" not in q_out and q_out.strip():
+            sections.append(("Quota", q_out))
+
+        # Sudo rights (may require root to run sudo -l -U)
+        ok_s, sudo_out = await self.run(
+            host_id,
+            f"sudo -l -U {username} 2>/dev/null || echo '(sudo unavailable)'",
+            container_id,
+        )
+        sections.append(("Sudo rights", sudo_out if sudo_out else "(none)"))
+
+        lines = []
+        for label, val in sections:
+            lines.append(f"  ── {label} ──")
+            for v_line in (val or "").splitlines():
+                lines.append(f"    {v_line}")
+            lines.append("")
+        return "\n".join(lines)
+
+    async def get_authorized_keys(
+        self,
+        host_id: str,
+        username: str,
+        container_id: Optional[str] = None,
+    ) -> list[str]:
+        """Read authorized_keys for any user (not just the current login user)."""
+        # Use getent passwd to handle non-standard home directories
+        cmd = (
+            f"HOME=$(getent passwd {username} | cut -d: -f6); "
+            f"cat \"$HOME/.ssh/authorized_keys\" 2>/dev/null"
+        )
+        ok, out = await self.run(host_id, cmd, container_id)
+        if not ok or not out.strip():
+            return []
+        return [l for l in out.splitlines() if l.strip() and not l.startswith("#")]
+
+    async def backup_authorized_keys(
+        self,
+        host_id: str,
+        username: str,
+        container_id: Optional[str] = None,
+    ) -> tuple[bool, str]:
+        """
+        Backup authorized_keys before any modification.
+        Timestamped backup in the same .ssh directory protects against
+        accidental key removal - always call this before mutating the file.
+        """
+        ts  = _uadm_dt.datetime.now().strftime("%Y%m%d_%H%M%S")
+        cmd = (
+            f"AKF=$(getent passwd {username} | cut -d: -f6)/.ssh/authorized_keys; "
+            f"[ -f \"$AKF\" ] "
+            f"&& cp \"$AKF\" \"$AKF.deflect_bk_{ts}\" && echo \"backup:$AKF.deflect_bk_{ts}\" "
+            f"|| echo 'no_existing_file'"
+        )
+        return await self.run(host_id, cmd, container_id)
+
+    async def list_sessions(
+        self,
+        host_id: str,
+        container_id: Optional[str] = None,
+    ) -> str:
+        """Return 'who' + 'w' output for the active session viewer."""
+        ok1, who  = await self.run(host_id, "who 2>/dev/null",  container_id)
+        ok2, w    = await self.run(host_id, "w -h 2>/dev/null", container_id)
+        parts = []
+        if ok1 and who:
+            parts.append("─── who ───\n" + who)
+        if ok2 and w:
+            parts.append("─── w ───\n" + w)
+        return "\n".join(parts) if parts else "(no active sessions or command unavailable)"
+
+    # ── Mutating operations ───────────────────────────────────────────────────
+
+    async def create_user(
+        self,
+        host_id: str,
+        username: str,
+        shell: str = "/bin/bash",
+        create_home: bool = True,
+        extra_groups: Optional[list[str]] = None,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Create user with useradd -m -s <shell>."""
+        flags = ["-s", shell]
+        if create_home:
+            flags.append("-m")
+        cmd = f"useradd {' '.join(flags)} {username}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        if ok and extra_groups:
+            for g in extra_groups:
+                await self.run(host_id, f"usermod -aG {g} {username}", container_id)
+        self._audit("create_user", host_id, container_id, operator, username, cmd, out, ok)
+        return ok, out
+
+    async def delete_user(
+        self,
+        host_id: str,
+        username: str,
+        remove_home: bool = False,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """
+        Delete user with userdel.
+        remove_home defaults to False - safer to keep home directory so
+        forensic data is preserved and the deletion is recoverable.
+        Pass remove_home=True only after explicit user confirmation.
+        """
+        flags = "-r" if remove_home else ""
+        cmd = f"userdel {flags} {username}".strip()
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("delete_user", host_id, container_id, operator, username, cmd, out, ok)
+        return ok, out
+
+    async def lock_user(
+        self,
+        host_id: str,
+        username: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """
+        Lock account: disable password AND set shell to nologin.
+        Prefer this over delete for incident response - account stays
+        auditable and the action is reversible.
+        """
+        cmd = f"usermod -L -s /usr/sbin/nologin {username}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("lock_user", host_id, container_id, operator, username, cmd, out, ok)
+        return ok, out
+
+    async def unlock_user(
+        self,
+        host_id: str,
+        username: str,
+        shell: str = "/bin/bash",
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Unlock account: re-enable password + restore shell."""
+        cmd = f"usermod -U -s {shell} {username}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("unlock_user", host_id, container_id, operator, username, cmd, out, ok)
+        return ok, out
+
+    async def assign_group(
+        self,
+        host_id: str,
+        username: str,
+        group: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Add user to group (usermod -aG - append, does not remove other groups)."""
+        cmd = f"usermod -aG {group} {username}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("assign_group", host_id, container_id, operator,
+                    f"{username}→{group}", cmd, out, ok)
+        return ok, out
+
+    async def remove_from_group(
+        self,
+        host_id: str,
+        username: str,
+        group: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Remove user from group with gpasswd -d."""
+        cmd = f"gpasswd -d {username} {group}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("remove_from_group", host_id, container_id, operator,
+                    f"{username}←{group}", cmd, out, ok)
+        return ok, out
+
+    async def create_group(
+        self,
+        host_id: str,
+        group: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Create group with groupadd."""
+        cmd = f"groupadd {group}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("create_group", host_id, container_id, operator, group, cmd, out, ok)
+        return ok, out
+
+    async def delete_group(
+        self,
+        host_id: str,
+        group: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Delete group with groupdel."""
+        cmd = f"groupdel {group}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("delete_group", host_id, container_id, operator, group, cmd, out, ok)
+        return ok, out
+
+    async def replace_authorized_keys(
+        self,
+        host_id: str,
+        username: str,
+        new_keys: list[str],
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """
+        Replace entire authorized_keys with new_keys list.
+        Always backs up the existing file first - a critical safety net
+        against accidental key removal (especially for the current login user).
+        Pass new_keys=[] to revoke all keys (e.g. during containment).
+        """
+        await self.backup_authorized_keys(host_id, username, container_id)
+        keys_content = "\n".join(new_keys) + ("\n" if new_keys else "")
+        b64_content = _uadm_b64.b64encode(keys_content.encode()).decode()
+        cmd = (
+            f"SSH_DIR=$(getent passwd {username} | cut -d: -f6)/.ssh; "
+            f"mkdir -p \"$SSH_DIR\" && chmod 700 \"$SSH_DIR\" && "
+            f"echo {b64_content} | base64 -d > \"$SSH_DIR/authorized_keys\" && "
+            f"chmod 600 \"$SSH_DIR/authorized_keys\" && echo OK"
+        )
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("replace_keys", host_id, container_id, operator, username,
+                    f"replace_authorized_keys ({len(new_keys)} keys)", out, ok)
+        return ok, out
+
+    async def append_authorized_key(
+        self,
+        host_id: str,
+        username: str,
+        key: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Append one SSH public key to authorized_keys."""
+        await self.backup_authorized_keys(host_id, username, container_id)
+        b64_key = _uadm_b64.b64encode(key.strip().encode()).decode()
+        cmd = (
+            f"SSH_DIR=$(getent passwd {username} | cut -d: -f6)/.ssh; "
+            f"mkdir -p \"$SSH_DIR\" && chmod 700 \"$SSH_DIR\" && "
+            f"echo {b64_key} | base64 -d >> \"$SSH_DIR/authorized_keys\" && "
+            f"chmod 600 \"$SSH_DIR/authorized_keys\" && echo OK"
+        )
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("append_key", host_id, container_id, operator, username,
+                    f"append_key: {key[:50]}…", out, ok)
+        return ok, out
+
+    async def set_account_expiry(
+        self,
+        host_id: str,
+        username: str,
+        expiry_date: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Set account expiry with chage -E (pass '' to clear expiry)."""
+        date_arg = expiry_date if expiry_date else "-1"
+        cmd = f"chage -E {date_arg} {username}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("set_expiry", host_id, container_id, operator, username, cmd, out, ok)
+        return ok, out
+
+    async def force_password_change(
+        self,
+        host_id: str,
+        username: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+    ) -> tuple[bool, str]:
+        """Force password change on next login via chage -d 0."""
+        cmd = f"chage -d 0 {username}"
+        ok, out = await self.run(host_id, cmd, container_id)
+        self._audit("force_pw_change", host_id, container_id, operator, username, cmd, out, ok)
+        return ok, out
+
+    async def emergency_contain(
+        self,
+        host_id: str,
+        username: str,
+        container_id: Optional[str] = None,
+        operator: str = "deflect",
+        revoke_keys:    bool = True,
+        remove_sudo:    bool = True,
+        kill_sessions:  bool = True,
+    ) -> list[tuple[str, bool, str]]:
+        """
+        Emergency containment sequence for a compromised account.
+        Called from ContainmentDialog (step 3) or directly from UserAdminScreen.
+        Returns list of (action_name, success, detail) tuples for progress display.
+
+        Steps:
+          1. Lock account (usermod -L + nologin shell)  ← always
+          2. Kill active sessions (loginctl / pkill)    ← if kill_sessions
+          3. Remove from privileged groups              ← if remove_sudo
+          4. Revoke SSH keys (replace with empty file)  ← if revoke_keys
+        """
+        results = []
+
+        # Step 1: Lock - always performed for emergency containment
+        ok, out = await self.lock_user(host_id, username, container_id, operator)
+        results.append(("Lock account", ok, out[:120]))
+
+        # Step 2: Kill sessions
+        if kill_sessions:
+            cmd = (
+                f"loginctl terminate-user {username} 2>/dev/null; "
+                f"pkill -KILL -u {username} 2>/dev/null; echo done"
+            )
+            ok2, out2 = await self.run(host_id, cmd, container_id)
+            self._audit("kill_sessions", host_id, container_id, operator,
+                        username, cmd, out2, ok2)
+            results.append(("Kill sessions", ok2, out2[:120]))
+
+        # Step 3: Remove from privileged groups
+        if remove_sudo:
+            for g in ("sudo", "admin", "wheel"):
+                ok3, out3 = await self.remove_from_group(
+                    host_id, username, g, container_id, operator)
+                results.append((f"Remove from {g}", ok3, out3[:80]))
+
+        # Step 4: Revoke SSH keys (replace with empty file, backup is made inside)
+        if revoke_keys:
+            ok4, out4 = await self.replace_authorized_keys(
+                host_id, username, [], container_id, operator)
+            results.append(("Revoke SSH keys", ok4, out4[:80]))
+
+        return results
+
+    # ── Audit log ─────────────────────────────────────────────────────────────
+
+    def _audit(
+        self,
+        action: str,
+        host_id: str,
+        container_id: Optional[str],
+        operator: str,
+        target: str,
+        command: str,
+        result: str,
+        success: bool,
+    ) -> None:
+        """
+        Write structured audit entry to admin.log + security.log.
+        Every mutating action is logged so the operator has a tamper-evident
+        record of who changed what on which host and when.
+        """
+        ts     = _uadm_dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ctx    = f"{host_id}/{container_id}" if container_id else host_id
+        status = "OK" if success else "FAIL"
+        _log_admin.info(
+            "[%s] %s  host=%s  op=%s  operator=%s  target=%s  cmd=%r  result=%r",
+            status, action, ctx, ts, operator, target, command[:200], result[:200],
+        )
+        _log_sec.info(
+            "[ADMIN %s] %s | host=%s | operator=%s | target=%s | cmd=%s",
+            status, action, ctx, operator, target, command[:100],
+        )
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# _UserDangerGuard - self-lockout and privileged-account protection
+# ══════════════════════════════════════════════════════════════════════════════
+
+class _UserDangerGuard:
+    """
+    Safety gate called before any mutating user/group operation.
+
+    Works alongside SafetyGuard (which protects against firewall self-banning).
+    This guard protects against accidentally locking out the current SSH session.
+
+    Protection levels returned by protection_level():
+      'ok'        - safe to proceed after normal confirmation
+      'warn'      - root/privileged target; show warning + single confirmation
+      'dangerous' - UID-0 user or user in sudo/admin/wheel; strong warning required
+      'critical'  - target IS the current SSH login user; must type username
+                    + full lockout phrase before any dangerous action is executed
+    """
+
+    # Phrase the operator must type verbatim for critical self-impacting operations.
+    # Deliberately long so it cannot be typed accidentally.
+    LOCKOUT_PHRASE = "I UNDERSTAND THIS MAY LOCK ME OUT"
+
+    # Actions that become CRITICAL when the target is the current session user.
+    _CRITICAL_ACTIONS = frozenset({
+        "lock_user", "delete_user", "force_password_change",
+        "set_expiry", "replace_keys", "revoke_keys",
+        "remove_from_group",   # especially sudo/admin/wheel
+    })
+
+    # Actions that require DANGEROUS confirmation for root / privileged users.
+    _PRIVILEGED_WARN_ACTIONS = frozenset({
+        "lock_user", "delete_user", "replace_keys",
+        "revoke_keys", "set_expiry", "force_password_change",
+    })
+
+    def is_current_user(
+        self, username: str, host_id: str, pool: "AgentPool"
+    ) -> bool:
+        """True if username matches the SSH auth user for this host."""
+        try:
+            return pool.state(host_id).config.username == username
+        except Exception:
+            return False
+
+    def protection_level(
+        self,
+        action: str,
+        user: UserInfo,
+        host_id: str,
+        pool: "AgentPool",
+    ) -> str:
+        """Return 'ok' | 'warn' | 'dangerous' | 'critical'."""
+        is_cur  = self.is_current_user(user.username, host_id, pool)
+        is_root = user.uid == 0 or user.username == "root"
+        is_priv = bool(set(user.groups) & _PRIVILEGED_GROUPS)
+
+        # Current SSH user + dangerous action = critical (possible self-lockout)
+        if is_cur and action in self._CRITICAL_ACTIONS:
+            return "critical"
+        # Root or UID-0 + sensitive action
+        if is_root and action in self._PRIVILEGED_WARN_ACTIONS:
+            return "dangerous"
+        # Member of privileged group + sensitive action
+        if is_priv and action in self._PRIVILEGED_WARN_ACTIONS:
+            return "warn"
+        return "ok"
+
+    def warning_text(
+        self,
+        level: str,
+        action: str,
+        user: UserInfo,
+        host_id: str,
+    ) -> str:
+        """Return human-readable warning message for the given protection level."""
+        if level == "critical":
+            return (
+                f"⚠⚠⚠  SELF-LOCKOUT RISK  ⚠⚠⚠\n\n"
+                f"[{user.username}] is the current SSH login user on [{host_id}].\n"
+                f"Performing [{action}] may permanently lock you out of this host.\n\n"
+                f"Only proceed if you have an alternative access path\n"
+                f"(console access, another SSH key, another admin account).\n\n"
+                f"Type the username to confirm, then the phrase:\n"
+                f'  {self.LOCKOUT_PHRASE}'
+            )
+        if level == "dangerous":
+            priv_groups = ", ".join(g for g in user.groups if g in _PRIVILEGED_GROUPS)
+            kind = "root / UID-0" if user.uid == 0 else f"privileged ({priv_groups})"
+            return (
+                f"⚠  HIGH-RISK TARGET  ⚠\n\n"
+                f"[{user.username}] is a {kind} account.\n"
+                f"Action [{action}] requires explicit confirmation."
+            )
+        if level == "warn":
+            return (
+                f"⚠  Confirm action [{action}] on user [{user.username}]?\n\n"
+                f"This user has elevated group membership."
+            )
+        return ""
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# _UaConfirmDialog - multi-level confirmation dialog
+# ══════════════════════════════════════════════════════════════════════════════
+
+class _UaConfirmDialog(ModalScreen):
+    """
+    Confirmation dialog for dangerous user administration actions.
+
+    Levels:
+      'ok'        - shown as "Are you sure?" with Yes/No
+      'warn'      - shows warning text + Yes/No
+      'dangerous' - requires typing the target username before Yes is enabled
+      'critical'  - requires typing username + LOCKOUT_PHRASE
+
+    Calls callback(True) on confirm, callback(False) on cancel.
+    """
+
+    DEFAULT_CSS = """
+    _UaConfirmDialog { align: center middle; }
+    #uacd-box {
+        width: 72; height: auto; max-height: 90%;
+        border: double $warning;
+        background: $surface;
+        padding: 1 2;
+    }
+    #uacd-box { border-title-color: $warning; border-title-style: bold; }
+    #uacd-msg    { height: auto; margin-bottom: 1; color: $warning; }
+    #uacd-input  { height: 3; margin-bottom: 1; }
+    #uacd-phrase { height: 3; margin-bottom: 1; }
+    #uacd-btns   { height: 3; layout: horizontal; }
+    Button { min-width: 14; margin-right: 1; }
+    """
+
+    BINDINGS = [Binding("escape", "cancel", "Cancel", show=False)]
+
+    def __init__(
+        self,
+        level: str,
+        warning_text: str,
+        target_username: str,
+        callback,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self._level    = level
+        self._warning  = warning_text
+        self._target   = target_username
+        self._callback = callback
+
+    def compose(self) -> ComposeResult:
+        with Container(id="uacd-box"):
+            yield Static(self._warning or "Confirm this action?", id="uacd-msg", markup=False)
+            if self._level in ("dangerous", "critical"):
+                yield Input(
+                    placeholder=f"Type username: {self._target}",
+                    id="uacd-input",
+                )
+            if self._level == "critical":
+                yield Input(
+                    placeholder=_UserDangerGuard.LOCKOUT_PHRASE,
+                    id="uacd-phrase",
+                )
+            with Horizontal(id="uacd-btns"):
+                yield Button("Confirm", variant="error",   id="btn-confirm")
+                yield Button("Cancel",  variant="default", id="btn-cancel")
+
+    def on_mount(self) -> None:
+        box = self.query_one("#uacd-box")
+        box.border_title = (
+            "⚠ CRITICAL CONFIRMATION" if self._level == "critical"
+            else "⚠ Confirmation Required"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "btn-cancel":
+            self._callback(False)
+            self.dismiss(None)
+            return
+        # Validate inputs for dangerous / critical levels
+        if self._level in ("dangerous", "critical"):
+            try:
+                typed_user = self.query_one("#uacd-input", Input).value.strip()
+            except Exception:
+                typed_user = ""
+            if typed_user != self._target:
+                self.app.notify(
+                    f"Username mismatch - type exactly: {self._target}",
+                    severity="warning",
+                )
+                return
+        if self._level == "critical":
+            try:
+                typed_phrase = self.query_one("#uacd-phrase", Input).value.strip()
+            except Exception:
+                typed_phrase = ""
+            if typed_phrase != _UserDangerGuard.LOCKOUT_PHRASE:
+                self.app.notify(
+                    f"Phrase mismatch - type exactly:\n{_UserDangerGuard.LOCKOUT_PHRASE}",
+                    severity="error",
+                )
+                return
+        self._callback(True)
+        self.dismiss(None)
+
+    def action_cancel(self) -> None:
+        self._callback(False)
+        self.dismiss(None)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# UserAdminScreen - main screen
+# ══════════════════════════════════════════════════════════════════════════════
+
+class _UAScroll(VerticalScroll):
+    """VerticalScroll that cannot receive keyboard focus.
+    Keys go directly to UserAdminScreen.on_key; mouse-wheel scrolling still works."""
+    can_focus = False
+
+
+class UserAdminScreen(ModalScreen):
+    """
+    Full-screen Linux user & group administration panel.
+    Follows DockerScreen's architecture: host tabs + content area + key hints.
+
+    Tabs: [U]sers  [G]roups  [K]eys  [S]essions  [D]etails
+
+    Keys (global):
+      ←  →          - switch between hosts
+      u/1           - Users tab
+      g/2           - Groups tab
+      k/3           - SSH Keys tab
+      w/4           - Sessions tab
+      d/5           - Details tab
+      ↑ ↓           - select row in current list
+      a             - add user (Users tab) / add group (Groups tab)
+      Enter / e     - edit selected user / group
+      l             - lock / unlock selected user (Users tab)
+      Del           - delete selected item (with confirmation)
+      K             - SSH Keys dialog for selected user
+      s             - show sudo rights for selected user
+      c             - emergency contain selected user (security action)
+      r             - refresh current tab
+      Esc / Ctrl+J  - close
+    """
+
+    DEFAULT_CSS = """
+    UserAdminScreen { align: center middle; background: $background 85%; }
+    #ua-box {
+        width: 100%; height: 100%;
+        layout: vertical;
+        border: double $accent;
+        background: $surface;
+        border-title-color: $accent;
+        border-title-style: bold;
+        border-subtitle-color: $text-muted;
+        border-subtitle-align: left;
+    }
+    #ua-host-tabs {
+        height: 1;
+        background: $panel-darken-1;
+        padding: 0 1;
+    }
+    #ua-container-row {
+        height: 1;
+        background: $panel-darken-2;
+        padding: 0 1;
+    }
+    #ua-tab-bar {
+        height: 1;
+        background: $panel-darken-3;
+        padding: 0 1;
+    }
+    #ua-content { height: 1fr; padding: 0 1; }
+    #ua-text    { height: auto; }
+    """
+
+    BINDINGS = [
+        Binding("escape",        "close_screen",     "Close",     show=False),
+        Binding("ctrl+j",        "close_screen",     "Close",     show=False),
+        Binding("up",            "row_up",           "Up",        show=False),
+        Binding("down",          "row_down",         "Down",      show=False),
+        Binding("left",          "host_prev",        "Prev host", show=False),
+        Binding("right",         "host_next",        "Next host", show=False),
+        Binding("left_square_bracket",  "container_prev", "Prev ctr", show=False),
+        Binding("right_square_bracket", "container_next", "Next ctr", show=False),
+    ]
+
+    # Tab identifiers and display labels
+    _TABS = [
+        ("users",    "U Users"),
+        ("groups",   "G Groups"),
+        ("keys",     "K Keys"),
+        ("sessions", "W Sessions"),
+        ("details",  "D Details"),
+    ]
+
+    def __init__(
+        self,
+        pool: "AgentPool",
+        host_id: Optional[str] = None,
+        initial_user: Optional[str] = None,
+        initial_tab: str = "users",
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self._pool         = pool
+        self._svc          = UserAdminService(pool)
+        self._guard        = _UserDangerGuard()
+        self._host_ids     = list(pool.host_ids())
+        self._host_idx     = 0
+        self._tab          = initial_tab
+        self._row          = 0
+        self._users:   list[UserInfo]  = []
+        self._groups:  list[GroupInfo] = []
+        self._current_user = ""         # SSH login user on current host
+        self._detail_cache = ""         # cached output for Details tab
+        self._keys_cache:  list[str]   = []
+        self._sessions_cache = ""
+        self._loading      = False
+        self._details_scroll_y = 0   # preserved scroll position for Details tab
+        self._selected_user_row  = 0   # remember selected user when switching tabs
+        self._selected_group_row = 0   # remember selected group when switching tabs
+        # Docker container sub-row: -1 = bare host, 0+ = index into _docker_containers
+        self._docker_containers: dict[str, list[tuple[str, str]]] = {}
+        self._docker_cidx  = -1
+        # Click position tracking (x_start, x_end, index/key)
+        self._host_tab_ranges:   list[tuple[int, int, int]]    = []
+        self._container_ranges:  list[tuple[int, int, int]]    = []
+        self._tab_ranges:        list[tuple[int, int, str]]    = []
+        # Jump to specific host if requested
+        if host_id and host_id in self._host_ids:
+            self._host_idx = self._host_ids.index(host_id)
+        # Jump to specific user if requested (e.g. from ContainmentDialog)
+        self._initial_user = initial_user
+
+    def compose(self) -> ComposeResult:
+        with Container(id="ua-box"):
+            yield Static("", id="ua-host-tabs")
+            yield Static("", id="ua-container-row")
+            yield Static("", id="ua-tab-bar")
+            with _UAScroll(id="ua-content"):
+                yield Static("", id="ua-text")
+
+    def on_mount(self) -> None:
+        self.query_one("#ua-box").border_title = "👤  USER & GROUP ADMINISTRATION"
+        self._update_host_tabs()
+        self._update_container_row()
+        self._update_tab_bar()
+        self.run_worker(self._load_data(), exclusive=True)
+        self.set_interval(30, self._soft_refresh)
+
+    # ── Data loading ──────────────────────────────────────────────────────────
+
+    async def _load_data(self) -> None:
+        """Load users/groups/sessions for current host. Run in worker."""
+        hid = self._current_host_id()
+        if not hid:
+            self._show_content(Text("  No hosts configured.", style="grey50"))
+            return
+        self._loading = True
+        self._show_content(Text("  Loading…", style="grey50"))
+        cid = self._current_container_id()
+        try:
+            self._current_user = await self._svc.detect_current_user(hid)
+            (
+                self._users,
+                self._groups,
+                self._sessions_cache,
+                (ok_d, docker_out),
+            ) = await asyncio.gather(
+                self._svc.list_users(hid, cid),
+                self._svc.list_groups(hid, cid),
+                self._svc.list_sessions(hid, cid),
+                self._svc.run(hid, "docker ps --format '{{.ID}} {{.Names}}' 2>/dev/null"),
+            )
+            self._detail_cache = ""   # invalidated; loaded lazily on Details tab
+            self._keys_cache   = []
+
+            # Discover Docker containers on this host so the sub-row can be shown.
+            # Failures are silent - not every host runs Docker.
+            containers: list[tuple[str, str]] = []
+            if ok_d and docker_out.strip():
+                for ln in docker_out.strip().splitlines():
+                    parts = ln.split(None, 1)
+                    if len(parts) == 2:
+                        containers.append((parts[0][:12], parts[1]))
+            self._docker_containers[hid] = containers
+            # Reset container selection when reloading (host switch already resets it)
+            if cid and not any(c[0] == cid for c in containers):
+                self._docker_cidx = -1
+
+            # If caller requested a specific user, jump to it
+            if self._initial_user:
+                for i, u in enumerate(self._users):
+                    if u.username == self._initial_user:
+                        self._row = i
+                        self._tab = "users"
+                        break
+                self._initial_user = None
+
+        except Exception as e:
+            self._show_content(Text(f"  Error loading data: {e}", style=CLR_ERROR))
+        finally:
+            self._loading = False
+            self._update_container_row()
+            self._refresh_view()
+
+    def _soft_refresh(self) -> None:
+        """Periodic refresh - skipped on Details tab to avoid thrashing SSH."""
+        if not self._loading and self._tab != "details":
+            self.run_worker(self._load_data(), exclusive=True)
+
+    # ── Host navigation ───────────────────────────────────────────────────────
+
+    def _current_host_id(self) -> Optional[str]:
+        if not self._host_ids:
+            return None
+        return self._host_ids[self._host_idx % len(self._host_ids)]
+
+    def _current_container_id(self) -> Optional[str]:
+        """Return selected Docker container ID, or None for bare-host mode."""
+        hid = self._current_host_id()
+        if not hid:
+            return None
+        containers = self._docker_containers.get(hid, [])
+        if self._docker_cidx < 0 or not containers:
+            return None
+        return containers[self._docker_cidx % len(containers)][0]
+
+    def action_host_prev(self) -> None:
+        if self._host_ids:
+            self._host_idx = (self._host_idx - 1) % len(self._host_ids)
+            self._row = 0
+            self._selected_user_row = 0
+            self._selected_group_row = 0
+            self._docker_cidx = -1   # reset container selection on host switch
+        self._update_host_tabs()
+        self._update_container_row()
+        self.run_worker(self._load_data(), exclusive=True)
+
+    def action_host_next(self) -> None:
+        if self._host_ids:
+            self._host_idx = (self._host_idx + 1) % len(self._host_ids)
+            self._row = 0
+            self._selected_user_row = 0
+            self._selected_group_row = 0
+            self._docker_cidx = -1   # reset container selection on host switch
+        self._update_host_tabs()
+        self._update_container_row()
+        self.run_worker(self._load_data(), exclusive=True)
+
+    def action_container_prev(self) -> None:
+        """[ - switch to previous container (or back to bare host)."""
+        hid = self._current_host_id()
+        containers = self._docker_containers.get(hid, []) if hid else []
+        if not containers:
+            return
+        # -1 → last container; 0 → -1 (bare host); n → n-1
+        self._docker_cidx = max(-1, self._docker_cidx - 1) if self._docker_cidx > -1 else len(containers) - 1
+        self._row = 0
+        self._selected_user_row = 0
+        self._selected_group_row = 0
+        self._update_container_row()
+        self.run_worker(self._load_data(), exclusive=True)
+
+    def action_container_next(self) -> None:
+        """] - switch to next container (or back to bare host)."""
+        hid = self._current_host_id()
+        containers = self._docker_containers.get(hid, []) if hid else []
+        if not containers:
+            return
+        # -1 → 0; last → -1 (bare host)
+        n = len(containers)
+        self._docker_cidx = (self._docker_cidx + 1) if self._docker_cidx < n - 1 else -1
+        self._row = 0
+        self._selected_user_row = 0
+        self._selected_group_row = 0
+        self._update_container_row()
+        self.run_worker(self._load_data(), exclusive=True)
+
+    def action_row_up(self) -> None:
+        items = self._current_list()
+        if items:
+            self._row = max(0, self._row - 1)
+        self._refresh_view()
+
+    def action_row_down(self) -> None:
+        items = self._current_list()
+        if items:
+            self._row = min(len(items) - 1, self._row + 1)
+        self._refresh_view()
+
+    def _current_list(self) -> list:
+        if self._tab == "users":
+            return self._users
+        if self._tab == "groups":
+            return self._groups
+        return []
+
+    # ── View rendering ────────────────────────────────────────────────────────
+
+    def _update_host_tabs(self) -> None:
+        if not self._host_ids:
+            return
+        t = Text()
+        self._host_tab_ranges = []
+        x_pos = 0  # start at 0, event.x is relative to widget
+        for i, hid in enumerate(self._host_ids):
+            try:
+                label = self._pool.state(hid).config.label
+            except Exception:
+                label = hid
+            if i == self._host_idx % len(self._host_ids):
+                text_part = f" [{label}] "
+                x_start = x_pos
+                t.append(text_part, style=f"bold white on {CLR_INFO}")
+                x_pos += len(text_part)
+                x_end = x_pos
+            else:
+                text_part = f"  {label}  "
+                x_start = x_pos
+                t.append(text_part, style="grey50")
+                x_pos += len(text_part)
+                x_end = x_pos
+            self._host_tab_ranges.append((x_start, x_end, i))
+        try:
+            self.query_one("#ua-host-tabs", Static).update(t)
+        except Exception:
+            pass
+
+    def _update_container_row(self) -> None:
+        """Render the Docker container sub-row (shown even when empty to keep layout stable)."""
+        hid = self._current_host_id()
+        containers = self._docker_containers.get(hid, []) if hid else []
+        t = Text()
+        self._container_ranges = []
+        if not containers:
+            t.append("  (no containers / not checked yet)", style="grey35")
+        else:
+            x_pos = 0
+            host_text = " host "
+            x_start = x_pos
+            t.append(host_text, style="grey50" if self._docker_cidx >= 0 else f"bold white on {CLR_ACCENT}")
+            x_pos += len(host_text)
+            x_end = x_pos
+            self._container_ranges.append((x_start, x_end, -1))  # -1 = bare host
+            for i, (cid, name) in enumerate(containers):
+                label = name[:18]
+                x_start = x_pos
+                if i == self._docker_cidx:
+                    text_part = f" [{label}] "
+                    t.append(text_part, style=f"bold white on {CLR_WARNING}")
+                    x_pos += len(text_part)
+                else:
+                    text_part = f"  {label}  "
+                    t.append(text_part, style="grey50")
+                    x_pos += len(text_part)
+                x_end = x_pos
+                self._container_ranges.append((x_start, x_end, i))
+        try:
+            self.query_one("#ua-container-row", Static).update(t)
+        except Exception:
+            pass
+
+    def _update_tab_bar(self) -> None:
+        t = Text()
+        self._tab_ranges = []
+        x_pos = 0  # start at 0, event.x is relative to widget
+        for key, label in self._TABS:
+            if key == self._tab:
+                text_part = f" [{label}] "
+                x_start = x_pos
+                t.append(text_part, style=f"bold white on {CLR_ACCENT}")
+                x_pos += len(text_part)
+                x_end = x_pos
+            else:
+                text_part = f"  {label}  "
+                x_start = x_pos
+                t.append(text_part, style="grey50")
+                x_pos += len(text_part)
+                x_end = x_pos
+            self._tab_ranges.append((x_start, x_end, key))
+        try:
+            self.query_one("#ua-tab-bar", Static).update(t)
+        except Exception:
+            pass
+
+    def _show_content(self, content, preserve_scroll: bool = False,
+                      auto_scroll: bool = True) -> None:
+        try:
+            scroller = self.query_one("#ua-content", _UAScroll)
+            text_w   = self.query_one("#ua-text",    Static)
+            if preserve_scroll:
+                try:
+                    self._details_scroll_y = int(scroller.scroll_y)
+                except Exception:
+                    pass
+            text_w.update(content)
+            if self._tab in ("users", "groups") and auto_scroll:
+                self.call_after_refresh(self._scroll_to_row)
+            elif preserve_scroll:
+                self.call_after_refresh(self._restore_details_scroll)
+        except Exception:
+            pass
+
+    def _scroll_to_row(self) -> None:
+        try:
+            scroller = self.query_one("#ua-content", _UAScroll)
+            target = max(0, 2 + self._row - 3)
+            scroller.scroll_to(y=target, animate=False)
+        except Exception:
+            pass
+
+    def _restore_details_scroll(self) -> None:
+        try:
+            scroller = self.query_one("#ua-content", _UAScroll)
+            scroller.scroll_to(y=self._details_scroll_y, animate=False)
+        except Exception:
+            pass
+
+    def on_click(self, event: events.Click) -> None:
+        sender = getattr(event, "widget", None) or getattr(event, "sender", None)
+        sender_id = getattr(sender, "id", None)
+        x = int(event.x)
+
+        # Handle host tabs click
+        if sender_id == "ua-host-tabs":
+            for x_start, x_end, host_idx in self._host_tab_ranges:
+                if x_start <= x < x_end:
+                    self._host_idx = host_idx
+                    self._row = 0
+                    self._selected_user_row = 0
+                    self._selected_group_row = 0
+                    self._docker_cidx = -1
+                    self._update_host_tabs()
+                    self._update_container_row()
+                    self.run_worker(self._load_data(), exclusive=True)
+                    return
+
+        # Handle container row click
+        elif sender_id == "ua-container-row":
+            for x_start, x_end, container_idx in self._container_ranges:
+                if x_start <= x < x_end:
+                    self._docker_cidx = container_idx
+                    self._row = 0
+                    self._selected_user_row = 0
+                    self._selected_group_row = 0
+                    self._update_container_row()
+                    self.run_worker(self._load_data(), exclusive=True)
+                    return
+
+        # Handle tab bar click
+        elif sender_id == "ua-tab-bar":
+            for x_start, x_end, tab_key in self._tab_ranges:
+                if x_start <= x < x_end:
+                    prev_tab = self._tab
+                    # Save current selection if switching away from users/groups
+                    if prev_tab == "users":
+                        self._selected_user_row = self._row
+                    elif prev_tab == "groups":
+                        self._selected_group_row = self._row
+                    self._tab = tab_key
+                    # Restore saved selection for Users/Groups tabs
+                    if tab_key == "users":
+                        self._row = min(self._selected_user_row, max(0, len(self._users) - 1)) if self._users else 0
+                    elif tab_key == "groups":
+                        self._row = min(self._selected_group_row, max(0, len(self._groups) - 1)) if self._groups else 0
+                    # If switching to Keys/Sessions/Details from Groups, reset to first user
+                    elif tab_key in ("keys", "sessions", "details") and prev_tab == "groups":
+                        self._row = 0
+                    self._refresh_view()
+                    return
+
+        # Handle content area clicks (users/groups list items)
+        elif sender_id in ("ua-text", "ua-content"):
+            if self._tab not in ("users", "groups"):
+                return
+            # event.y is relative to the clicked widget's top-left corner.
+            # For #ua-text (Static), y is already in document coordinates - no scroll adjustment needed.
+            # For #ua-content (scroller), y is in viewport coordinates - add scroll_y.
+            if sender_id == "ua-content":
+                try:
+                    scroll_y = int(self.query_one("#ua-content", _UAScroll).scroll_y)
+                except Exception:
+                    scroll_y = 0
+                clicked_line = event.y + scroll_y
+            else:
+                clicked_line = event.y
+            header_lines = 2
+            item_idx = clicked_line - header_lines
+            items = self._current_list()
+            if 0 <= item_idx < len(items):
+                self._row = item_idx
+                # Save selection for current tab
+                if self._tab == "users":
+                    self._selected_user_row = self._row
+                elif self._tab == "groups":
+                    self._selected_group_row = self._row
+                self._refresh_view(scroll_to_row=False)
+
+    def _refresh_view(self, scroll_to_row: bool = True) -> None:
+        self._update_host_tabs()
+        self._update_container_row()
+        self._update_tab_bar()
+        self._update_hint_bar()
+        if self._tab == "users":
+            try:
+                self._show_content(self._render_users(), auto_scroll=scroll_to_row)
+            except Exception as e:
+                self._show_content(Text(f"  Render error: {e}", style=CLR_ERROR))
+        elif self._tab == "groups":
+            try:
+                self._show_content(self._render_groups(), auto_scroll=scroll_to_row)
+            except Exception as e:
+                self._show_content(Text(f"  Render error: {e}", style=CLR_ERROR))
+        elif self._tab == "keys":
+            self.run_worker(self._render_keys_async(), exclusive=False)
+        elif self._tab == "sessions":
+            self._show_content(self._render_sessions())
+        elif self._tab == "details":
+            self.run_worker(self._render_details_async(), exclusive=False)
+
+    def _update_hint_bar(self) -> None:
+        hid = self._current_host_id()
+        has_ctr = bool(self._docker_containers.get(hid, []) if hid else [])
+        ctr_hint = "  []:container" if has_ctr else ""
+        if self._tab == "users":
+            hints = f"↑↓:select  ←→:host{ctr_hint}  a:add  Enter/e:edit  l:lock  K:keys  h:shell  c:contain  Del:delete  r:refresh  Esc:close"
+        elif self._tab == "groups":
+            hints = f"↑↓:select  ←→:host{ctr_hint}  a:add  Enter/e:edit  Del:delete  r:refresh  Esc:close"
+        elif self._tab == "keys":
+            hints = f"↑↓:select user  ←→:host{ctr_hint}  K:manage keys  o:rotate keys  r:refresh  Esc:close"
+        elif self._tab == "sessions":
+            hints = f"←→:host{ctr_hint}  r:refresh  Esc:close"
+        else:
+            hints = f"←→:host{ctr_hint}  r:refresh  Esc:close"
+        try:
+            self.query_one("#ua-box").border_subtitle = f" {hints}"
+        except Exception:
+            pass
+
+    def _render_users(self) -> Text:
+        t = Text()
+        if not self._users:
+            t.append("  No users found (or not connected).\n", style="grey50")
+            return t
+        # Header
+        t.append(
+            f"  {'UID':>5}  {'USERNAME':<20} {'SHELL':<22} {'STATUS':<12} {'GROUPS'}\n",
+            style=f"bold {CLR_TEXT_DIM}",
+        )
+        t.append("  " + "─" * 88 + "\n", style="grey35")
+        row_idx = self._row % max(1, len(self._users))
+        for i, u in enumerate(self._users):
+            selected = (i == row_idx)
+            cursor   = "▶ " if selected else "  "
+            uid_s    = str(u.uid)
+            shell_s  = u.shell[:22]
+            # Status column
+            if u.is_locked:
+                status = "🔒 locked"
+                st_sty = CLR_ERROR
+            elif u.active_sessions > 0:
+                status = f"● active({u.active_sessions})"
+                st_sty = CLR_SUCCESS
+            else:
+                status = "○ idle"
+                st_sty = CLR_TEXT_DIM
+            # Username style: system users dimmed, current login user starred
+            if u.username == self._current_user:
+                u_style = f"bold {CLR_WARNING}"
+                uname_s = f"{u.username}★"[:20]
+            elif u.is_system:
+                u_style = CLR_TEXT_DIM
+                uname_s = u.username[:20]
+            else:
+                u_style = CLR_TEXT if selected else "grey85"
+                uname_s = u.username[:20]
+            # Groups - highlight privileged groups in red
+            group_parts = []
+            for g in u.groups[:6]:
+                if g in _PRIVILEGED_GROUPS:
+                    group_parts.append(f"[bold red]{g}[/]")
+                else:
+                    group_parts.append(g)
+            groups_s = " ".join(group_parts)[:40]
+            row_style = "bold white" if selected else "default"
+            t.append(cursor,  style=f"bold {CLR_CURSOR}" if selected else "grey50")
+            t.append(f"{uid_s:>5}  ", style=CLR_TEXT_DIM)
+            t.append(f"{uname_s:<20} ", style=u_style)
+            t.append(f"{shell_s:<22} ", style="grey70")
+            t.append(f"{status:<12} ", style=st_sty)
+            t.append(groups_s + "\n", style="grey62")
+        # Footer: current user note
+        t.append(
+            f"\n  ★ = current SSH user ({self._current_user})  "
+            f"  dim = system user (UID<1000)\n",
+            style="grey35",
+        )
+        return t
+
+    def _render_groups(self) -> Text:
+        t = Text()
+        if not self._groups:
+            t.append("  No groups found.\n", style="grey50")
+            return t
+        t.append(
+            f"  {'GID':>5}  {'GROUP':<24} {'PRIV':<6} {'MEMBERS'}\n",
+            style=f"bold {CLR_TEXT_DIM}",
+        )
+        t.append("  " + "─" * 80 + "\n", style="grey35")
+        row_idx = self._row % max(1, len(self._groups))
+        for i, g in enumerate(self._groups):
+            selected = (i == row_idx)
+            cursor   = "▶ " if selected else "  "
+            priv_s   = "⚡PRIV" if g.is_privileged else "     "
+            priv_sty = f"bold {CLR_WARNING}" if g.is_privileged else "grey50"
+            members_s = ", ".join(g.members[:8])
+            if len(g.members) > 8:
+                members_s += f" +{len(g.members)-8}"
+            members_s = members_s[:50]
+            gname_sty = (
+                f"bold {CLR_WARNING}" if g.is_privileged and selected
+                else CLR_WARNING if g.is_privileged
+                else ("bold white" if selected else "grey85")
+            )
+            t.append(cursor, style=f"bold {CLR_CURSOR}" if selected else "grey50")
+            t.append(f"{g.gid:>5}  ", style=CLR_TEXT_DIM)
+            t.append(f"{g.name:<24} ", style=gname_sty)
+            t.append(f"{priv_s:<6} ", style=priv_sty)
+            t.append(members_s + "\n", style="grey62")
+        return t
+
+    async def _render_keys_async(self) -> None:
+        """Load and display authorized_keys for the selected user."""
+        hid = self._current_host_id()
+        if not hid or not self._users:
+            self._show_content(Text("  No user selected.", style="grey50"))
+            return
+        u = self._users[self._row % max(1, len(self._users))]
+        cid = self._current_container_id()
+        keys = await self._svc.get_authorized_keys(hid, u.username, cid)
+        self._keys_cache = keys
+        t = Text()
+        t.append(
+            f"  SSH Authorized Keys for [{u.username}] on [{hid}]\n\n",
+            style=f"bold {CLR_ACCENT}",
+        )
+        if not keys:
+            t.append("  (no authorized_keys or file not readable)\n", style="grey50")
+        else:
+            for i, key in enumerate(keys):
+                prefix = "▶ " if i == 0 else "  "
+                # Show key type and comment; truncate the base64 blob
+                parts = key.split()
+                if len(parts) >= 2:
+                    key_type = parts[0]
+                    comment  = parts[2] if len(parts) >= 3 else ""
+                    blob_short = parts[1][:20] + "…"
+                    t.append(f"  {i+1:>2}. ", style="grey50")
+                    t.append(f"{key_type:<20}", style=CLR_ACCENT)
+                    t.append(f"  {blob_short}  ", style="grey35")
+                    t.append(comment + "\n", style=CLR_TEXT_DIM)
+                else:
+                    t.append(f"  {key[:80]}\n", style="grey50")
+        t.append(
+            "\n  K:manage keys (SshKeysDialog)  o:rotate (RotateKeyScreen)\n",
+            style="grey35",
+        )
+        self._show_content(t)
+
+    def _render_sessions(self) -> Text:
+        t = Text()
+        # Get selected user
+        if not self._users:
+            t.append("  No user selected.\n", style="grey50")
+            return t
+        u = self._users[self._row % max(1, len(self._users))]
+        t.append(
+            f"  Active Sessions for [{u.username}]\n\n",
+            style=f"bold {CLR_ACCENT}",
+        )
+        if self._sessions_cache:
+            # Filter sessions to only show ones for the selected user
+            user_sessions = []
+            for line in self._sessions_cache.splitlines():
+                # Skip section headers (start with "───")
+                if line.startswith("───"):
+                    user_sessions.append(line)
+                    continue
+                # Parse first column (username)
+                parts = line.split()
+                if parts and parts[0] == u.username:
+                    user_sessions.append(line)
+            if user_sessions:
+                for line in user_sessions:
+                    t.append(f"  {line}\n", style=CLR_TEXT)
+            else:
+                t.append(f"  (no active sessions for {u.username})\n", style="grey50")
+        else:
+            t.append("  (no active sessions or not loaded)\n", style="grey50")
+        return t
+
+    async def _render_details_async(self) -> None:
+        """Load and display full details for selected user."""
+        hid = self._current_host_id()
+        if not hid or not self._users:
+            self._show_content(Text("  No user selected.", style="grey50"))
+            return
+        u = self._users[self._row % max(1, len(self._users))]
+        cid = self._current_container_id()
+        self._show_content(Text(f"  Loading details for [{u.username}]…", style="grey50"))
+        self._details_scroll_y = 0
+        details = await self._svc.get_user_details(hid, u.username, cid)
+        t = Text()
+        t.append(
+            f"  Details for [{u.username}]  (host: {hid})\n\n",
+            style=f"bold {CLR_ACCENT}",
+        )
+        for line in details.splitlines():
+            if line.strip().startswith("──"):
+                t.append(f"\n{line}\n", style=f"bold {CLR_TEXT_DIM}")
+            else:
+                t.append(line + "\n", style=CLR_TEXT)
+        self._show_content(t, preserve_scroll=False)
+
+    # ── Key handling ──────────────────────────────────────────────────────────
+
+    def on_key(self, event) -> None:
+        key = event.key
+        hid = self._current_host_id()
+        prev_tab = self._tab
+
+        # Tab switching
+        if key in ("u", "1"):
+            # Save current selection if switching away from users/groups
+            if prev_tab == "groups":
+                self._selected_group_row = self._row
+            self._tab = "users"
+            self._row = min(self._selected_user_row, max(0, len(self._users) - 1)) if self._users else 0
+            self._refresh_view(); return
+        if key in ("g", "2"):
+            # Save current selection if switching away from users
+            if prev_tab == "users":
+                self._selected_user_row = self._row
+            self._tab = "groups"
+            self._row = min(self._selected_group_row, max(0, len(self._groups) - 1)) if self._groups else 0
+            self._refresh_view(); return
+        if key in ("k", "3"):
+            # Save current selection if switching away from users/groups
+            if prev_tab == "users":
+                self._selected_user_row = self._row
+            elif prev_tab == "groups":
+                self._selected_group_row = self._row
+            self._tab = "keys"
+            # Restore selected user row for Keys tab
+            self._row = min(self._selected_user_row, max(0, len(self._users) - 1)) if self._users else 0
+            self._refresh_view(); return
+        if key in ("w", "4"):
+            # Save current selection if switching away from users/groups
+            if prev_tab == "users":
+                self._selected_user_row = self._row
+            elif prev_tab == "groups":
+                self._selected_group_row = self._row
+            self._tab = "sessions"
+            # Restore selected user row for Sessions tab
+            self._row = min(self._selected_user_row, max(0, len(self._users) - 1)) if self._users else 0
+            self._refresh_view(); return
+        if key in ("d", "5") and self._tab != "delete_confirm":
+            # Save current selection if switching away from users/groups
+            if prev_tab == "users":
+                self._selected_user_row = self._row
+            elif prev_tab == "groups":
+                self._selected_group_row = self._row
+            self._tab = "details"
+            # Restore selected user row for Details tab
+            self._row = min(self._selected_user_row, max(0, len(self._users) - 1)) if self._users else 0
+            self._refresh_view(); return
+
+        # Refresh
+        if key == "r":
+            self.run_worker(self._load_data(), exclusive=True); return
+
+        # Actions requiring a selected user/group
+        if key == "a":
+            if self._tab == "users":
+                self._open_user_edit(hid, None)
+            elif self._tab == "groups":
+                self._open_group_edit(hid, None)
+            return
+
+        if self._tab == "users" and self._users:
+            u = self._users[self._row % max(1, len(self._users))]
+            if key in ("e", "enter"):
+                self._open_user_edit(hid, u)
+            elif key == "l":
+                self._action_toggle_lock(hid, u)
+            elif key == "K":
+                self._open_ssh_keys_dialog(hid, u)
+            elif key == "s":
+                self.run_worker(self._show_sudo_rights(hid, u), exclusive=False)
+            elif key == "h":
+                self._open_ssh_shell_as_user(hid, u)
+            elif key == "c":
+                self._action_emergency_contain(hid, u)
+            elif key == "delete":
+                self._action_delete_user(hid, u)
+
+        elif self._tab == "groups" and self._groups:
+            g = self._groups[self._row % max(1, len(self._groups))]
+            if key in ("e", "enter"):
+                self._open_group_edit(hid, g)
+            elif key == "delete":
+                self._action_delete_group(hid, g)
+
+        elif self._tab == "keys" and self._users:
+            u = self._users[self._row % max(1, len(self._users))]
+            if key == "K":
+                self._open_ssh_keys_dialog(hid, u)
+            elif key == "o":
+                self._open_rotate_key_screen(hid, u)
+
+    # ── User actions ──────────────────────────────────────────────────────────
+
+    def _action_toggle_lock(self, hid: Optional[str], u: UserInfo) -> None:
+        """Lock or unlock user, with danger guard."""
+        if not hid:
+            return
+        action = "lock_user" if not u.is_locked else "unlock_user"
+        level  = self._guard.protection_level(action, u, hid, self._pool)
+        msg    = self._guard.warning_text(level, action, u, hid)
+
+        def _do(confirmed: bool) -> None:
+            if not confirmed:
+                return
+            if u.is_locked:
+                self.run_worker(self._exec_unlock(hid, u.username), exclusive=False)
+            else:
+                self.run_worker(self._exec_lock(hid, u.username), exclusive=False)
+
+        if level == "ok":
+            _do(True)
+        else:
+            self.app.push_screen(
+                _UaConfirmDialog(level, msg, u.username, _do))
+
+    async def _exec_lock(self, hid: str, username: str) -> None:
+        _record_screen_exec("UserAdminScreen")
+        ok, out = await self._svc.lock_user(hid, username, self._current_container_id())
+        self.app.notify(
+            f"Locked {username}: {out[:80]}" if ok else f"Lock failed: {out[:80]}",
+            severity="information" if ok else "error",
+        )
+        await self._load_data()
+
+    async def _exec_unlock(self, hid: str, username: str) -> None:
+        _record_screen_exec("UserAdminScreen")
+        ok, out = await self._svc.unlock_user(hid, username, container_id=self._current_container_id())
+        self.app.notify(
+            f"Unlocked {username}: {out[:80]}" if ok else f"Unlock failed: {out[:80]}",
+            severity="information" if ok else "error",
+        )
+        await self._load_data()
+
+    def _action_delete_user(self, hid: Optional[str], u: UserInfo) -> None:
+        """Delete user - presents a 3-option dialog (disable / delete / delete+home)."""
+        if not hid:
+            return
+        level = self._guard.protection_level("delete_user", u, hid, self._pool)
+        msg   = self._guard.warning_text(level, "delete_user", u, hid) or (
+            f"Delete user [{u.username}]?\n\n"
+            "Preferred: disable account first rather than deleting.\n"
+            "Home directory will NOT be removed by default."
+        )
+
+        def _do(confirmed: bool) -> None:
+            if not confirmed:
+                return
+            self.run_worker(self._exec_delete_user(hid, u.username), exclusive=False)
+
+        self.app.push_screen(_UaConfirmDialog(level, msg, u.username, _do))
+
+    async def _exec_delete_user(self, hid: str, username: str) -> None:
+        _record_screen_exec("UserAdminScreen")
+        # Keep home directory by default - safer and forensically useful
+        ok, out = await self._svc.delete_user(hid, username, remove_home=False, container_id=self._current_container_id())
+        self.app.notify(
+            f"Deleted {username}: {out[:80]}" if ok else f"Delete failed: {out[:80]}",
+            severity="information" if ok else "error",
+        )
+        await self._load_data()
+
+    def _action_delete_group(self, hid: Optional[str], g: GroupInfo) -> None:
+        if not hid:
+            return
+
+        def _do(confirmed: bool) -> None:
+            if not confirmed:
+                return
+            self.run_worker(self._exec_delete_group(hid, g.name), exclusive=False)
+
+        level = "dangerous" if g.is_privileged else "ok"
+        msg = (
+            f"⚠ Deleting privileged group [{g.name}] may affect system security."
+            if g.is_privileged
+            else f"Delete group [{g.name}]?"
+        )
+        # For privileged group deletion use a fake user object to satisfy guard interface
+        if level == "dangerous":
+            # Use group name as the "username" for the confirmation widget
+            self.app.push_screen(_UaConfirmDialog(level, msg, g.name, _do))
+        else:
+            self.app.push_screen(_UaConfirmDialog("ok", msg, g.name, _do))
+
+    async def _exec_delete_group(self, hid: str, group: str) -> None:
+        _record_screen_exec("UserAdminScreen")
+        ok, out = await self._svc.delete_group(hid, group, container_id=self._current_container_id())
+        self.app.notify(
+            f"Deleted group {group}: {out[:80]}" if ok
+            else f"Delete group failed: {out[:80]}",
+            severity="information" if ok else "error",
+        )
+        await self._load_data()
+
+    def _action_emergency_contain(
+        self, hid: Optional[str], u: UserInfo
+    ) -> None:
+        """
+        Emergency containment: lock + kill sessions + remove from sudo + revoke keys.
+        Requires strong confirmation. Always logs to admin.log.
+        """
+        if not hid:
+            return
+        level = self._guard.protection_level("lock_user", u, hid, self._pool)
+        # Containment on current user is always critical regardless of guard level
+        if self._guard.is_current_user(u.username, hid, self._pool):
+            level = "critical"
+        msg = (
+            self._guard.warning_text(level, "emergency_contain", u, hid)
+            or (
+                f"⚠ EMERGENCY CONTAIN [{u.username}] on [{hid}]\n\n"
+                "This will:\n"
+                "  1. Lock account (usermod -L + nologin)\n"
+                "  2. Kill active sessions\n"
+                "  3. Remove from sudo/admin/wheel groups\n"
+                "  4. Revoke all SSH keys (backup made first)\n\n"
+                "This action is logged to admin.log."
+            )
+        )
+
+        def _do(confirmed: bool) -> None:
+            if not confirmed:
+                return
+            self.run_worker(
+                self._exec_emergency_contain(hid, u.username), exclusive=False)
+
+        self.app.push_screen(_UaConfirmDialog(level, msg, u.username, _do))
+
+    async def _exec_emergency_contain(
+        self, hid: str, username: str
+    ) -> None:
+        _record_screen_exec("UserAdminScreen")
+        self.app.notify(f"Containing {username}…", severity="warning")
+        cid = self._current_container_id()
+        try:
+            results = await self._svc.emergency_contain(hid, username, container_id=cid)
+            lines = [f"{'✓' if ok else '✗'} {name}: {detail}"
+                     for name, ok, detail in results]
+            all_ok = all(ok for _, ok, _ in results)
+            self.app.notify(
+                f"Containment {'complete' if all_ok else 'partial'}: "
+                + "; ".join(l[:40] for l in lines[:3]),
+                severity="information" if all_ok else "warning",
+                timeout=10,
+            )
+        except Exception as e:
+            _log.error("[UserAdmin] emergency_contain failed: %s", e)
+            self.app.notify(f"Containment error: {e}", severity="error")
+        await self._load_data()
+
+    async def _show_sudo_rights(self, hid: Optional[str], u: UserInfo) -> None:
+        if not hid:
+            return
+        ok, out = await self._svc.run(
+            hid,
+            f"sudo -l -U {u.username} 2>/dev/null || "
+            f"grep -r '{u.username}' /etc/sudoers /etc/sudoers.d/ 2>/dev/null | head -20",
+            self._current_container_id(),
+        )
+        t = Text()
+        t.append(f"  Sudo rights for [{u.username}]:\n\n", style=f"bold {CLR_ACCENT}")
+        for line in (out or "(none or unavailable)").splitlines():
+            t.append(f"  {line}\n", style=CLR_TEXT)
+        self._show_content(t)
+
+    # ── Sub-dialog openers ────────────────────────────────────────────────────
+
+    def _open_user_edit(
+        self, hid: Optional[str], user: Optional[UserInfo]
+    ) -> None:
+        if not hid:
+            return
+        cid = self._current_container_id()
+        def _on_done(result) -> None:
+            if result:
+                self.run_worker(self._load_data(), exclusive=True)
+        self.app.push_screen(
+            UserEditDialog(self._svc, hid, user, callback=_on_done, container_id=cid))
+
+    def _open_group_edit(
+        self, hid: Optional[str], group: Optional[GroupInfo]
+    ) -> None:
+        if not hid:
+            return
+        cid = self._current_container_id()
+        def _on_done(result) -> None:
+            if result:
+                self.run_worker(self._load_data(), exclusive=True)
+        self.app.push_screen(
+            GroupEditDialog(self._svc, hid, group, callback=_on_done, container_id=cid))
+
+    def _open_ssh_keys_dialog(
+        self, hid: Optional[str], u: UserInfo
+    ) -> None:
+        if not hid:
+            return
+        cid = self._current_container_id()
+        def _on_done(result) -> None:
+            self.run_worker(self._load_data(), exclusive=True)
+        self.app.push_screen(
+            SshKeysDialog(self._svc, self._pool, hid, u.username, callback=_on_done, container_id=cid))
+
+    def _open_rotate_key_screen(
+        self, hid: Optional[str], u: UserInfo
+    ) -> None:
+        if not hid:
+            return
+        cfgman = getattr(self.app, "_cfgman", None)
+        if not cfgman:
+            self.app.notify("Configuration manager not available", severity="error")
+            return
+        def _on_done(result) -> None:
+            self.run_worker(self._load_data(), exclusive=True)
+        # Pass the selected username so we generate a key for this specific user
+        self.app.push_screen(
+            RotateKeyScreen(self._pool, cfgman, [hid], username=u.username))
+
+    def _open_ssh_shell_as_user(self, hid: Optional[str], u: UserInfo) -> None:
+        """Open interactive SSH shell as the selected user (via sudo)."""
+        if not hid:
+            return
+        # cd to user's home directory first, then switch user with HOME env set
+        init_cmd = f"cd ~{u.username} && sudo -u {u.username} -H bash -l"
+        screen = SshShellScreen(self._pool, hid, init_cmd=init_cmd)
+        self.app.push_screen(screen)
+
+    # ── Action stubs ──────────────────────────────────────────────────────────
+
+    def action_close_screen(self) -> None:
+        self.dismiss(None)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# UserEditDialog - create or edit a Linux user
+# ══════════════════════════════════════════════════════════════════════════════
+
+class UserEditDialog(ModalScreen):
+    """
+    Create or edit a Linux user.
+    Pass user=None to create, user=UserInfo to edit existing.
+    callback(True) is called when an operation completes successfully.
+    """
+
+    DEFAULT_CSS = """
+    UserEditDialog { align: center middle; }
+    #ued-box {
+        width: 68; height: auto; max-height: 90%;
+        border: double $accent;
+        background: $surface;
+        padding: 1 2;
+    }
+    #ued-box { border-title-color: $accent; border-title-style: bold; }
+    #ued-row-username, #ued-row-shell, #ued-row-groups, #ued-row-password { height: 3; layout: horizontal; margin-bottom: 1; }
+    Label    { width: 18; height: 3; content-align: left middle; }
+    Input    { width: 1fr; }
+    #ued-btns { height: 3; layout: horizontal; margin-top: 1; }
+    Button   { min-width: 14; margin-right: 1; }
+    """
+
+    BINDINGS = [Binding("escape", "cancel", "Cancel", show=False)]
+
+    def __init__(
+        self,
+        svc: UserAdminService,
+        host_id: str,
+        user: Optional[UserInfo],
+        callback=None,
+        container_id: Optional[str] = None,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self._svc          = svc
+        self._host_id      = host_id
+        self._user         = user
+        self._callback     = callback or (lambda r: None)
+        self._creating     = user is None
+        self._container_id = container_id
+
+    def compose(self) -> ComposeResult:
+        from textual.widgets import Label
+        with Container(id="ued-box"):
+            with Horizontal(id="ued-row-username"):
+                yield Label("Username:")
+                yield Input(
+                    value=(self._user.username if self._user else ""),
+                    placeholder="e.g. deployuser",
+                    id="ued-username",
+                    disabled=not self._creating,
+                )
+            with Horizontal(id="ued-row-shell"):
+                yield Label("Shell:")
+                yield Input(
+                    value=(self._user.shell if self._user else "/bin/bash"),
+                    placeholder="/bin/bash",
+                    id="ued-shell",
+                )
+            with Horizontal(id="ued-row-groups"):
+                yield Label("Add to groups:")
+                yield Input(
+                    placeholder="sudo,docker  (comma-separated)",
+                    id="ued-groups",
+                )
+            with Horizontal(id="ued-row-password"):
+                yield Label("Password:")
+                yield Input(
+                    placeholder="leave blank to keep unchanged",
+                    id="ued-password",
+                    password=True,
+                )
+            with Horizontal(id="ued-btns"):
+                lbl = "Create User" if self._creating else "Apply Changes"
+                yield Button(lbl,    variant="primary", id="btn-save")
+                yield Button("Cancel", variant="default", id="btn-cancel")
+
+    def on_mount(self) -> None:
+        box = self.query_one("#ued-box")
+        box.border_title = (
+            "➕ Create User" if self._creating
+            else f"✏  Edit User: {self._user.username}"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "btn-cancel":
+            self._callback(False)
+            self.dismiss(None)
+            return
+        username = self.query_one("#ued-username", Input).value.strip()
+        shell    = self.query_one("#ued-shell",    Input).value.strip() or "/bin/bash"
+        groups_s = self.query_one("#ued-groups",   Input).value.strip()
+        groups   = [g.strip() for g in groups_s.split(",") if g.strip()]
+        password = self.query_one("#ued-password", Input).value
+        if not username:
+            self.app.notify("Username is required.", severity="warning")
+            return
+        self.run_worker(
+            self._do_save(username, shell, groups, password), exclusive=False)
+
+    async def _do_save(
+        self, username: str, shell: str, groups: list[str], password: str = ""
+    ) -> None:
+        cid = self._container_id
+        if self._creating:
+            ok, out = await self._svc.create_user(
+                self._host_id, username, shell=shell,
+                extra_groups=groups if groups else None,
+                container_id=cid,
+            )
+        else:
+            ok, out = await self._svc.run(
+                self._host_id,
+                f"usermod -s {shell} {username}",
+                cid,
+            )
+            for g in groups:
+                await self._svc.assign_group(self._host_id, username, g, container_id=cid)
+        # Set password via chpasswd (works for both create and edit)
+        if ok and password:
+            import shlex
+            pw_cmd = f"echo {shlex.quote(username + ':' + password)} | chpasswd"
+            pw_ok, pw_out = await self._svc.run(self._host_id, pw_cmd, cid)
+            if not pw_ok:
+                self.app.notify(f"Password set failed: {pw_out[:80]}", severity="error")
+        action = "create" if self._creating else "edit"
+        self.app.notify(
+            f"User {action}: {out[:80]}" if ok
+            else f"User {action} failed: {out[:80]}",
+            severity="information" if ok else "error",
+        )
+        if ok:
+            self._callback(True)
+            self.dismiss(None)
+
+    def action_cancel(self) -> None:
+        self._callback(False)
+        self.dismiss(None)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# GroupEditDialog - create or edit a Linux group
+# ══════════════════════════════════════════════════════════════════════════════
+
+class GroupEditDialog(ModalScreen):
+    """Create or edit a Linux group. callback(True) on success."""
+
+    DEFAULT_CSS = """
+    GroupEditDialog { align: center middle; }
+    #ged-box {
+        width: 60; height: auto;
+        border: double $accent;
+        background: $surface;
+        padding: 1 2;
+    }
+    #ged-box { border-title-color: $accent; border-title-style: bold; }
+    #ged-row { height: 3; layout: horizontal; margin-bottom: 1; }
+    Label    { width: 18; height: 3; content-align: left middle; }
+    Input    { width: 1fr; }
+    #ged-btns { height: 3; layout: horizontal; margin-top: 1; }
+    Button   { min-width: 14; margin-right: 1; }
+    """
+
+    BINDINGS = [Binding("escape", "cancel", "Cancel", show=False)]
+
+    def __init__(
+        self,
+        svc: UserAdminService,
+        host_id: str,
+        group: Optional[GroupInfo],
+        callback=None,
+        container_id: Optional[str] = None,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self._svc          = svc
+        self._host_id      = host_id
+        self._group        = group
+        self._callback     = callback or (lambda r: None)
+        self._creating     = group is None
+        self._container_id = container_id
+
+    def compose(self) -> ComposeResult:
+        from textual.widgets import Label
+        with Container(id="ged-box"):
+            with Horizontal(id="ged-row"):
+                yield Label("Group name:")
+                yield Input(
+                    value=(self._group.name if self._group else ""),
+                    placeholder="e.g. developers",
+                    id="ged-name",
+                    disabled=not self._creating,
+                )
+            with Horizontal(id="ged-btns"):
+                lbl = "Create Group" if self._creating else "Rename Group"
+                yield Button(lbl,    variant="primary", id="btn-save")
+                yield Button("Cancel", variant="default", id="btn-cancel")
+
+    def on_mount(self) -> None:
+        self.query_one("#ged-box").border_title = (
+            "➕ Create Group" if self._creating
+            else f"✏  Edit Group: {self._group.name}"
+        )
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "btn-cancel":
+            self._callback(False)
+            self.dismiss(None)
+            return
+        name = self.query_one("#ged-name", Input).value.strip()
+        if not name:
+            self.app.notify("Group name is required.", severity="warning")
+            return
+        self.run_worker(self._do_save(name), exclusive=False)
+
+    async def _do_save(self, name: str) -> None:
+        cid = self._container_id
+        if self._creating:
+            ok, out = await self._svc.create_group(self._host_id, name, container_id=cid)
+            action = "create"
+        else:
+            # groupmod -n (rename) - safest supported edit operation
+            ok, out = await self._svc.run(
+                self._host_id,
+                f"groupmod -n {name} {self._group.name}",
+                cid,
+            )
+            action = "rename"
+        self.app.notify(
+            f"Group {action}: {out[:80]}" if ok
+            else f"Group {action} failed: {out[:80]}",
+            severity="information" if ok else "error",
+        )
+        if ok:
+            self._callback(True)
+            self.dismiss(None)
+
+    def action_cancel(self) -> None:
+        self._callback(False)
+        self.dismiss(None)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# SshKeysDialog - view / edit authorized_keys for any user
+# ══════════════════════════════════════════════════════════════════════════════
+
+class SshKeysDialog(ModalScreen):
+    """
+    Manage authorized_keys for a specific user on a specific host.
+
+    Reuses UserAdminService for append/remove/replace operations.
+    For full key rotation (generate new keypair, verify, swap) the dialog
+    delegates to RotateKeyScreen rather than duplicating that logic here.
+
+    Keys:
+      ↑ ↓   - select key row
+      a     - append a new key (opens Input dialog)
+      d/Del - remove selected key (with confirmation)
+      r     - open RotateKeyScreen for full rotation workflow
+      Esc   - close
+    """
+
+    DEFAULT_CSS = """
+    SshKeysDialog { align: center middle; }
+    #skd-box {
+        width: 90; height: auto; max-height: 90%;
+        border: double $warning;
+        background: $surface;
+        padding: 1 2;
+    }
+    #skd-box { border-title-color: $warning; border-title-style: bold; }
+    #skd-content { height: auto; max-height: 50%; overflow-y: auto; }
+    #skd-btns { height: 3; layout: horizontal; margin-top: 1; }
+    Button { min-width: 16; margin-right: 1; }
+    """
+
+    BINDINGS = [
+        Binding("escape", "close", "Close", show=False),
+        Binding("up",    "row_up",   "Up",   show=False),
+        Binding("down",  "row_down", "Down", show=False),
+    ]
+
+    def __init__(
+        self,
+        svc: UserAdminService,
+        pool: "AgentPool",
+        host_id: str,
+        username: str,
+        callback=None,
+        container_id: Optional[str] = None,
+        **kwargs,
+    ):
+        super().__init__(**kwargs)
+        self._svc          = svc
+        self._pool         = pool
+        self._host_id      = host_id
+        self._username     = username
+        self._callback     = callback or (lambda r: None)
+        self._container_id = container_id
+        self._keys:  list[str] = []
+        self._row    = 0
+
+    def compose(self) -> ComposeResult:
+        with Container(id="skd-box"):
+            yield Static("", id="skd-content")
+            with Horizontal(id="skd-btns"):
+                yield Button("Generate new",   variant="primary",  id="btn-generate")
+                yield Button("Append key",     variant="default",  id="btn-append")
+                yield Button("Remove selected", variant="warning",  id="btn-remove")
+                yield Button("Rotate (full)",  variant="error",    id="btn-rotate")
+                yield Button("Close",          variant="default",  id="btn-close")
+
+    def on_mount(self) -> None:
+        box = self.query_one("#skd-box")
+        box.border_title = f"🔑  SSH Keys - {self._username} @ {self._host_id}"
+        box.border_subtitle = (
+            " ↑↓:select  g:generate  a:append  Del:remove  o:rotate(full)  Esc:close"
+        )
+        self.run_worker(self._load_keys(), exclusive=True)
+
+    async def _load_keys(self) -> None:
+        self._keys = await self._svc.get_authorized_keys(
+            self._host_id, self._username, self._container_id)
+        self._update_content()
+
+    def _update_content(self) -> None:
+        t = Text()
+        guard = _UserDangerGuard()
+        is_cur = guard.is_current_user(self._username, self._host_id, self._pool)
+        if is_cur:
+            t.append(
+                f"  ★ [{self._username}] is the current SSH login user.\n"
+                "  Removing ALL keys will lock you out!\n\n",
+                style=f"bold {CLR_WARNING}",
+            )
+        if not self._keys:
+            t.append(
+                "  No authorized keys found (or file not readable).\n",
+                style="grey50",
+            )
+        else:
+            t.append(
+                f"  {'#':>3}  {'TYPE':<20}  {'FINGERPRINT (partial)':<24}  COMMENT\n",
+                style=f"bold {CLR_TEXT_DIM}",
+            )
+            t.append("  " + "─" * 72 + "\n", style="grey35")
+            row_idx = self._row % max(1, len(self._keys))
+            for i, key in enumerate(self._keys):
+                selected = (i == row_idx)
+                cursor   = "▶" if selected else " "
+                parts = key.split()
+                ktype   = parts[0][:20] if parts else "?"
+                comment = parts[2][:30] if len(parts) >= 3 else ""
+                blob    = (parts[1][:22] + "…") if len(parts) >= 2 else ""
+                sty = "bold white" if selected else "grey85"
+                t.append(f"  {cursor} {i+1:>2}  ", style=CLR_CURSOR if selected else "grey50")
+                t.append(f"{ktype:<20}  ", style=sty)
+                t.append(f"{blob:<24}  ", style="grey50")
+                t.append(comment + "\n", style=CLR_TEXT_DIM)
+        try:
+            self.query_one("#skd-content", Static).update(t)
+        except Exception:
+            pass
+
+    def action_row_up(self) -> None:
+        if self._keys:
+            self._row = max(0, self._row - 1)
+        self._update_content()
+
+    def action_row_down(self) -> None:
+        if self._keys:
+            self._row = min(len(self._keys) - 1, self._row + 1)
+        self._update_content()
+
+    def on_key(self, event) -> None:
+        if event.key == "g":
+            self._open_generate_screen()
+        elif event.key == "a":
+            self._open_append_dialog()
+        elif event.key in ("d", "delete") and self._keys:
+            self._action_remove_key()
+        elif event.key == "o":
+            self._open_rotate_screen()
+
+    def _open_append_dialog(self) -> None:
+        """Show an Input dialog to paste a new public key."""
+        def _on_result(result) -> None:
+            if result:
+                self.run_worker(self._do_append(result), exclusive=False)
+
+        class _KeyInputDialog(ModalScreen):
+            DEFAULT_CSS = """
+            _KeyInputDialog { align: center middle; }
+            #kid-box {
+                width: 80; height: auto;
+                border: solid $accent;
+                background: $surface;
+                padding: 1 2;
+            }
+            """
+            BINDINGS = [Binding("escape", "cancel", "Cancel", show=False)]
+
+            def __init__(self, cb, **kwargs):
+                super().__init__(**kwargs)
+                self._cb = cb
+
+            def compose(self):
+                with Container(id="kid-box"):
+                    yield Static(
+                        Text(
+                            "  Paste the SSH public key to append:\n"
+                            "  (e.g. ssh-ed25519 AAAA… user@host)",
+                            style=CLR_TEXT_DIM,
+                        )
+                    )
+                    yield Input(
+                        placeholder="ssh-ed25519 AAAA… comment",
+                        id="kid-input",
+                    )
+                    yield Button("Append", variant="primary", id="btn-ok")
+
+            def on_button_pressed(self, event: Button.Pressed):
+                if event.button.id == "btn-ok":
+                    val = self.query_one("#kid-input", Input).value.strip()
+                    self._cb(val)
+                    self.dismiss(None)
+
+            def action_cancel(self):
+                self._cb("")
+                self.dismiss(None)
+
+        self.app.push_screen(_KeyInputDialog(_on_result))
+
+    async def _do_append(self, key: str) -> None:
+        if not key.strip():
+            return
+        # Sanity check: must start with a known key type
+        valid_prefixes = ("ssh-rsa ", "ssh-ed25519 ", "ecdsa-sha2-", "ssh-dss ")
+        if not any(key.startswith(p) for p in valid_prefixes):
+            self.app.notify(
+                "Key does not start with a recognized type (ssh-rsa, ssh-ed25519, etc.)",
+                severity="error",
+            )
+            return
+        ok, out = await self._svc.append_authorized_key(
+            self._host_id, self._username, key, container_id=self._container_id)
+        self.app.notify(
+            f"Key appended: {out[:60]}" if ok else f"Append failed: {out[:80]}",
+            severity="information" if ok else "error",
+        )
+        if ok:
+            await self._load_keys()
+
+    def _action_remove_key(self) -> None:
+        """Remove the selected key from authorized_keys."""
+        if not self._keys:
+            return
+        key_to_remove = self._keys[self._row % len(self._keys)]
+        # Critical protection: warn before removing last key of current SSH user
+        guard  = _UserDangerGuard()
+        is_cur = guard.is_current_user(self._username, self._host_id, self._pool)
+        if is_cur and len(self._keys) == 1:
+            msg = (
+                f"⚠⚠  LAST KEY WARNING  ⚠⚠\n\n"
+                f"This is the ONLY SSH key for [{self._username}] (current SSH user).\n"
+                "Removing it will make future SSH logins impossible unless another\n"
+                "authentication method is configured."
+            )
+            level = "critical"
+        elif is_cur:
+            msg = (
+                f"⚠  Remove this key from [{self._username}] (current SSH user)?\n"
+                f"{len(self._keys)-1} key(s) will remain."
+            )
+            level = "dangerous"
+        else:
+            msg = f"Remove selected key from [{self._username}]?"
+            level = "ok"
+
+        def _do(confirmed: bool) -> None:
+            if confirmed:
+                self.run_worker(
+                    self._do_remove_key(key_to_remove), exclusive=False)
+
+        self.app.push_screen(
+            _UaConfirmDialog(level, msg, self._username, _do))
+
+    async def _do_remove_key(self, key_to_remove: str) -> None:
+        remaining = [k for k in self._keys if k != key_to_remove]
+        ok, out = await self._svc.replace_authorized_keys(
+            self._host_id, self._username, remaining, container_id=self._container_id)
+        self.app.notify(
+            f"Key removed: {out[:60]}" if ok else f"Remove failed: {out[:80]}",
+            severity="information" if ok else "error",
+        )
+        if ok:
+            await self._load_keys()
+
+    def _open_generate_screen(self) -> None:
+        """
+        Generate and deploy a new SSH key for this user using RotateKeyScreen
+        in generate+deploy mode.
+        """
+        try:
+            cfgman = self.app._cfgman
+        except AttributeError:
+            self.app.notify(
+                "Key generation requires config manager (not available in demo mode)",
+                severity="warning",
+            )
+            return
+        # Open RotateKeyScreen in generate+deploy mode (username specified)
+        def _on_done(result) -> None:
+            # Reload keys after generation completes
+            self.run_worker(self._load_keys(), exclusive=False)
+
+        screen = RotateKeyScreen(self._pool, cfgman, [self._host_id],
+                                username=self._username)
+        self.app.push_screen(screen)
+
+    def _open_rotate_screen(self) -> None:
+        """
+        Delegate full key rotation to RotateKeyScreen.
+        This avoids duplicating the generate→verify→swap logic that already
+        exists in SshKeyManager / RotateKeyScreen.
+        """
+        try:
+            cfgman = self.app._cfgman
+        except AttributeError:
+            self.app.notify(
+                "Key rotation requires config manager (not available in demo mode)",
+                severity="warning",
+            )
+            return
+        # Open RotateKeyScreen in full rotation mode (no username = rotate primary user)
+        self.app.push_screen(
+            RotateKeyScreen(self._pool, cfgman, [self._host_id]))
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "btn-close":
+            self.action_close()
+        elif event.button.id == "btn-generate":
+            self._open_generate_screen()
+        elif event.button.id == "btn-append":
+            self._open_append_dialog()
+        elif event.button.id == "btn-remove":
+            if self._keys:
+                self._action_remove_key()
+        elif event.button.id == "btn-rotate":
+            self._open_rotate_screen()
+
+    def action_close(self) -> None:
+        self._callback(True)
         self.dismiss(None)
 
 
@@ -15967,11 +23197,14 @@ class HostEditorScreen(ModalScreen):
     def __init__(self, pool: AgentPool,
                  host_id: Optional[str] = None,
                  clone_from: Optional[str] = None,
+                 prefill: Optional["HostConfig"] = None,
                  **kwargs):
         super().__init__(**kwargs)
         self._pool       = pool
         self._host_id    = host_id
         self._clone_from = clone_from
+        self._prefill    = prefill
+        self._prefill_id = prefill.id if prefill else None
         self._editing    = host_id is not None
         self._cloning    = clone_from is not None and not self._editing
         self._auth_mode  = "key"      # updated by on_mount and auth buttons
@@ -15991,6 +23224,8 @@ class HostEditorScreen(ModalScreen):
             except Exception as e:
                 _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
                 pass
+        elif self._prefill:
+            e = self._prefill
         self._auth_mode = (e.auth if e and e.auth else "key")
         self._apply_auth_visibility()
 
@@ -16028,7 +23263,7 @@ class HostEditorScreen(ModalScreen):
         return label + "-2"
 
     def compose(self) -> ComposeResult:
-        # source config: editing → host_id,  cloning → clone_from,  new → None
+        # source config: editing → host_id,  cloning → clone_from,  prefill → stub,  new → None
         e: Optional[HostConfig] = None
         if self._editing:
             try:
@@ -16042,16 +23277,19 @@ class HostEditorScreen(ModalScreen):
             except Exception as e:
                 _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
                 pass
+        elif self._prefill:
+            e = self._prefill
 
         if self._editing:
             title = "✎  Edit Host"
         elif self._cloning:
             src_label = e.label if e else self._clone_from
             title = f"⊕  Clone Host  [dim](from: {src_label})[/]"
+        elif self._prefill:
+            title = "⊕  Add Host"
         else:
             title = "+  New Host"
 
-        # For clone: auto-increment label, clear address
         label_val   = e.label   if e else ""
         address_val = e.address if e else ""
         if self._cloning:
@@ -16194,6 +23432,7 @@ class HostEditorScreen(ModalScreen):
                                 severity="error")
                 return None
             host_id = (self._host_id
+                       or self._prefill_id
                        or address.replace(".", "-").replace(":", "-"))
             ai_instructions = ""
             try:
@@ -17241,7 +24480,7 @@ class DiskScreen(ModalScreen):
                 self._redraw()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
-        """Enter / mouse click on a directory row — show action popup."""
+        """Enter / mouse click on a directory row - show action popup."""
         path = self._selected_path()
         if path:
             self.app.push_screen(_DiskDirActionScreen(path), lambda act: self._on_dir_action(act, path))
@@ -17256,8 +24495,10 @@ class DiskScreen(ModalScreen):
                                                    initial_path=path))
         elif action == "act-ssh":
             self.dismiss(None)
+            hs = self._pool.state(self._sel_hid)
+            init_cmd = _get_ssh_init_cmd(hs, f"cd {path}")
             self.app.push_screen(SshShellScreen(self._pool, self._sel_hid,
-                                                init_cmd=f"cd {path}"))
+                                                init_cmd=init_cmd))
 
     def _selected_path(self) -> Optional[str]:
         """Return the remote path of the currently highlighted dir row, or None."""
@@ -17268,17 +24509,19 @@ class DiskScreen(ModalScreen):
         return self._dir_paths[idx]
 
     def action_open_ssh(self) -> None:
-        """F2 — open SSH shell navigated to the selected directory."""
+        """F2 - open SSH shell navigated to the selected directory."""
         path = self._selected_path()
         if not path:
             self.app.notify("Select a directory first", severity="warning")
             return
         self.dismiss(None)
+        hs = self._pool.state(self._sel_hid)
+        init_cmd = _get_ssh_init_cmd(hs, f"cd {path}")
         self.app.push_screen(SshShellScreen(self._pool, self._sel_hid,
-                                            init_cmd=f"cd {path}"))
+                                            init_cmd=init_cmd))
 
     def action_open_fm(self) -> None:
-        """Ctrl+F — open File Manager navigated to the selected directory."""
+        """Ctrl+F - open File Manager navigated to the selected directory."""
         path = self._selected_path()
         if not path:
             self.app.notify("Select a directory first", severity="warning")
@@ -17597,16 +24840,18 @@ class ProcessScreen(ModalScreen):
         return self._focused
 
     def action_open_ssh(self):
-        """F2 — open SSH shell for the host of the focused process (or filtered host)."""
+        """F2 - open SSH shell for the host of the focused process (or filtered host)."""
         hid = self._host_at_cursor()
         if not hid:
             self.app.notify("No host selected", severity="warning")
             return
         self.dismiss(None)
-        self.app.push_screen(SshShellScreen(self._pool, hid))
+        hs = self._pool.state(hid)
+        init_cmd = _get_ssh_init_cmd(hs)
+        self.app.push_screen(SshShellScreen(self._pool, hid, init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — open File Manager for the host of the focused process."""
+        """Ctrl+F - open File Manager for the host of the focused process."""
         hid = self._host_at_cursor()
         if not hid:
             self.app.notify("No host selected", severity="warning")
@@ -17980,8 +25225,9 @@ class SecurityWizardScreen(ModalScreen):
     SecurityWizardScreen > Vertical {
         width: 88; height: 92%; background: $surface;
         border: double $warning; padding: 0 1;
+        border-title-color: $text; border-title-background: $warning;
+        border-title-style: bold;
     }
-    SecurityWizardScreen #wiz-title { height: 1; background: $warning; color: $text; text-style: bold; }
     SecurityWizardScreen #wiz-content { height: 1fr; overflow-y: auto; padding: 1; }
     SecurityWizardScreen #wiz-status { height: 1; color: $text-muted; }
     """
@@ -17999,8 +25245,7 @@ class SecurityWizardScreen(ModalScreen):
         self._audit_running = False
 
     def compose(self):
-        with Vertical():
-            yield Static("", id="wiz-title")
+        with Vertical(id="wiz-panel"):
             yield Static("", id="wiz-content")
             yield Static("", id="wiz-status")
 
@@ -18012,11 +25257,26 @@ class SecurityWizardScreen(ModalScreen):
             _log.warning("Exception: %s: %s", type(e).__name__, e)  # TODO: improve log quality
             label = self._host_id
         try:
-            self.query_one("#wiz-title", Static).update(f" 🔍 SECURITY WIZARD - {label}")
+            self.query_one("#wiz-panel", Vertical).border_title = f" 🔍 SECURITY WIZARD - {label} "
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
         self.run_worker(self._run_audit_async(), exclusive=False)
+
+    def _build_ufw_allow_cmds(self, listening: list) -> str:
+        """Return shell fragment: 'ufw allow PORT/tcp' for every detected port.
+        Uses ; so each rule is attempted independently - ufw --force enable
+        always runs even if one allow fails. No comments to avoid quoting issues."""
+        if listening:
+            return " ; ".join(
+                f"ufw allow {port}/tcp"
+                for port, _lbl in listening
+            )
+        try:
+            ssh_port = self._pool.state(self._host_id).config.port or 22
+        except Exception:
+            ssh_port = 22
+        return f"ufw allow {ssh_port}/tcp"
 
     async def _run_audit_async(self):
         self._audit_running = True
@@ -18028,16 +25288,32 @@ class SecurityWizardScreen(ModalScreen):
 
         wizard_cmd = (
             "which ufw 2>/dev/null && echo 'HAS_UFW' || echo 'NO_UFW' ; "
+            "test -d /etc/ufw && echo 'UFW_CONF_OK' || echo 'UFW_CONF_MISSING' ; "
             "which fail2ban-client 2>/dev/null && echo 'HAS_F2B' || echo 'NO_F2B' ; "
             "systemctl is-active fail2ban 2>/dev/null || echo 'F2B_DOWN' ; "
             "ufw status 2>/dev/null | head -3 || echo 'UFW_NA' ; "
+            "echo '---PORTS---' ; "
+            "ss -tlnp 2>/dev/null | awk 'NR>1 && /LISTEN/{split($4,a,\":\"); port=a[length(a)]; "
+            "match($6,/users:\\(\\(\"([^\"]+)/,m); print port\" \"m[1]}' | sort -un ; "
             "echo '---SSH---' ; "
             "grep -i 'PermitRootLogin' /etc/ssh/sshd_config 2>/dev/null || echo 'PermitRootLogin unknown' ; "
             "grep -i 'PasswordAuthentication' /etc/ssh/sshd_config 2>/dev/null || echo 'PasswordAuthentication unknown' ; "
             "ss -tlnp 2>/dev/null | grep ':22 ' && echo 'SSH_PORT_22' || echo 'SSH_NONSTANDARD' ; "
             "echo '---F2B---' ; "
             "fail2ban-client status 2>/dev/null | grep -E 'Jail list|Number of jail' || echo 'F2B_NA' ; "
-            "fail2ban-client status sshd 2>/dev/null | grep 'maxretry' || echo 'MAXRETRY_NA'"
+            "fail2ban-client status sshd 2>/dev/null | grep 'maxretry' || echo 'MAXRETRY_NA' ; "
+            "echo '---SSH2---' ; "
+            "grep -iE '^[[:space:]]*MaxAuthTries' /etc/ssh/sshd_config 2>/dev/null || echo 'MaxAuthTries unset' ; "
+            "grep -iE '^[[:space:]]*LoginGraceTime' /etc/ssh/sshd_config 2>/dev/null || echo 'LoginGraceTime unset' ; "
+            "echo '---NGINX---' ; "
+            "which nginx 2>/dev/null && echo 'HAS_NGINX' || echo 'NO_NGINX' ; "
+            "grep -rh 'limit_req_zone' /etc/nginx/ 2>/dev/null | head -1 || echo 'NO_RATELIMIT' ; "
+            "echo '---SYSCTL---' ; "
+            "sysctl -n net.ipv4.tcp_syncookies 2>/dev/null || echo 'NA' ; "
+            "echo '---MAIL---' ; "
+            "which postfix 2>/dev/null && echo 'HAS_POSTFIX' || echo 'NO_POSTFIX' ; "
+            "which exim4 2>/dev/null && echo 'HAS_EXIM' || echo 'NO_EXIM' ; "
+            "postconf smtpd_client_connection_rate_limit 2>/dev/null | grep -v '= 0$' | head -1 || echo 'PFIX_RATELIMIT_NA'"
         )
 
         hs = self._pool.state(self._host_id)
@@ -18070,12 +25346,18 @@ class SecurityWizardScreen(ModalScreen):
             return
 
         # Parse results
-        pre = raw.split("---SSH---", 1)[0] if "---SSH---" in raw else raw
-        ssh_section = raw.split("---SSH---", 1)[1].split("---F2B---", 1)[0] if "---SSH---" in raw else ""
-        f2b_section = raw.split("---F2B---", 1)[1] if "---F2B---" in raw else ""
+        pre = raw.split("---PORTS---", 1)[0] if "---PORTS---" in raw else raw
+        ports_raw    = raw.split("---PORTS---", 1)[1].split("---SSH---",    1)[0] if "---PORTS---" in raw else ""
+        ssh_section  = raw.split("---SSH---",  1)[1].split("---F2B---",    1)[0] if "---SSH---"  in raw else ""
+        f2b_section  = raw.split("---F2B---",  1)[1].split("---SSH2---",   1)[0] if "---F2B---"  in raw else ""
+        ssh2_section = raw.split("---SSH2---", 1)[1].split("---NGINX---",  1)[0] if "---SSH2---" in raw else ""
+        nginx_section= raw.split("---NGINX---",1)[1].split("---SYSCTL---", 1)[0] if "---NGINX---"in raw else ""
+        sysctl_sec   = raw.split("---SYSCTL---",1)[1].split("---MAIL---",  1)[0] if "---SYSCTL---"in raw else ""
+        mail_section = raw.split("---MAIL---", 1)[1]                              if "---MAIL---" in raw else ""
 
         audit = {
-            "ufw_installed":   "HAS_UFW" in pre,
+            "ufw_installed":    "HAS_UFW" in pre,
+            "ufw_conf_missing": "UFW_CONF_MISSING" in pre,
             "f2b_installed":   "HAS_F2B" in pre,
             "f2b_active":      "active" in pre and "F2B_DOWN" not in pre,
             "ufw_active":      "Status: active" in pre,
@@ -18095,7 +25377,83 @@ class SecurityWizardScreen(ModalScreen):
         if mr:
             audit["f2b_maxretry"] = int(mr.group(1))
 
+        # Listening ports: [(port, process), ...]
+        _PORT_NAMES = {
+            "21": "FTP", "22": "SSH", "25": "SMTP", "53": "DNS",
+            "80": "HTTP", "443": "HTTPS", "465": "SMTPS", "587": "SMTP-sub",
+            "993": "IMAPS", "995": "POP3S", "3306": "MySQL", "5432": "PostgreSQL",
+            "6379": "Redis", "8080": "HTTP-alt", "8443": "HTTPS-alt",
+            "27017": "MongoDB", "11211": "Memcached", "9200": "Elasticsearch",
+        }
+        listening: list[tuple[str, str]] = []
+        for line in ports_raw.splitlines():
+            parts = line.strip().split(None, 1)
+            if not parts or not parts[0].isdigit():
+                continue
+            port = parts[0]
+            proc = parts[1].strip() if len(parts) > 1 else ""
+            name = _PORT_NAMES.get(port, proc or "service")
+            listening.append((port, name))
+        audit["listening_ports"] = listening  # [(port_str, label), ...]
+
+        # SSH2: MaxAuthTries, LoginGraceTime
+        audit["max_auth_tries"]   = None
+        audit["login_grace_time"] = None
+        for line in ssh2_section.splitlines():
+            line = line.strip()
+            mt = _re.search(r'MaxAuthTries\s+(\d+)', line, _re.I)
+            if mt:
+                audit["max_auth_tries"] = int(mt.group(1))
+            lt = _re.search(r'LoginGraceTime\s+(\d+)', line, _re.I)
+            if lt:
+                audit["login_grace_time"] = int(lt.group(1))
+
+        # NGINX rate-limiting
+        audit["nginx_installed"] = "HAS_NGINX" in nginx_section
+        audit["nginx_ratelimit"] = ("NO_RATELIMIT" not in nginx_section
+                                    and "limit_req_zone" in nginx_section)
+
+        # Kernel SYN cookies
+        sysctl_val = sysctl_sec.strip().splitlines()[0].strip() if sysctl_sec.strip() else "NA"
+        audit["syncookies_enabled"] = (True if sysctl_val == "1"
+                                       else False if sysctl_val == "0" else None)
+
+        # Mail server
+        audit["postfix_installed"]   = "HAS_POSTFIX" in mail_section
+        audit["exim_installed"]      = "HAS_EXIM"    in mail_section
+        audit["postfix_ratelimited"] = ("PFIX_RATELIMIT_NA" not in mail_section
+                                        and bool(mail_section.strip()))
+
         self._audit = audit
+        # Log key findings so the operator has a persistent record
+        _critical_issues = []
+        if audit.get("root_login") not in ("no", "prohibit-password", ""):
+            _critical_issues.append(f"PermitRootLogin={audit['root_login']}")
+        if audit.get("passwd_auth", "").lower() == "yes":
+            _critical_issues.append("PasswordAuthentication=yes")
+        if not audit.get("ufw_active"):
+            _critical_issues.append("ufw-inactive")
+        if not audit.get("f2b_active"):
+            _critical_issues.append("fail2ban-inactive")
+        mat = audit.get("max_auth_tries")
+        if mat is not None and mat > 4:
+            _critical_issues.append(f"MaxAuthTries={mat}")
+        if _critical_issues:
+            _log.warning("[SECURITY_AUDIT] host=%s  ISSUES: %s",
+                         self._host_id, ", ".join(_critical_issues))
+        else:
+            _log.info("[SECURITY_AUDIT] host=%s  all checks passed", self._host_id)
+        _log.info("[SECURITY_AUDIT] host=%s  ufw=%s f2b=%s root_login=%s passwd_auth=%s "
+                  "max_auth_tries=%s login_grace=%s nginx_ratelimit=%s postfix_ratelimited=%s",
+                  self._host_id,
+                  "active" if audit.get("ufw_active") else "inactive",
+                  "active" if audit.get("f2b_active") else "inactive",
+                  audit.get("root_login", "?"),
+                  audit.get("passwd_auth", "?"),
+                  audit.get("max_auth_tries", "?"),
+                  audit.get("login_grace_time", "?"),
+                  audit.get("nginx_ratelimit", "?"),
+                  audit.get("postfix_ratelimited", "?"))
         self._render_audit()
         self._audit_running = False
 
@@ -18109,15 +25467,30 @@ class SecurityWizardScreen(ModalScreen):
         def hint(msg): t.append(f"     → {msg}\n", style="grey50")
 
         t.append("\n FIREWALL\n", style="bold white")
+        listening: list = a.get("listening_ports", [])
+        if listening:
+            ports_str = "  ".join(f"{p}({lbl})" for p, lbl in listening[:12])
+            t.append(f"  Listening: {ports_str}\n", style="grey70")
         if a.get("ufw_installed"):
-            if a.get("ufw_active"):
+            if a.get("ufw_conf_missing"):
+                bad("ufw binary present but /etc/ufw config is missing (manually deleted?)")
+                hint("press R to reinstall ufw package and restore config files")
+            elif a.get("ufw_active"):
                 ok("ufw installed and active")
             else:
                 warn("ufw installed but INACTIVE")
-                hint("press e in Firewall Manager to enable")
+                if listening:
+                    ports_preview = ", ".join(f"{p}/{lbl}" for p, lbl in listening[:6])
+                    hint(f"press e to enable ufw - will allow {len(listening)} detected ports: {ports_preview}{'…' if len(listening) > 6 else ''}")
+                else:
+                    hint("press e to enable ufw with detected ports")
         else:
             bad("ufw NOT installed")
-            hint("press i to install ufw with basic rules (deny in, allow ssh)")
+            if listening:
+                ports_preview = ", ".join(f"{p}/{lbl}" for p, lbl in listening[:6])
+                hint(f"press i to install ufw - will allow {len(listening)} detected ports: {ports_preview}{'…' if len(listening) > 6 else ''}")
+            else:
+                hint("press i to install ufw - will allow all currently listening ports")
 
         t.append("\n FAIL2BAN\n", style="bold white")
         if a.get("f2b_installed"):
@@ -18152,6 +25525,7 @@ class SecurityWizardScreen(ModalScreen):
             ok("PasswordAuthentication = no  (key-only login)")
         elif passwd_auth == "yes":
             warn("PasswordAuthentication = yes  (passwords allowed)")
+            hint("press a to set PasswordAuthentication no  (keys only)")
         else:
             warn(f"PasswordAuthentication = {passwd_auth or 'not set'}")
 
@@ -18160,10 +25534,66 @@ class SecurityWizardScreen(ModalScreen):
         else:
             ok("SSH on non-standard port")
 
+        t.append("\n SSH HARDENING\n", style="bold white")
+        mat = a.get("max_auth_tries")
+        if mat is None:
+            warn("MaxAuthTries = default (6)  - brute-force window is too wide")
+            hint("press m to set MaxAuthTries 3")
+        elif mat <= 3:
+            ok(f"MaxAuthTries = {mat}  (good)")
+        else:
+            warn(f"MaxAuthTries = {mat}  (recommended ≤ 3)")
+            hint("press m to set MaxAuthTries 3")
+        lgt = a.get("login_grace_time")
+        if lgt is None:
+            warn("LoginGraceTime = default (120s)  - long auth windows waste connections")
+            hint("press g to set LoginGraceTime 20")
+        elif lgt <= 30:
+            ok(f"LoginGraceTime = {lgt}s  (good)")
+        else:
+            warn(f"LoginGraceTime = {lgt}s  (recommended ≤ 30s)")
+            hint("press g to set LoginGraceTime 20")
+
+        if a.get("nginx_installed"):
+            t.append("\n NGINX RATE LIMITING\n", style="bold white")
+            if a.get("nginx_ratelimit"):
+                ok("limit_req_zone configured - rate limiting active")
+            else:
+                warn("No nginx rate limiting (limit_req_zone) found")
+                hint("press n to inject limit_req_zone 10r/s + reload nginx")
+
+        t.append("\n KERNEL / TCP HARDENING\n", style="bold white")
+        sc = a.get("syncookies_enabled")
+        if sc is True:
+            ok("tcp_syncookies = 1  (SYN flood protection active)")
+        elif sc is False:
+            bad("tcp_syncookies = 0  (vulnerable to SYN flood!)")
+            hint("press k to enable sysctl net.ipv4.tcp_syncookies=1")
+        else:
+            warn("Could not read net.ipv4.tcp_syncookies")
+
+        if a.get("postfix_installed") or a.get("exim_installed"):
+            mta = "Postfix" if a.get("postfix_installed") else "Exim4"
+            t.append(f"\n EMAIL SERVER ({mta})\n", style="bold white")
+            if a.get("postfix_installed"):
+                if a.get("postfix_ratelimited"):
+                    ok("Postfix smtpd_client_connection_rate_limit is configured")
+                else:
+                    warn("No Postfix connection rate limit - vulnerable to SMTP brute")
+                    hint("press p to set smtpd_client_connection_rate_limit=10 + reload")
+            if a.get("exim_installed"):
+                ok("Exim4 detected - manual rate-limit review recommended")
+
         t.append("\n ACTIONS\n", style="bold white")
         if not a.get("ufw_installed"):
             t.append("  [i]", style="bold white on dark_green")
-            t.append(" Install ufw + allow SSH + enable\n", style="grey85")
+            t.append(" Install ufw + allow detected ports + enable\n", style="grey85")
+        if a.get("ufw_installed") and a.get("ufw_conf_missing"):
+            t.append("  [R]", style="bold white on dark_red")
+            t.append(" Reinstall ufw (restores deleted /etc/ufw config)\n", style="grey85")
+        if a.get("ufw_installed") and not a.get("ufw_active") and not a.get("ufw_conf_missing"):
+            t.append("  [e]", style="bold white on dark_red")
+            t.append(" Enable ufw - allow detected ports first, then activate\n", style="grey85")
         if not a.get("f2b_installed"):
             t.append("  [f]", style="bold white on dark_green")
             t.append(" Install & start fail2ban\n", style="grey85")
@@ -18173,6 +25603,24 @@ class SecurityWizardScreen(ModalScreen):
         if root_login == "yes":
             t.append("  [x]", style="bold white on dark_red")
             t.append(" Fix PermitRootLogin → prohibit-password\n", style="grey85")
+        if passwd_auth == "yes":
+            t.append("  [a]", style="bold white on dark_red")
+            t.append(" Disable PasswordAuthentication → keys only\n", style="grey85")
+        if mat is None or (mat is not None and mat > 3):
+            t.append("  [m]", style="bold white on dark_blue")
+            t.append(f" Set MaxAuthTries 3  (now: {mat or 'default/6'})\n", style="grey85")
+        if lgt is None or (lgt is not None and lgt > 30):
+            t.append("  [g]", style="bold white on dark_blue")
+            t.append(f" Set LoginGraceTime 20  (now: {lgt or 'default/120'}s)\n", style="grey85")
+        if a.get("nginx_installed") and not a.get("nginx_ratelimit"):
+            t.append("  [n]", style="bold white on dark_blue")
+            t.append(" Add nginx rate-limit: limit_req_zone 10r/s\n", style="grey85")
+        if sc is False:
+            t.append("  [k]", style="bold white on dark_red")
+            t.append(" Enable kernel SYN cookie protection\n", style="grey85")
+        if a.get("postfix_installed") and not a.get("postfix_ratelimited"):
+            t.append("  [p]", style="bold white on dark_blue")
+            t.append(" Harden Postfix: add SMTP connection rate limit\n", style="grey85")
         t.append("  [r]", style="bold white on grey23")
         t.append(" Re-run audit   ", style="grey70")
         t.append("  [Esc]", style="bold white on grey23")
@@ -18193,10 +25641,13 @@ class SecurityWizardScreen(ModalScreen):
             return
 
         if key == "i" and not a.get("ufw_installed"):
-            self._run_fix("ufw",
-                "apt-get install -y ufw && "
-                "ufw default deny incoming && ufw default allow outgoing && "
-                "ufw allow ssh && ufw --force enable")
+            self._ask_ports_then_enable(install_ufw=True)
+            event.stop()
+        elif key == "R" and a.get("ufw_installed") and a.get("ufw_conf_missing"):
+            self._ask_ports_then_enable(install_ufw=True)  # reinstall restores /etc/ufw
+            event.stop()
+        elif key == "e" and a.get("ufw_installed") and not a.get("ufw_active") and not a.get("ufw_conf_missing"):
+            self._ask_ports_then_enable(install_ufw=False)
             event.stop()
         elif key == "f" and not a.get("f2b_installed"):
             self._run_fix("fail2ban",
@@ -18230,16 +25681,78 @@ class SecurityWizardScreen(ModalScreen):
                     "echo 'PermitRootLogin prohibit-password' >> /etc/ssh/sshd_config; "
                     "systemctl reload sshd 2>/dev/null || service sshd reload 2>/dev/null || true")
             event.stop()
+        elif key == "a" and a.get("passwd_auth", "").lower() == "yes":
+            cfg = None
+            try:
+                cfg = self._pool.state(self._host_id).config
+            except Exception as e:
+                _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())
+                pass
+            if cfg and getattr(cfg, "auth", "key") == "password":
+                self.notify(
+                    "Cannot disable PasswordAuthentication: this host uses password auth.\n"
+                    "Add an SSH key to the host first, then apply this rule.",
+                    severity="error",
+                    timeout=8,
+                )
+            else:
+                self._run_fix("PasswordAuthentication no",
+                    "sed -i 's/^#\\?PasswordAuthentication.*/PasswordAuthentication no/' "
+                    "/etc/ssh/sshd_config 2>/dev/null; "
+                    "grep -q '^PasswordAuthentication' /etc/ssh/sshd_config || "
+                    "echo 'PasswordAuthentication no' >> /etc/ssh/sshd_config; "
+                    "systemctl reload sshd 2>/dev/null || service sshd reload 2>/dev/null || true")
+            event.stop()
+        elif key == "m":
+            mat = a.get("max_auth_tries")
+            if mat is None or mat > 3:
+                self._run_fix("MaxAuthTries 3",
+                    "sed -i 's/^#\\?MaxAuthTries.*/MaxAuthTries 3/' /etc/ssh/sshd_config 2>/dev/null ; "
+                    "grep -q '^MaxAuthTries' /etc/ssh/sshd_config || "
+                    "echo 'MaxAuthTries 3' >> /etc/ssh/sshd_config ; "
+                    "systemctl reload sshd 2>/dev/null || service sshd reload 2>/dev/null || true")
+                event.stop()
+        elif key == "g":
+            lgt = a.get("login_grace_time")
+            if lgt is None or lgt > 30:
+                self._run_fix("LoginGraceTime 20",
+                    "sed -i 's/^#\\?LoginGraceTime.*/LoginGraceTime 20/' /etc/ssh/sshd_config 2>/dev/null ; "
+                    "grep -q '^LoginGraceTime' /etc/ssh/sshd_config || "
+                    "echo 'LoginGraceTime 20' >> /etc/ssh/sshd_config ; "
+                    "systemctl reload sshd 2>/dev/null || service sshd reload 2>/dev/null || true")
+                event.stop()
+        elif key == "n" and a.get("nginx_installed") and not a.get("nginx_ratelimit"):
+            self._run_fix("nginx rate-limit",
+                "echo 'limit_req_zone $binary_remote_addr zone=deflect_limit:10m rate=10r/s;' "
+                "> /etc/nginx/conf.d/deflect_ratelimit.conf 2>/dev/null ; "
+                "nginx -t 2>&1 && nginx -s reload 2>/dev/null || true")
+            event.stop()
+        elif key == "k" and a.get("syncookies_enabled") is False:
+            self._run_fix("sysctl SYN cookies",
+                "sysctl -w net.ipv4.tcp_syncookies=1 ; "
+                "sysctl -w net.ipv4.tcp_max_syn_backlog=2048 ; "
+                "grep -q 'tcp_syncookies' /etc/sysctl.conf 2>/dev/null || "
+                "echo 'net.ipv4.tcp_syncookies=1' >> /etc/sysctl.conf")
+            event.stop()
+        elif key == "p" and a.get("postfix_installed") and not a.get("postfix_ratelimited"):
+            self._run_fix("Postfix rate limit",
+                "postconf -e 'smtpd_client_connection_rate_limit=10' 2>/dev/null ; "
+                "postconf -e 'smtpd_client_message_rate_limit=5' 2>/dev/null ; "
+                "systemctl reload postfix 2>/dev/null || postfix reload 2>/dev/null || true")
+            event.stop()
         elif key == "r":
             self.action_run_audit()
             event.stop()
 
     def _run_fix(self, label: str, cmd: str):
         self.notify(f"Applying: {label}…", severity="warning")
+        _log.warning("[SECURITY_WIZARD FIX] host=%s  fix='%s'", self._host_id, label)
         async def _do():
             hs = self._pool.state(self._host_id)
             if not hs or not hs.client:
                 self.notify("Host not connected", severity="error")
+                _log.error("[SECURITY_WIZARD FIX FAIL] host=%s  fix='%s'  reason=not_connected",
+                           self._host_id, label)
                 return
             loop = asyncio.get_running_loop()
             def _run():
@@ -18249,6 +25762,8 @@ class SecurityWizardScreen(ModalScreen):
             try:
                 out = await loop.run_in_executor(None, _run)
                 last = out.splitlines()[-1] if out.splitlines() else "done"
+                _log.warning("[SECURITY_WIZARD FIX OK] host=%s  fix='%s'  output: %s",
+                             self._host_id, label, out[:300])
                 self.notify(f"{label}: {last[:70]}", severity="information")
                 # Re-run audit to reflect new state
                 await self._run_audit_async()
@@ -18257,7 +25772,8 @@ class SecurityWizardScreen(ModalScreen):
                 if agent:
                     await agent._fetch_firewall()
             except Exception as e:
-                _log.warning("Handled exception in block: %s: %s", type(e).__name__, e)  # TODO: improve log quality
+                _log.error("[SECURITY_WIZARD FIX FAIL] host=%s  fix='%s'  error: %s",
+                           self._host_id, label, e)
                 self.notify(f"Fix failed: {e}", severity="error")
         self.run_worker(_do(), exclusive=False)
 
@@ -18265,6 +25781,152 @@ class SecurityWizardScreen(ModalScreen):
         self.run_worker(self._run_audit_async(), exclusive=False)
 
     def action_close_wiz(self):
+        self.dismiss(None)
+
+    def _ask_ports_then_enable(self, install_ufw: bool):
+        """Open UfwPortSelectScreen; on confirm build & run the ufw setup command.
+
+        The generated command always includes a self-healing pre-check:
+        if /etc/ufw is missing (e.g. after 'rm -rf /etc/ufw'), it reinstalls
+        the ufw package before proceeding - regardless of install_ufw flag.
+        """
+        listening = self._audit.get("listening_ports", [])
+        def _on_confirm(selected: list | None):
+            if selected is None:
+                return  # cancelled
+            allow_cmds = self._build_ufw_allow_cmds(selected)
+            # dpkg's noninteractive mode treats user-deleted conffiles as "kept absent"
+            # and won't restore them even with --force-confmiss in some configurations.
+            # Bulletproof approach: extract conffiles straight from the .deb, bypassing dpkg.
+            heal = (
+                "mkdir -p /etc/ufw ; "
+                "DEBIAN_FRONTEND=noninteractive apt-get install --reinstall -y "
+                "-o Dpkg::Options::=--force-confmiss ufw 2>&1 | tail -3 ; "
+                "if [ ! -f /etc/ufw/before.rules ] || [ ! -f /etc/ufw/ufw.conf ]; then "
+                "  cd /tmp && rm -rf ufw_pkg ufw_*.deb 2>/dev/null ; "
+                "  apt-get download ufw 2>/dev/null || "
+                "    cp /var/cache/apt/archives/ufw_*.deb /tmp/ 2>/dev/null ; "
+                "  DEB=$(ls /tmp/ufw_*.deb 2>/dev/null | head -1) ; "
+                "  if [ -n \"$DEB\" ]; then "
+                "    dpkg-deb -x \"$DEB\" /tmp/ufw_pkg && "
+                "    cp -rn /tmp/ufw_pkg/etc/ufw/. /etc/ufw/ ; "
+                "    rm -rf /tmp/ufw_pkg \"$DEB\" ; "
+                "  fi ; "
+                "fi ; "
+                # last-resort minimal ufw.conf in case extraction also failed
+                "test -f /etc/ufw/ufw.conf || "
+                "printf 'ENABLED=no\\nLOGLEVEL=low\\nIPV6=yes\\n' > /etc/ufw/ufw.conf"
+            )
+            cmd = (
+                f"{heal} ; "
+                "ufw default deny incoming ; ufw default allow outgoing ; "
+                f"{allow_cmds} ; ufw --force enable 2>&1"
+            )
+            label = "ufw install + enable" if install_ufw else "ufw enable"
+            self._run_fix(label, cmd)
+        self.app.push_screen(UfwPortSelectScreen(listening), _on_confirm)
+
+
+class UfwPortSelectScreen(ModalScreen):
+    """
+    Shown before enabling ufw - lets the user choose which detected
+    listening ports to allow. Returns list[(port, label)] or None (cancel).
+    Keys: ↑↓ navigate, Space toggle, Enter confirm, Esc cancel.
+    """
+
+    DEFAULT_CSS = """
+    UfwPortSelectScreen { align: center middle; }
+    UfwPortSelectScreen > Vertical {
+        width: 60; height: auto; max-height: 80%;
+        background: $surface; border: double $warning; padding: 1 2;
+    }
+    UfwPortSelectScreen #sel-title { height: 1; color: $warning; text-style: bold; }
+    UfwPortSelectScreen #sel-list  { height: auto; max-height: 20; overflow-y: auto; }
+    UfwPortSelectScreen #sel-hint  { height: 1; color: $text-muted; margin-top: 1; }
+    """
+
+    BINDINGS = [
+        Binding("escape", "cancel", "Cancel", show=False),
+        Binding("enter",  "confirm","Confirm", show=False),
+        Binding("space",  "toggle", "Toggle",  show=False),
+        Binding("up",     "move_up","Up",      show=False),
+        Binding("down",   "move_dn","Down",    show=False),
+    ]
+
+    def __init__(self, listening: list, **kwargs):
+        super().__init__(**kwargs)
+        # listening: [(port_str, label), ...]
+        self._items: list[tuple[str, str, bool]] = [
+            (port, lbl, True) for port, lbl in listening
+        ]
+        self._cursor = 0
+
+    def compose(self):
+        with Vertical():
+            yield Static("🔥 Select ports to allow before enabling ufw", id="sel-title")
+            yield Static("", id="sel-list")
+            yield Static("↑↓ navigate  Space toggle  Enter confirm  Esc cancel",
+                         id="sel-hint")
+
+    def on_mount(self):
+        self._redraw()
+
+    def _redraw(self):
+        t = Text()
+        if not self._items:
+            t.append("  (no listening ports detected - only SSH port will be allowed)\n",
+                     style="grey50 italic")
+        for i, (port, lbl, checked) in enumerate(self._items):
+            sel = i == self._cursor
+            chk = "☑" if checked else "☐"
+            style_chk = "bold green" if checked else "grey50"
+            style_row = f"bold {CLR_CURSOR}" if sel else ""
+            prefix = "▶ " if sel else "  "
+            t.append(prefix, style=style_row)
+            t.append(f"{chk} ", style=style_chk)
+            t.append(f"{port:<6}", style=f"bold {CLR_ACCENT}" if sel else CLR_ACCENT)
+            t.append(f"  {lbl}\n", style=style_row or "grey85")
+        try:
+            self.query_one("#sel-list", Static).update(t)
+        except Exception:
+            pass
+
+    def on_key(self, event: events.Key):
+        if event.key == "up":
+            self._cursor = max(0, self._cursor - 1)
+            self._redraw(); event.stop()
+        elif event.key == "down":
+            self._cursor = min(len(self._items) - 1, self._cursor + 1)
+            self._redraw(); event.stop()
+        elif event.key == "space":
+            if self._items:
+                p, lbl, chk = self._items[self._cursor]
+                self._items[self._cursor] = (p, lbl, not chk)
+                self._redraw(); event.stop()
+        elif event.key == "enter":
+            self.action_confirm(); event.stop()
+        elif event.key == "escape":
+            self.action_cancel(); event.stop()
+
+    def action_toggle(self):
+        if self._items:
+            p, lbl, chk = self._items[self._cursor]
+            self._items[self._cursor] = (p, lbl, not chk)
+            self._redraw()
+
+    def action_move_up(self):
+        self._cursor = max(0, self._cursor - 1)
+        self._redraw()
+
+    def action_move_dn(self):
+        self._cursor = min(len(self._items) - 1, self._cursor + 1)
+        self._redraw()
+
+    def action_confirm(self):
+        selected = [(p, lbl) for p, lbl, chk in self._items if chk]
+        self.dismiss(selected)
+
+    def action_cancel(self):
         self.dismiss(None)
 
 
@@ -19339,6 +27001,8 @@ class DeflectAppV2(DeflectApp):
         Binding("ctrl+o", "edit_host",           "Edit Host",     show=False),
         Binding("ctrl+a", "ai_chat",             "AI Chat",       show=False),
         Binding("ctrl+i", "ai_stats",            "AI Stats",      show=False),
+        Binding("ctrl+h", "auth_sentinel",       "Auth Sentinel", show=False),
+        Binding("ctrl+j", "user_admin",          "User Admin",    show=False),
         Binding("escape", "close_update_banner", "close",         show=False),
     ]
 
@@ -19555,7 +27219,7 @@ class DeflectAppV2(DeflectApp):
             )
             return
         # Sanity check: header must identify as Deflect One, tail must carry the EOF
-        # marker — a truncated or wrong download will be missing one or both.
+        # marker - a truncated or wrong download will be missing one or both.
         if b"APP_VERSION" not in new_bytes[:8192] or b"DEFLECT_EOF" not in new_bytes[-256:]:
             self.call_from_thread(
                 self.notify,
@@ -19637,7 +27301,9 @@ class DeflectAppV2(DeflectApp):
             return
         # use focused panel host if possible, else first
         hid = ids[self._focus_idx % len(ids)] if self._focus_idx < len(ids) else ids[0]
-        self.push_screen(SshShellScreen(self._pool, hid))
+        hs = self._pool.state(hid)
+        init_cmd = _get_ssh_init_cmd(hs)
+        self.push_screen(SshShellScreen(self._pool, hid, init_cmd=init_cmd))
 
     def action_ai_chat(self):
         if not hasattr(self._pool, "add_host"):
@@ -19655,6 +27321,12 @@ class DeflectAppV2(DeflectApp):
 
     def action_ai_stats(self):
         self.push_screen(AiStatsScreen(self._pool.ai_engine))
+
+    def action_auth_sentinel(self):
+        if not hasattr(self._pool, "all_agents"):
+            self.notify("Auth Sentinel not available in demo mode", severity="warning")
+            return
+        self.push_screen(AuthSentinelScreen(self._pool, self._cfg))
 
     def action_port_forwards(self):
         if not hasattr(self._pool, "add_host"):
@@ -19699,6 +27371,18 @@ class DeflectAppV2(DeflectApp):
             return
         hid = ids[self._focus_idx % len(ids)] if self._focus_idx < len(ids) else ids[0]
         self.push_screen(DockerScreen(self._pool, self._metrics, hid))
+
+    def action_user_admin(self):
+        """Ctrl+J - open User & Group Administration screen for the focused host."""
+        if not hasattr(self._pool, "add_host"):
+            self.notify("User Admin not available in demo mode", severity="warning")
+            return
+        ids = self._pool.host_ids()
+        if not ids:
+            self.notify("No hosts configured", severity="warning")
+            return
+        hid = ids[self._focus_idx % len(ids)] if self._focus_idx < len(ids) else ids[0]
+        self.push_screen(UserAdminScreen(self._pool, host_id=hid))
 
     def action_apt_manager(self):
         if not hasattr(self._pool, "add_host"):
@@ -19792,6 +27476,17 @@ class DeflectAppV2(DeflectApp):
         ids = self._pool.host_ids()
         hid = ids[self._focus_idx % len(ids)] if ids else ""
         self.push_screen(FirewallScreen(self._pool, self._metrics, focused_host_id=hid))
+
+    def action_security_wizard(self):
+        if not hasattr(self._pool, "add_host"):
+            self.notify("Security Wizard not available in demo mode", severity="warning")
+            return
+        ids = self._pool.host_ids()
+        if not ids:
+            self.notify("No hosts configured", severity="warning")
+            return
+        hid = ids[self._focus_idx % len(ids)]
+        self.push_screen(SecurityWizardScreen(self._pool, hid))
 
     def action_show_processes(self):
         if not hasattr(self._pool, "add_host"):
@@ -20540,7 +28235,7 @@ class DeployScreen(ModalScreen):
         self.notify("Scanning repos…", severity="information")
 
     def action_open_ssh(self):
-        """F2 — SSH shell into selected repo's directory (or just the host)."""
+        """F2 - SSH shell into selected repo's directory (or just the host)."""
         hid, path = self._selected_repo()
         if not hid:
             hid = self._focused
@@ -20548,11 +28243,13 @@ class DeployScreen(ModalScreen):
             self.app.notify("No host selected", severity="warning")
             return
         self.dismiss(None)
+        hs = self._pool.state(hid)
+        init_cmd = _get_ssh_init_cmd(hs, f"cd {path}" if path else None)
         self.app.push_screen(SshShellScreen(self._pool, hid,
-                                            init_cmd=f"cd {path}" if path else None))
+                                            init_cmd=init_cmd))
 
     def action_open_fm(self):
-        """Ctrl+F — File Manager for selected repo's host and directory."""
+        """Ctrl+F - File Manager for selected repo's host and directory."""
         hid, path = self._selected_repo()
         if not hid:
             hid = self._focused
@@ -21277,9 +28974,12 @@ class FileEntry:
             return f"{b/1024/1024/1024:>8.1f}G"
 
     def mtime_str(self) -> str:
-        import time
+        import datetime as _dt
         try:
-            return time.strftime("%Y-%m-%d %H:%M", time.localtime(self.mtime))
+            # Convert Unix timestamp to UTC datetime, then to local time
+            dt_utc = _dt.datetime.fromtimestamp(self.mtime, tz=_dt.timezone.utc)
+            dt_local = dt_utc.astimezone()
+            return dt_local.strftime("%Y-%m-%d %H:%M")
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             return "             ?"
@@ -21944,7 +29644,7 @@ class FilePanelWidget(_Widget):
     def _refresh_table(self) -> None:
         tbl = self._tbl()
         tbl.clear(columns=True)
-        # Column headers — active sort column gets an arrow indicator
+        # Column headers - active sort column gets an arrow indicator
         arrow = "▲" if not self._sort_rev else "▼"
         name_hdr = f"Name {arrow}" if self._sort_col == "name" else "Name"
         size_hdr = f"Size {arrow}" if self._sort_col == "size" else "Size"
@@ -22078,7 +29778,7 @@ class FilePanelWidget(_Widget):
         if is_dir:
             try:
                 target = await loop.run_in_executor(None, self._adapter.readlink, link_path)
-                # readlink may return relative path — resolve against current dir
+                # readlink may return relative path - resolve against current dir
                 if target and not target.startswith("/"):
                     target = self._adapter.join(self._path, target)
                 await self._load_dir(target or link_path)
@@ -22324,7 +30024,7 @@ class _FmEditFavDialog(ModalScreen):
 
 class _FmFavouritesScreen(ModalScreen):
     """
-    Ctrl+D — Favourite Locations dialog (Total Commander style).
+    Ctrl+D - Favourite Locations dialog (Total Commander style).
     Flat list of saved host+path pairs with descriptions.
     Enter: navigate to  |  a/Ins: add current  |  Del: remove  |  e/F2: edit
     """
@@ -22413,7 +30113,7 @@ class _FmFavouritesScreen(ModalScreen):
         footer.update(f" {len(self._favs)} location(s) saved")
 
     def on_data_table_row_selected(self, event: DataTable.RowSelected) -> None:
-        """Enter on DataTable fires RowSelected — use it to navigate."""
+        """Enter on DataTable fires RowSelected - use it to navigate."""
         row = event.cursor_row
         if 0 <= row < len(self._favs):
             self.dismiss(self._favs[row])
@@ -22488,7 +30188,7 @@ class _FmFavouritesScreen(ModalScreen):
 
 class _FmAttrDialog(ModalScreen):
     """
-    Ctrl+Z — Edit file attributes: chmod (octal), chown user:group, touch mtime.
+    Ctrl+Z - Edit file attributes: chmod (octal), chown user:group, touch mtime.
     Works for both local and remote (remote uses SFTP chmod + SSH touch/chown).
     """
 
@@ -22587,7 +30287,7 @@ class _FmAttrDialog(ModalScreen):
 
 class _FmSymlinkDialog(ModalScreen):
     """
-    s — Create a new symlink or edit the target of an existing one (MC style).
+    s - Create a new symlink or edit the target of an existing one (MC style).
     Fields: link name, target path.
     """
 
@@ -22991,11 +30691,11 @@ def _cross_copy_chunked(src_a, src_path: str, dst_a, dst_path: str,
                         progress_cb, pause_ev, cancel_ref) -> None:
     """
     Blocking chunked cross-host copy (local↔remote or remote↔remote different hosts).
-    Phase 1: read entire source into memory (no progress — fast for local→remote).
+    Phase 1: read entire source into memory (no progress - fast for local→remote).
     Phase 2: write to destination in chunks, calling progress_cb per chunk so the
              transfer panel reflects the actual (slow) write to the destination.
     """
-    # Phase 1: read entire source into memory — no progress updates here
+    # Phase 1: read entire source into memory - no progress updates here
     if cancel_ref[0]:
         raise InterruptedError("Cancelled")
     if isinstance(src_a, _LocalFSAdapter):
@@ -23046,7 +30746,7 @@ def _cross_copy_chunked(src_a, src_path: str, dst_a, dst_path: str,
         finally:
             sftp.close()
     else:
-        # Generic adapter (e.g. Docker): no chunked write API — write all at once
+        # Generic adapter (e.g. Docker): no chunked write API - write all at once
         dst_a.write_bytes(dst_path, data)
         progress_cb(total)
 
@@ -23418,7 +31118,7 @@ class _FmTransferPanel(_Widget):
             spd = job.speed_str()
             if spd and job.status == _TJ_RUNNING:
                 t.append(f"  {spd}", style="cyan")
-            # Speed sparkline (1 line of braille) — smooth with 3-point moving average
+            # Speed sparkline (1 line of braille) - smooth with 3-point moving average
             if job.speed_hist and job.status in (_TJ_RUNNING, _TJ_DONE):
                 raw = list(job.speed_hist)
                 smoothed = [
@@ -23570,7 +31270,7 @@ class FileManagerScreen(ModalScreen):
         self._initial_adapter   = initial_adapter  # if set, overrides initial_host_id
         # container_id → (host_id, container_name) for Docker source-bar buttons
         self._docker_map: "dict[str, tuple[str, str]]" = {}
-        # _busy is gone — queue handles concurrency now
+        # _busy is gone - queue handles concurrency now
         # _xfer stores per-entry (src_a, src_path, dst_a, dst_path, move)
         # needed for retry; keyed by job_id
         self._xfer_meta: "dict[str, tuple]" = {}
@@ -23794,7 +31494,7 @@ class FileManagerScreen(ModalScreen):
                 container_label = fav.get("container_label", f"docker:{container_id[:12]}")
                 adapter = _DockerFSAdapter(host_id, container_id, self._pool,
                                            container_label=container_label)
-                # No source-bar button for Docker — clear active state
+                # No source-bar button for Docker - clear active state
                 self._sync_source_bar(f"__docker__{container_id}", side)
             else:
                 adapter = self._make_adapter(host_id)
@@ -23804,7 +31504,7 @@ class FileManagerScreen(ModalScreen):
         self.app.push_screen(_FmFavouritesScreen(self._pool, panel), _on_fav)
 
     def action_open_shell(self) -> None:
-        """Ctrl+T — open a shell pre-navigated to the active panel's current location."""
+        """Ctrl+T - open a shell pre-navigated to the active panel's current location."""
         adapter = self._active().adapter()
         path    = self._active().current_path()
 
@@ -23814,13 +31514,17 @@ class FileManagerScreen(ModalScreen):
                 f"docker exec -it {adapter._container_id} "
                 f"sh -c {_shlex.quote('cd ' + path + ' && bash || sh')}"
             )
+            hs = self._pool.state(adapter._host_id)
+            init_cmd = _get_ssh_init_cmd(hs, init_cmd)
             self.app.push_screen(
                 SshShellScreen(self._pool, adapter._host_id, init_cmd=init_cmd))
         elif isinstance(adapter, _RemoteFSAdapter):
             # SSH host: open interactive shell, cd to current path
+            hs = self._pool.state(adapter._host_id)
+            init_cmd = _get_ssh_init_cmd(hs, f"cd {_shlex.quote(path)}")
             self.app.push_screen(
                 SshShellScreen(self._pool, adapter._host_id,
-                               init_cmd=f"cd {_shlex.quote(path)}"))
+                               init_cmd=init_cmd))
         else:
             self.app.notify("Shell not available for local filesystem",
                             severity="warning")
@@ -23878,7 +31582,7 @@ class FileManagerScreen(ModalScreen):
             if path:
                 asyncio.create_task(panel._load_dir(path.strip()))
         self.app.push_screen(
-            _FmInputDialog("Quick CD — enter path:", default=panel.current_path()),
+            _FmInputDialog("Quick CD - enter path:", default=panel.current_path()),
             _on_path)
 
     def action_file_attrs(self) -> None:
@@ -24305,7 +32009,7 @@ class FileManagerScreen(ModalScreen):
             entry = panel.selected_entry()
             t.append(f":{path}", style="cyan")
             sort_arrow = "▲" if not panel._sort_rev else "▼"
-            t.append(f"  [{panel._sort_col}{sort_arrow}]", style="grey42")
+            t.append(f"  [{panel._sort_col}{sort_arrow}]", style="grey46")
             n_sel = len(panel._selected)
             if n_sel:
                 t.append(f"  │  [bold yellow]{n_sel} selected[/bold yellow]", style="bold yellow")
@@ -25236,6 +32940,368 @@ class AiStatsScreen(ModalScreen):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# SECTION: welcome_screen  (v0.78)
+# First-run onboarding - shown when no hosts are configured.
+# Three paths: Demo / Add Host / Import from ~/.ssh/config.
+# ══════════════════════════════════════════════════════════════════════════════
+
+
+def _parse_ssh_config_hosts(path: Path) -> list[dict]:
+    """Parse ~/.ssh/config and return list of host dicts. Skips wildcards."""
+    hosts: list[dict] = []
+    current: Optional[dict] = None
+    try:
+        for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+            line = line.strip()
+            if not line or line.startswith("#"):
+                continue
+            m = re.match(r"^Host\s+(.+)$", line, re.IGNORECASE)
+            if m:
+                if current and "*" not in current["alias"]:
+                    hosts.append(current)
+                alias = m.group(1).strip()
+                current = {
+                    "alias":    alias,
+                    "hostname": alias,
+                    "user":     "root",
+                    "port":     22,
+                    "key_path": "~/.ssh/id_rsa",
+                }
+            elif current:
+                km = re.match(r"^(\w+)\s+(.+)$", line)
+                if km:
+                    key, val = km.group(1).lower(), km.group(2).strip()
+                    if key == "hostname":
+                        current["hostname"] = val
+                    elif key == "user":
+                        current["user"] = val
+                    elif key == "port":
+                        try:
+                            current["port"] = int(val)
+                        except ValueError:
+                            pass
+                    elif key == "identityfile":
+                        current["key_path"] = val
+        if current and "*" not in current.get("alias", "*"):
+            hosts.append(current)
+    except OSError:
+        pass
+    return hosts
+
+
+class _WelcomeStubPool:
+    """Minimal pool stub so HostEditorScreen can operate without a real AgentPool."""
+
+    def __init__(self, cfg_manager: "ConfigManager"):
+        self._cfgman = cfg_manager
+
+    async def add_host(self, cfg: "HostConfig") -> None:
+        cfg.import_source = "manual"
+        self._cfgman.save_host(cfg)
+
+    async def remove_host(self, host_id: str) -> None:
+        self._cfgman.delete_host(host_id)
+
+    def state(self, host_id: str):
+        raise KeyError(host_id)
+
+
+class SSHImportDialog(ModalScreen):
+    """Checklist of ~/.ssh/config hosts - user selects which to import into Deflect."""
+
+    DEFAULT_CSS = """
+    SSHImportDialog { align: center middle; }
+    #import-box {
+        width: 66; height: auto; max-height: 80vh;
+        border: double $accent; background: $surface; padding: 1 2;
+    }
+    #import-title { text-style: bold; color: $accent; margin-bottom: 1; }
+    #import-list  { height: auto; max-height: 40vh; border: solid $primary 30%; }
+    #import-hint  { color: $text-muted; margin-top: 1; }
+    #import-btns  { margin-top: 1; height: 3; }
+    ListItem.ssh-selected { background: $accent 15%; }
+    """
+
+    def __init__(self, cfg_manager: "ConfigManager", ssh_hosts: "list[dict]"):
+        super().__init__()
+        self._cfgman    = cfg_manager
+        self._ssh_hosts = ssh_hosts
+        self._selected: set[str] = {h["alias"] for h in ssh_hosts}
+
+    def compose(self) -> ComposeResult:
+        with Container(id="import-box"):
+            yield Static(
+                f"Import from ~/.ssh/config  ──  {len(self._ssh_hosts)} hosts found",
+                id="import-title")
+            with ListView(id="import-list"):
+                for h in self._ssh_hosts:
+                    label = (f"[✓] [bold]{h['alias']}[/bold]  "
+                             f"[dim]{h['hostname']}:{h['port']}  {h['user']}[/dim]")
+                    yield ListItem(Static(label, id=f"lbl-{h['alias']}"),
+                                   id=f"ssh-{h['alias']}",
+                                   classes="ssh-selected")
+            yield Static("[dim]↑↓ navigate  ·  Space/Enter toggle  ·  all pre-selected[/dim]",
+                         id="import-hint")
+            with Horizontal(id="import-btns"):
+                yield Button("Import Selected", variant="primary", id="btn-import")
+                yield Button("Cancel",          variant="error",   id="btn-cancel")
+
+    def on_list_view_selected(self, event: ListView.Selected) -> None:
+        item = event.item
+        alias = item.id.removeprefix("ssh-")
+        if alias in self._selected:
+            self._selected.discard(alias)
+            item.remove_class("ssh-selected")
+            try:
+                lbl = item.query_one(f"#lbl-{alias}", Static)
+                h   = next(x for x in self._ssh_hosts if x["alias"] == alias)
+                lbl.update(f"[ ] [dim]{h['alias']}  {h['hostname']}:{h['port']}  {h['user']}[/dim]")
+            except Exception:
+                pass
+        else:
+            self._selected.add(alias)
+            item.add_class("ssh-selected")
+            try:
+                lbl = item.query_one(f"#lbl-{alias}", Static)
+                h   = next(x for x in self._ssh_hosts if x["alias"] == alias)
+                lbl.update(f"[✓] [bold]{h['alias']}[/bold]  "
+                            f"[dim]{h['hostname']}:{h['port']}  {h['user']}[/dim]")
+            except Exception:
+                pass
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        if event.button.id == "btn-cancel":
+            self.dismiss(False)
+            return
+        if event.button.id != "btn-import":
+            return
+        existing_ids = {h.get("id") for h in self._cfgman._data.get("hosts", [])}
+        imported = 0
+        for h in self._ssh_hosts:
+            if h["alias"] not in self._selected:
+                continue
+            host_id = re.sub(r"[^a-zA-Z0-9_-]", "-", h["alias"])
+            if host_id in existing_ids:
+                continue
+            cfg = HostConfig(
+                id                  = host_id,
+                label               = h["alias"],
+                address             = h["hostname"],
+                port                = h["port"],
+                username            = h["user"],
+                auth                = "key",
+                key_path            = h["key_path"],
+                import_source       = "ssh_config",
+                import_source_path  = str(_SSH_CONFIG_FILE),
+                import_source_alias = h["alias"],
+            )
+            self._cfgman.save_host(cfg)
+            imported += 1
+        self.dismiss(imported > 0)
+
+
+class _WCard(Static):
+    """Focusable card widget for WelcomeScreen."""
+    can_focus = True
+
+
+class WelcomeScreen(ModalScreen):
+    """First-run onboarding screen - full-screen, three paths to get started."""
+
+    DEFAULT_CSS = """
+    WelcomeScreen { align: center middle; background: $background; }
+    #welcome-box {
+        width: 72; height: auto;
+        border: double $accent; background: $surface; padding: 2 3;
+    }
+    #welcome-title {
+        text-align: center; text-style: bold;
+        color: $accent; margin-bottom: 0;
+    }
+    #welcome-sub {
+        text-align: center; color: $text-muted; margin-bottom: 2;
+    }
+    #welcome-intro { margin-bottom: 1; }
+    .wcard {
+        border: solid $primary 30%;
+        padding: 1 2; margin-bottom: 1;
+    }
+    .wcard:hover  { border: solid $accent; background: $accent 8%; }
+    .wcard:focus  { border: solid $accent; background: $accent 15%; }
+    #welcome-hint { color: $text-muted; text-align: center; margin-top: 1; }
+    """
+
+    BINDINGS = [
+        Binding("d",      "pick_demo",   "Demo",       show=False),
+        Binding("a",      "pick_add",    "Add Host",   show=False),
+        Binding("i",      "pick_import", "Import SSH", show=False),
+        Binding("q",      "quit_app",    "Quit",       show=False),
+        Binding("enter",  "activate",    "Select",     show=False),
+        Binding("tab",    "next_card",   "Next",       show=False),
+        Binding("down",   "next_card",   "Next",       show=False),
+        Binding("up",     "prev_card",   "Prev",       show=False),
+    ]
+
+    _CARD_ORDER = ["wcard-demo", "wcard-add", "wcard-import"]
+
+    def __init__(self, cfg_manager: "ConfigManager", ssh_hosts: "list[dict]"):
+        super().__init__()
+        self._cfgman    = cfg_manager
+        self._ssh_hosts = ssh_hosts
+
+    def compose(self) -> ComposeResult:
+        n = len(self._ssh_hosts)
+        with Container(id="welcome-box"):
+            yield Static("D E F L E C T   O N E",          id="welcome-title")
+            yield Static("Enterprise Infrastructure Command Center", id="welcome-sub")
+            yield Static("No hosts configured yet - choose a starting point:",
+                         id="welcome-intro")
+
+            yield _WCard("[bold]D[/bold]  Try Demo[dim] - explore 25+ screens, no SSH needed[/dim]",
+                         id="wcard-demo", classes="wcard")
+            yield _WCard("[bold]A[/bold]  Add Your First Host[dim] - hostname · port · user · key or password[/dim]",
+                         id="wcard-add",  classes="wcard")
+
+            if self._ssh_hosts:
+                preview = "  ·  ".join(h["alias"] for h in self._ssh_hosts[:5])
+                if n > 5:
+                    preview += f"  ·  …+{n - 5} more"
+                yield _WCard(
+                    f"[bold]I[/bold]  Import ~/.ssh/config[dim] - {n} host{'s' if n != 1 else ''}: {preview}[/dim]",
+                    id="wcard-import", classes="wcard")
+
+            yield Static("[dim]Tab / ↑↓ - navigate    Enter / click - select    Q - quit[/dim]",
+                         id="welcome-hint")
+
+    def on_mount(self) -> None:
+        # Focus first card so keyboard navigation works immediately
+        try:
+            self.query_one("#wcard-demo").focus()
+        except Exception:
+            pass
+
+    def _focused_card_id(self) -> Optional[str]:
+        focused = self.focused
+        if focused is not None and focused.id in self._CARD_ORDER:
+            return focused.id
+        return None
+
+    def action_next_card(self) -> None:
+        cards = [c for c in self._CARD_ORDER if self.query(f"#{c}")]
+        cur   = self._focused_card_id()
+        if cur is None:
+            idx = 0
+        else:
+            idx = (cards.index(cur) + 1) % len(cards) if cur in cards else 0
+        try:
+            self.query_one(f"#{cards[idx]}").focus()
+        except Exception:
+            pass
+
+    def action_prev_card(self) -> None:
+        cards = [c for c in self._CARD_ORDER if self.query(f"#{c}")]
+        cur   = self._focused_card_id()
+        if cur is None:
+            idx = len(cards) - 1
+        else:
+            idx = (cards.index(cur) - 1) % len(cards) if cur in cards else 0
+        try:
+            self.query_one(f"#{cards[idx]}").focus()
+        except Exception:
+            pass
+
+    def action_activate(self) -> None:
+        card_id = self._focused_card_id()
+        if card_id == "wcard-demo":
+            self.action_pick_demo()
+        elif card_id == "wcard-add":
+            self.action_pick_add()
+        elif card_id == "wcard-import":
+            self.action_pick_import()
+
+    def action_pick_demo(self) -> None:
+        self.app._welcome_result = "demo"
+        self.app.exit()
+
+    def action_pick_add(self) -> None:
+        stub = _WelcomeStubPool(self._cfgman)
+
+        def _after(cfg: "Optional[HostConfig]") -> None:
+            if cfg is not None:
+                self.app._welcome_result = "run"
+                self.app.exit()
+
+        self.app.push_screen(HostEditorScreen(stub), _after)
+
+    def action_pick_import(self) -> None:
+        if not self._ssh_hosts:
+            return
+
+        def _after(imported: bool) -> None:
+            if imported:
+                self.app._welcome_result = "run"
+                self.app.exit()
+
+        self.app.push_screen(SSHImportDialog(self._cfgman, self._ssh_hosts), _after)
+
+    def action_quit_app(self) -> None:
+        self.app._welcome_result = "quit"
+        self.app.exit()
+
+    def on_click(self, event: events.Click) -> None:
+        # Walk up from the clicked widget to find a card
+        node = event.widget
+        while node is not None:
+            nid = getattr(node, 'id', None)
+            if nid in self._CARD_ORDER:
+                if nid == "wcard-demo":
+                    self.action_pick_demo()
+                elif nid == "wcard-add":
+                    self.action_pick_add()
+                elif nid == "wcard-import":
+                    self.action_pick_import()
+                return
+            node = getattr(node, 'parent', None)
+
+    def on_key(self, event: events.Key) -> None:
+        if event.key == "d":
+            self.action_pick_demo()
+        elif event.key == "a":
+            self.action_pick_add()
+        elif event.key == "i" and self._ssh_hosts:
+            self.action_pick_import()
+        elif event.key in ("q", "escape"):
+            self.action_quit_app()
+
+
+class WelcomeApp(App):
+    """Thin wrapper App that shows only WelcomeScreen - no background tasks."""
+
+    CSS = "WelcomeScreen { background: $background; }"
+
+    def __init__(self, cfg_manager: "ConfigManager"):
+        super().__init__()
+        self._cfgman         = cfg_manager
+        self._welcome_result = "quit"
+
+    def on_mount(self) -> None:
+        ssh_hosts = _parse_ssh_config_hosts(_SSH_CONFIG_FILE)
+        self.push_screen(WelcomeScreen(self._cfgman, ssh_hosts))
+
+
+def _run_welcome(cfg_manager: "ConfigManager") -> str:
+    """
+    Run the welcome TUI and return the user's choice:
+      "demo" - launch demo mode (no SSH)
+      "run"  - hosts were added/imported, launch main app
+      "quit" - user pressed Q or Escape
+    """
+    app = WelcomeApp(cfg_manager)
+    app.run()
+    return app._welcome_result
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # SECTION: entrypoint  (was __main__.py)
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -25298,7 +33364,8 @@ def _run_demo(cfg):
         HostConfig(id="linode-01",  label="Web Server",  address="194.195.1.10",  tags=["web","prod"]),
         HostConfig(id="linode-02",  label="App Server",  address="194.195.1.11",  tags=["app","prod"]),
         HostConfig(id="contabo-db", label="Database",    address="62.84.1.10",    tags=["db","prod"]),
-        HostConfig(id="contabo-2",  label="Mail Server", address="62.84.1.11",    tags=["mail"]),
+        HostConfig(id="contabo-2",  label="Mail Server", address="62.84.1.11",    tags=["mail"],
+                   auth="password"),  # DEMO: offline - shows realistic fleet with one unreachable host
     ]
     cfg.hosts = demo_hosts
 
@@ -25339,11 +33406,14 @@ def _run_demo(cfg):
             m.mail_queue_hist.append(random.uniform(1, 6))  # msgs/min
         fake_metrics[h.id] = m
 
-    pool.host_ids   = lambda: [h.id for h in demo_hosts]
-    pool.all_states = lambda: list(pool._hosts.values())
+    pool.host_ids    = lambda: [h.id for h in demo_hosts]
+    pool.all_states  = lambda: list(pool._hosts.values())
+    pool.all_agents  = lambda: []                              # no real SSH agents in demo
+    pool.state       = lambda hid: pool._hosts.get(hid)
+    pool.ai_engine   = AIEngine(cfg.ai)
 
     async def _noop(): pass
-    pool.close_all = _noop
+    pool.close_all   = _noop
 
     # ── fake metrics ──
     metrics = MetricsCollector.__new__(MetricsCollector)
@@ -25355,21 +33425,34 @@ def _run_demo(cfg):
     radar._pool     = pool
     radar._state    = RadarState()
     radar._ip_hosts = defaultdict(set)
-    for flag, ip, user, kind, cc in [
-        ("🇨🇳", "123.58.182.44",  "root",   "brute", "CN"),
-        ("🇷🇺", "91.243.91.211",  "admin",  "scan",  "RU"),
-        ("🇧🇷", "177.75.248.33",  "pi",     "brute", "BR"),
-        ("🇳🇱", "185.220.101.44", "ubuntu", "brute", "NL"),
-        ("🇰🇷", "211.44.33.12",   "deploy", "scan",  "KR"),
-        ("🇨🇳", "118.25.196.88",  "root",   "brute", "CN"),
-        ("🇩🇪", "46.101.210.55",  "user",   "scan",  "DE"),
-    ]:
+    import random as _r
+    _demo_attacks = [
+        # flag, ip,                 user,      method, kind,    host_id,      cc
+        ("🇨🇳", "123.58.182.44",   "root",    "ssh",  "brute", "linode-01",  "CN"),
+        ("🇷🇺", "91.243.91.211",   "admin",   "ssh",  "scan",  "linode-02",  "RU"),
+        ("🇧🇷", "177.75.248.33",   "pi",      "ssh",  "brute", "linode-01",  "BR"),
+        ("🇳🇱", "185.220.101.44",  "ubuntu",  "ssh",  "brute", "linode-02",  "NL"),
+        ("🇰🇷", "211.44.33.12",    "deploy",  "ssh",  "scan",  "contabo-db", "KR"),
+        ("🇨🇳", "118.25.196.88",   "root",    "ssh",  "brute", "linode-01",  "CN"),
+        ("🇩🇪", "46.101.210.55",   "postgres","ssh",  "scan",  "contabo-db", "DE"),
+        ("🇺🇦", "194.165.16.99",   "oracle",  "ssh",  "brute", "linode-02",  "UA"),
+        ("🇺🇸", "104.21.48.201",   "admin",   "ssh",  "scan",  "linode-01",  "US"),
+        ("🇹🇷", "31.192.108.43",   "root",    "ssh",  "brute", "contabo-db", "TR"),
+        ("🇮🇩", "114.121.92.77",   "ubuntu",  "ssh",  "brute", "linode-01",  "ID"),
+        ("🇷🇺", "185.220.100.255", "git",     "ssh",  "scan",  "linode-02",  "RU"),
+    ]
+    # Spread timestamps back in time so history looks real
+    _now_ts = _t.time()
+    for i, (flag, ip, user, method, kind, hid, cc) in enumerate(_demo_attacks):
+        ts_offset = len(_demo_attacks) - i   # oldest first
+        ts_str = _t.strftime("%b %d %H:%M:%S",
+                              _t.localtime(_now_ts - ts_offset * _r.randint(120, 300)))
         radar._state.events.append(AttackEvent(
-            ts=_t.strftime("%b %d %H:%M:%S"), host_id="linode-01",
-            src_ip=ip, username=user, method="ssh", kind=kind,
+            ts=ts_str, host_id=hid,
+            src_ip=ip, username=user, method=method, kind=kind,
             country=cc, flag=flag))
-    radar._state.atk_per_min  = 14.0
-    radar._state.banned_count = 12
+    radar._state.atk_per_min  = 18.3
+    radar._state.banned_count = 24
 
     # ── fake watcher ──
     watcher           = ServiceWatcher.__new__(ServiceWatcher)
@@ -25398,6 +33481,7 @@ def _run_demo(cfg):
     watcher.poll_loop = lambda *a, **kw: _idle()
 
     # Animate demo data: randomise metrics every 5s so bars move
+    import time as _time
     async def _animate():
         while True:
             await asyncio.sleep(5)
@@ -25405,8 +33489,6 @@ def _run_demo(cfg):
                 m = fake_metrics[h.id]
                 if h.id == "contabo-2":
                     continue
-                import random as _r
-                import time as _time
                 m.cpu_pct  = max(2, min(98, m.cpu_pct  + _r.uniform(-8, 8)))
                 m.ram_pct  = max(10, min(95, m.ram_pct  + _r.uniform(-4, 4)))
 
@@ -25440,19 +33522,25 @@ def _run_demo(cfg):
                     m.mail_throughput_mpm = max(0.5, m.mail_throughput_mpm - _r.uniform(0.2, 0.5))
                 m.mail_queue_hist.append(m.mail_throughput_mpm)
                 m.updated_at = _t.time()
-            # add a new attack event
-            import random as _r
-            sample = [
-                ("🇨🇳","58.218.92.{}".format(_r.randint(1,254)), "root",   "brute", "CN"),
-                ("🇷🇺","91.243.{}.1" .format(_r.randint(1,254)), "admin",  "scan",  "RU"),
-                ("🇮🇳","103.{}.1.1"  .format(_r.randint(1,254)), "ubuntu", "brute", "IN"),
+            # add 1-3 new attack events per tick so the radar feels alive
+            _new_event_pool = [
+                ("🇨🇳","58.218.92.{}".format(_r.randint(1,254)),  "root",     "ssh","brute","linode-01",  "CN"),
+                ("🇷🇺","91.243.{}.1" .format(_r.randint(1,254)),  "admin",    "ssh","scan", "linode-02",  "RU"),
+                ("🇮🇳","103.{}.1.1"  .format(_r.randint(1,254)),  "ubuntu",   "ssh","brute","linode-01",  "IN"),
+                ("🇳🇱","185.220.{}.1".format(_r.randint(1,254)),  "git",      "ssh","scan", "contabo-db", "NL"),
+                ("🇧🇷","200.{}.1.1"  .format(_r.randint(1,254)),  "pi",       "ssh","brute","linode-02",  "BR"),
+                ("🇰🇷","211.44.{}.1" .format(_r.randint(1,254)),  "postgres", "ssh","scan", "contabo-db", "KR"),
+                ("🇹🇷","31.192.{}.1" .format(_r.randint(1,254)),  "deploy",   "ssh","brute","linode-01",  "TR"),
+                ("🇮🇩","114.{}.1.1"  .format(_r.randint(1,254)),  "user",     "ssh","brute","linode-02",  "ID"),
             ]
-            flag, ip, user, kind, cc = _r.choice(sample)
-            radar._state.events.append(AttackEvent(
-                ts=_t.strftime("%b %d %H:%M:%S"), host_id="linode-01",
-                src_ip=ip, username=user, method="ssh", kind=kind,
-                country=cc, flag=flag))
-            radar._state.atk_per_min = _r.uniform(8, 20)
+            for _ in range(_r.randint(1, 3)):
+                flag, ip, user, method, kind, hid, cc = _r.choice(_new_event_pool)
+                radar._state.events.append(AttackEvent(
+                    ts=_t.strftime("%b %d %H:%M:%S"), host_id=hid,
+                    src_ip=ip, username=user, method=method, kind=kind,
+                    country=cc, flag=flag))
+            radar._state.atk_per_min  = _r.uniform(12, 28)
+            radar._state.banned_count = min(radar._state.banned_count + _r.randint(0, 1), 99)
 
     # Build app AFTER all fake objects are ready
     async def _run_demo_async():
@@ -25474,7 +33562,7 @@ def show_startup_banner(cfg_manager: "ConfigManager") -> None:
     # Header - always shown
     print(
         f"\n"
-        f"  \u2694  Deflect One v{APP_VERSION}  by WhitemanV\n"
+        f"  \u2694  Deflect One v{APP_VERSION} by Vladonai Software\n"
         f"     {APP_SITE}  |  {APP_GITHUB}\n"
     )
     # Sponsor line - conditional: 10+ days AND at least one connected host
@@ -25573,11 +33661,23 @@ def main():
     show_startup_banner(cfg_manager)
 
     if not cfg.hosts:
-        print(f"No hosts configured in {DEFLECT_DIR / 'deflect.json'}")
-        print("Add at least one host to Deflect One and re-run, or use --demo to preview.")
-        sys.exit(0)
+        result = _run_welcome(cfg_manager)
+        if result == "demo":
+            _run_demo(cfg_manager.load())
+        elif result == "run":
+            try:
+                asyncio.run(_run(cfg_manager.load()))
+            except KeyboardInterrupt:
+                print("\nShutting down...")
+                return
+        # "quit" → exit cleanly
+        return
 
-    asyncio.run(_run(cfg))
+    try:
+        asyncio.run(_run(cfg))
+    except KeyboardInterrupt:
+        print("\nShutting down...")
+        return
 
 
 # ── DEFLECT_EOF ───────────────────────────────────────────────────────────────
