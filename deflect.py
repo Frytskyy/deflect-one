@@ -235,13 +235,14 @@ Control Plane (where you run Deflect One):
   from your laptop, regardless of OS.
 
 Managed Servers (hosts Deflect One connects to):
-  [X] Debian 10+    (primary, fully tested, should work also on older versions)
-  [X] Ubuntu 20.04+ (primary, fully tested, should work also on older versions)
-  [ ] Other distros (Fedora, CentOS, Arch, Alpine, etc.)
-     These are known to work in principle (SSH + Linux CLI basics are universal),
-     but have not been extensively tested. Compatibility and feature coverage yet
-     (firewall rules, package manager, service names, log locations) may vary.
-     Community testing and contributions for other distros are welcome.
+  [X] Debian 10+    (primary, fully tested)
+  [X] Ubuntu 20.04+ (primary, fully tested)
+  [X] CentOS / RHEL / Rocky / Alma (dnf/yum detected; package manager, log paths, Apache unit all handled)
+  [X] Fedora        (dnf detected; same as RHEL path)
+  [~] Arch Linux    (pacman detected; package upgrades work; UFW screen shows firewalld gap)
+  [~] Alpine Linux  (apk detected; package upgrades work; some log paths differ, no ufw)
+  [ ] Other distros  SSH + systemd basics work universally; firewall screen and Quick Install
+                     package names may need local tuning.
 
 SSH & Connectivity:
   • Works with password or key-based authentication
@@ -837,7 +838,7 @@ Facades for DeflectApp (full backward compatibility):
 ├─────────────────────────────────┴──────────────────────────────────────────┤
 │  #bottom-row (height: 12)                                                   │
 │  ┌─ServicesPanel──────────────────────────────────────────────────────────┐│
-│  │ SERVICES  ↑↓ select r:restart  s:stop  l:logs  e:enable  d:disable  ←→:panel ││
+│  │ SERVICES  ↑↓/PgUp/PgDn/Home/End:select  r:restart  s:stop  l:logs  e:enable  d:disable  ←→:panel ││
 │  └────────────────────────────────────────────────────────────────────────┘│
 ├─ FKeyBar (dock: bottom) ────────────────────────────────────────────────────┤
 │ F2:Shell F3:Logs ^D:Docker F8:APT ^R:Recon ^K:Vault ^S:Scripts F9:Fleet F10:Q│
@@ -1484,6 +1485,40 @@ v0.79 (in progress...)
     Nobody noticed for a while.
   · Warning dialog before upgrading kernel/grub/systemd packages — lists them, requires confirmation.
   · Shows download size before committing to anything.
+
+  ── SERVICES — CPU load indicator ────────────────────────────────────────────
+
+  · ServicesPanel and ServerCard now show a live CPU sparkline and current load
+    per service. Hidden below 3% — noise suppression.
+  · Services with higher CPU float to the top automatically.
+
+  ── SERVICES — keyboard navigation ───────────────────────────────────────────
+
+  · PgDn/PgUp jump a full column at a time — no more holding Down through 50 services.
+  · Home/End jump to first and last service instantly.
+  · Ctrl+Down/Up and Ctrl+Home/End work as Mac equivalents for the same actions.
+
+  ── SERVICES — service names fixed ───────────────────────────────────────────
+
+  · Some systemd versions prefix each unit line with a Unicode bullet (●/✗/○)
+    as a separate column. The parser now handles both formats, so service names
+    always appear correctly instead of showing blank rows.
+
+  ── SERVICES — alerts improved ───────────────────────────────────────────────
+
+  · SERVICE_FAILED alerts now include the service name: "SERVICE_FAILED: postfix on bila-vm".
+  · No more alert spam on startup — services already broken when Deflect starts
+    are treated as baseline; you only get alerted when something fails after launch.
+
+  ── MULTI-DISTRO SUPPORT ─────────────────────────────────────────────────────
+
+  · Package Manager screen (F8) now works on CentOS/RHEL/Fedora (dnf/yum), Arch (pacman),
+    and Alpine (apk) — auto-detected on connect, no config needed.
+  · Title, upgrade commands, and Quick Install package names adapt to the detected distro.
+    "U: upgrade security" only shows on distros that support security-only upgrades.
+  · Log tail (F3): Nginx and Apache tabs now fall back to journalctl when log files
+    are absent (containers, minimal images, RHEL setups).
+  · Apache inventory detection now also checks the `httpd` binary (RHEL/CentOS name).
 
 v1.0 (plan)
 
@@ -3059,14 +3094,139 @@ class ContainerInfo:
 
 @dataclass
 class AptInfo:
-    """APT / OS state, populated by HostAgent._apt_loop()."""
+    """Package manager / OS state, populated by HostAgent._apt_loop()."""
     os_version:      str      = ""   # e.g. "Ubuntu 22.04.3 LTS"
     kernel:          str      = ""   # e.g. "5.15.0-105-generic"
     upgradable:      list     = field(default_factory=list)  # list of dicts {name,current,new,security}
     security_count:  int      = 0
     total_count:     int      = 0
     last_checked:    float    = 0.0
-    download_size:   str      = ""   # e.g. "12.3 MB" from apt-get -s full-upgrade
+    download_size:   str      = ""   # e.g. "12.3 MB" (apt only)
+    pkg_manager:     str      = ""   # "apt" | "dnf" | "yum" | "pacman" | "apk" | "unknown"
+
+
+# Shell script run on each host to detect package manager, OS, kernel, and upgradable packages.
+# Output format:
+#   Line 0:  PM=<apt|dnf|yum|pacman|apk|unknown>
+#   Line 1:  OS version string
+#   Line 2:  kernel version
+#   Lines 3..N: package list (format depends on PM)
+#   ---SIZE---
+#   Lines after separator: download size (apt only)
+_FETCH_PKG_INFO_CMD = r"""
+if   command -v apt-get >/dev/null 2>&1; then PM=apt
+elif command -v dnf     >/dev/null 2>&1; then PM=dnf
+elif command -v yum     >/dev/null 2>&1; then PM=yum
+elif command -v pacman  >/dev/null 2>&1; then PM=pacman
+elif command -v apk     >/dev/null 2>&1; then PM=apk
+else PM=unknown; fi
+echo "PM=$PM"
+grep PRETTY_NAME /etc/os-release 2>/dev/null | cut -d= -f2 | tr -d '"' || echo Linux
+uname -r
+case $PM in
+  apt)
+    apt list --upgradable 2>/dev/null | grep -v '^Listing'
+    echo '---SIZE---'
+    apt-get -s full-upgrade 2>/dev/null | grep 'Need to get'
+    ;;
+  dnf)
+    dnf check-update 2>/dev/null; true
+    echo '---SIZE---'
+    ;;
+  yum)
+    yum check-update 2>/dev/null; true
+    echo '---SIZE---'
+    ;;
+  pacman)
+    pacman -Qu 2>/dev/null
+    echo '---SIZE---'
+    ;;
+  apk)
+    apk list -u 2>/dev/null
+    echo '---SIZE---'
+    ;;
+  *)
+    echo '---SIZE---'
+    ;;
+esac
+"""
+
+
+def _parse_apt_upgradable(lines: list) -> list:
+    pkg_re = re.compile(
+        r'^(?P<name>[^/]+)/(?P<repo>\S+)\s+(?P<new_ver>\S+)\s+\S+'
+        r'(?:.*upgradable from:\s*(?P<old_ver>\S+))?'
+    )
+    pkgs = []
+    for line in lines:
+        mo = pkg_re.match(line.strip())
+        if not mo:
+            continue
+        is_sec = "security" in mo.group("repo")
+        pkgs.append({"name": mo.group("name"), "current": mo.group("old_ver") or "?",
+                     "new": mo.group("new_ver"), "security": is_sec})
+    return pkgs
+
+
+def _parse_dnf_upgradable(lines: list) -> list:
+    _SKIP = ("Last ", "Loaded ", "Updated ", "Obsoleting", "Security:", "===", "Extra ")
+    pkgs = []
+    for line in lines:
+        line = line.strip()
+        if not line or any(line.startswith(p) for p in _SKIP):
+            continue
+        parts = line.split()
+        if len(parts) < 2:
+            continue
+        name_arch = parts[0]
+        new_ver   = parts[1]
+        repo      = parts[2] if len(parts) > 2 else ""
+        name = name_arch.rsplit(".", 1)[0] if "." in name_arch else name_arch
+        pkgs.append({"name": name, "current": "?", "new": new_ver,
+                     "security": "security" in repo.lower()})
+    return pkgs
+
+
+def _parse_pacman_upgradable(lines: list) -> list:
+    pkgs = []
+    for line in lines:
+        parts = line.strip().split()
+        # "name old_ver -> new_ver"
+        if len(parts) >= 4 and parts[2] == "->":
+            pkgs.append({"name": parts[0], "current": parts[1], "new": parts[3], "security": False})
+        elif len(parts) >= 2 and parts[0] and not parts[0].startswith(":"):
+            pkgs.append({"name": parts[0], "current": "?", "new": parts[-1], "security": False})
+    return pkgs
+
+
+def _parse_apk_upgradable(lines: list) -> list:
+    # "name-version-rN arch {group} ... [upgradable from: old_ver]"
+    tok_re = re.compile(r'^(.+?)-(\d[\d.]*(?:-r\d+)?)\s')
+    cur_re = re.compile(r'\[upgradable from:\s*(.+?)\]')
+    pkgs = []
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        mo = tok_re.match(line)
+        if not mo:
+            continue
+        cur_mo = cur_re.search(line)
+        pkgs.append({"name": mo.group(1), "current": cur_mo.group(1) if cur_mo else "?",
+                     "new": mo.group(2), "security": False})
+    return pkgs
+
+
+def _parse_pkg_upgradable(pm: str, lines: list) -> list:
+    if pm == "apt":
+        return _parse_apt_upgradable(lines)
+    if pm in ("dnf", "yum"):
+        return _parse_dnf_upgradable(lines)
+    if pm == "pacman":
+        return _parse_pacman_upgradable(lines)
+    if pm == "apk":
+        return _parse_apk_upgradable(lines)
+    return []
 
 
 _BATCH_CMD = r"""
@@ -4650,8 +4810,11 @@ def _format_ts_local(utc_ts: str, short: bool = True) -> str:
 _SVC_CMD = (
     # --no-pager and TERM=dumb prevent ANSI codes in non-TTY SSH sessions.
     # --plain is omitted for compatibility with older systemd (<228).
+    # systemctl output may have a leading Unicode bullet (●/✗/○) as $1 on some
+    # systemd versions; detect by checking whether $1 contains a dot (unit name)
+    # or not, and shift field indices accordingly.
     "TERM=dumb systemctl list-units --type=service --all --no-legend "
-    "--no-pager 2>/dev/null | awk 'NF>=4{print $1,$3,$4}' | head -60"
+    "--no-pager 2>/dev/null | awk 'NF>=4{if(index($1,\".\"))print $1,$3,$4; else print $2,$4,$5}' | head -60"
 )
 
 @dataclass
@@ -4663,6 +4826,8 @@ class ServiceInfo:
     sub:       str = "unknown"
     is_new:    bool = False
     is_gone:   bool = False
+    cpu_pct:   float = 0.0                                          # latest sample from _update_service_cpu
+    cpu_history: deque = field(default_factory=lambda: deque(maxlen=12))  # last 12 samples (~120s @ 10s poll)
 
     @property
     def ok(self) -> bool:
@@ -4749,6 +4914,21 @@ class ServiceWatcher:
                     active="unknown", sub="gone", is_gone=True))
 
         self._services[host_id] = current
+
+    def _update_service_cpu(self, host_id: str, metrics: "HostMetrics | None") -> None:
+        """Match running processes to services and update cpu_pct + cpu_history.
+
+        Called from HostAgent._services_loop() right after _poll_host(), while
+        metrics.processes is fresh (also updated every 10s by _proc_loop).
+        """
+        svcs = self._services.get(host_id)
+        if not svcs or not metrics or not metrics.processes:
+            return
+        procs = metrics.processes
+        for svc in svcs:
+            cpu = _svc_match_proc(svc.name, procs)
+            svc.cpu_pct = cpu
+            svc.cpu_history.append(cpu)
 
     async def control(self, host_id: str, service: str, action: str) -> str:
         valid = {"start", "stop", "restart", "enable", "disable"}
@@ -4850,7 +5030,7 @@ class AgentEvent:
 
 _INVENTORY_CMD = r"""
 echo "OS=$(cat /etc/os-release 2>/dev/null | grep PRETTY_NAME | cut -d= -f2 | tr -d '"')";
-for cmd in nginx apache2 caddy haproxy; do
+for cmd in nginx apache2 httpd caddy haproxy; do
   v=$($cmd -v 2>&1 | head -1) && echo "$cmd=$v"; done;
 for cmd in psql mysql redis-server mongod; do
   v=$($cmd --version 2>&1 | head -1) && echo "$cmd=$v"; done;
@@ -5142,14 +5322,22 @@ class HostAgent:
             await asyncio.sleep(self._cfg.poll_interval)
 
     async def _services_loop(self):
-        prev_failed: set[str] = set()
+        prev_failed: set[str] | None = None   # None = first poll (baseline, no alerts)
         while True:
             try:
                 if self._host_state.state == ConnState.CONNECTED:
                     await self._watcher._poll_host(self._cfg.id)
-                    await self._react_services(prev_failed)
-                    prev_failed = {s.name for s in self.services
-                                   if s.active == "failed"}
+                    self._watcher._update_service_cpu(
+                        self._cfg.id, self._collector._metrics.get(self._cfg.id))
+                    if prev_failed is None:
+                        # First poll: treat current failures as baseline so we don't
+                        # spam alerts for services that were already broken before startup.
+                        prev_failed = {s.name for s in self.services
+                                       if s.active == "failed"}
+                    else:
+                        await self._react_services(prev_failed)
+                        prev_failed = {s.name for s in self.services
+                                       if s.active == "failed"}
             except Exception as e:
                 _log.error("services_loop %s: %s", self._cfg.id, e)
             await asyncio.sleep(10)
@@ -5498,8 +5686,7 @@ class HostAgent:
         m.docker_containers = containers
 
     async def _apt_loop(self):
-        """Collect OS version, kernel, and apt upgradable list. Runs once on connect, then every hour.
-        (security updates are important but we're not obsessive about it)"""
+        """Collect OS version, kernel, and upgradable package list. Runs once on connect, then every hour."""
         await asyncio.sleep(20)
         while True:
             try:
@@ -5515,19 +5702,11 @@ class HostAgent:
         if m is None:
             return
 
-        batch_cmd = (
-            "lsb_release -d 2>/dev/null | cut -f2- ;"
-            "uname -r ;"
-            "apt list --upgradable 2>/dev/null | grep -v '^Listing' ;"
-            "echo '---SIZE---' ;"
-            "apt-get -s full-upgrade 2>/dev/null | grep 'Need to get'"
-        )
-
         def _run():
             hs = self._host_state
             if not hs.client:
                 return ""
-            _, stdout, _ = hs.client.exec_command(batch_cmd, timeout=30)
+            _, stdout, _ = hs.client.exec_command(_FETCH_PKG_INFO_CMD, timeout=60)
             return stdout.read().decode(errors="replace")
 
         try:
@@ -5537,50 +5716,34 @@ class HostAgent:
             return
 
         lines = raw.splitlines()
-        if len(lines) < 2:
+        if len(lines) < 3:
             return
 
-        os_version = lines[0].strip()
-        kernel = lines[1].strip()
+        # Line 0: "PM=apt" etc., line 1: OS version, line 2: kernel
+        pm_line     = lines[0].strip()
+        pkg_manager = pm_line[3:] if pm_line.startswith("PM=") else "apt"
+        os_version  = lines[1].strip()
+        kernel      = lines[2].strip()
 
-        # split on the separator we inject between pkg list and size line
         try:
-            sep_idx = next(i for i, l in enumerate(lines) if l.strip() == "---SIZE---")
-            pkg_lines  = lines[2:sep_idx]
+            sep_idx    = next(i for i, l in enumerate(lines) if l.strip() == "---SIZE---")
+            pkg_lines  = lines[3:sep_idx]
             size_lines = lines[sep_idx + 1:]
         except StopIteration:
-            pkg_lines  = lines[2:]
+            pkg_lines  = lines[3:]
             size_lines = []
 
-        pkgs: list[dict] = []
-        security_count = 0
-        # apt list --upgradable format: name/repo version arch [upgradable from: old]
-        pkg_re = re.compile(
-            r'^(?P<name>[^/]+)/(?P<repo>\S+)\s+(?P<new_ver>\S+)\s+\S+'
-            r'(?:.*upgradable from:\s*(?P<old_ver>\S+))?'
-        )
-        for line in pkg_lines:
-            mo = pkg_re.match(line.strip())
-            if not mo:
-                continue
-            is_sec = "security" in mo.group("repo")
-            if is_sec:
-                security_count += 1
-            pkgs.append({
-                "name":     mo.group("name"),
-                "current":  mo.group("old_ver") or "?",
-                "new":      mo.group("new_ver"),
-                "security": is_sec,
-            })
+        pkgs           = _parse_pkg_upgradable(pkg_manager, pkg_lines)
+        security_count = sum(1 for p in pkgs if p.get("security"))
 
-        # "Need to get 12.3 MB of archives." → extract "12.3 MB"
         download_size = ""
-        size_re = re.compile(r'Need to get\s+([\d.,]+\s*\w+)\s+of archives')
-        for sl in size_lines:
-            sm = size_re.search(sl)
-            if sm:
-                download_size = sm.group(1)
-                break
+        if pkg_manager == "apt":
+            size_re = re.compile(r'Need to get\s+([\d.,]+\s*\w+)\s+of archives')
+            for sl in size_lines:
+                sm = size_re.search(sl)
+                if sm:
+                    download_size = sm.group(1)
+                    break
 
         import time as _time
         m.apt_info = AptInfo(
@@ -5591,6 +5754,7 @@ class HostAgent:
             total_count=len(pkgs),
             last_checked=_time.time(),
             download_size=download_size,
+            pkg_manager=pkg_manager,
         )
 
     async def _disk_loop(self):
@@ -5802,7 +5966,12 @@ class HostAgent:
             return
 
         cmd = (
-            "ps aux --sort=-%cpu 2>/dev/null | head -21 ; "
+            # top -bn2 takes two samples 0.3s apart and prints the second,
+            # giving real current CPU% instead of ps aux lifetime average.
+            # -w512 prevents line truncation; -o sorts by CPU descending.
+            # Falls back to ps aux if top is unavailable (rare).
+            "top -bn2 -d0.3 -w512 -o %CPU 2>/dev/null | grep -v '^$' | tail -n +8 | head -20 "
+            "|| ps aux --sort=-%cpu 2>/dev/null | tail -n +2 | head -20 ; "
             "echo '---OOM---' ; "
             "dmesg 2>/dev/null | grep -i 'out of memory' | tail -5"
         )
@@ -5824,23 +5993,49 @@ class HostAgent:
         ps_out  = parts[0] if parts else ""
         oom_out = parts[1] if len(parts) > 1 else ""
 
+        def _parse_float(s: str) -> float:
+            try: return float(s.replace(",", "."))
+            except ValueError: return 0.0
+
         procs: list[dict] = []
         lines = ps_out.splitlines()
-        # skip header line (USER PID %CPU %MEM VSZ RSS ... COMMAND)
-        for line in lines[1:]:
-            cols = line.split(None, 10)
-            if len(cols) < 11:
-                continue
-            procs.append({
-                "user":    cols[0][:12],
-                "pid":     cols[1],
-                "cpu_pct": float(cols[2]) if cols[2].replace(".","",1).isdigit() else 0.0,
-                "mem_pct": float(cols[3]) if cols[3].replace(".","",1).isdigit() else 0.0,
-                "vsz":     cols[4],
-                "rss":     cols[5],
-                "state":   cols[7],  # STAT column
-                "command": cols[10][:60],
-            })
+        # Detect format by first non-empty line:
+        #   top:  PID USER PR NI VIRT RES SHR S %CPU %MEM TIME+ COMMAND  (cols[8]=cpu)
+        #   ps:   USER PID %CPU %MEM VSZ RSS TTY STAT START TIME COMMAND  (cols[2]=cpu)
+        is_top = False
+        for line in lines:
+            stripped = line.strip()
+            if stripped:
+                is_top = stripped.split()[0].isdigit()  # top starts with PID (int)
+                break
+        for line in lines:
+            cols = line.split(None, 11)
+            if is_top:
+                if len(cols) < 12 or not cols[0].isdigit():
+                    continue
+                procs.append({
+                    "user":    cols[1][:12],
+                    "pid":     cols[0],
+                    "cpu_pct": _parse_float(cols[8]),
+                    "mem_pct": _parse_float(cols[9]),
+                    "vsz":     cols[4],
+                    "rss":     cols[5],
+                    "state":   cols[7],
+                    "command": cols[11][:60],
+                })
+            else:
+                if len(cols) < 11 or cols[0].isdigit():
+                    continue  # skip header
+                procs.append({
+                    "user":    cols[0][:12],
+                    "pid":     cols[1],
+                    "cpu_pct": _parse_float(cols[2]),
+                    "mem_pct": _parse_float(cols[3]),
+                    "vsz":     cols[4],
+                    "rss":     cols[5],
+                    "state":   cols[7],
+                    "command": cols[10][:60],
+                })
 
         if procs:
             m.processes = procs
@@ -6946,6 +7141,8 @@ class HostAgent:
                 ai_cfg = self._app_cfg.ai
                 if not ai_cfg.enabled or not self._get_ai_engine:
                     continue
+                if not self._cfg.ai_controlled:
+                    continue
                 if not self._cfg.ai_instructions:
                     continue
                 if self._host_state.state != ConnState.CONNECTED:
@@ -6971,7 +7168,7 @@ class HostAgent:
                 os_info      = (getattr(m, "os_info", "") or "Linux") if m else "Linux"
                 svcs         = self._watcher.services_for(self._cfg.id)
                 services_str = "  ".join(
-                    f"{'●' if s.running else '✗'} {s.name}"
+                    f"{'●' if s.active == 'active' else '✗'} {s.name}"
                     for s in svcs[:12]) or "-"
 
                 # ── Action history for cross-cycle context ────────────────
@@ -8051,7 +8248,14 @@ def _to_level(pct: float) -> int:
     return min(4, int(max(0.0, min(100.0, pct)) * 4 / 100 + 0.5))
 
 
-def braille_sparkline(history: deque | list, width: int) -> Text:
+def braille_sparkline(history: deque | list, width: int, peak_override: float = 0.0) -> Text:
+    """Render a braille sparkline.
+
+    peak_override > 0: use a fixed scale (e.g. 100.0 for CPU%) so bars reflect
+    the absolute level, not just relative variation within the window.
+    peak_override == 0 (default): auto-scale to the local maximum, good for
+    values whose range is unknown (network bytes, mail throughput, etc.).
+    """
     vals = list(history)
     if not vals:
         return Text(" " * width, style="dim")
@@ -8061,7 +8265,10 @@ def braille_sparkline(history: deque | list, width: int) -> Text:
         vals = [vals[0]] * (needed - len(vals)) + vals
     vals = vals[-needed:]
 
-    peak = max(vals) if max(vals) > 0 else 1
+    if peak_override > 0:
+        peak = peak_override
+    else:
+        peak = max(vals) if max(vals) > 0 else 1
 
     result = Text()
     for i in range(0, needed, 2):
@@ -8155,8 +8362,11 @@ class Panel(Static, can_focus=True):
     def on_focus(self) -> None:
         self.app.notify_panel_focus(self._panel_id)
 
-    # ←→ keys switch panel focus; ↑↓ handled per-panel
+    # ←→ keys switch panel focus; ↑↓ handled per-panel.
+    # _stop_propagation is set by subclass on_key when it handled the key itself.
     def on_key(self, event: events.Key) -> None:
+        if event._stop_propagation:
+            return
         if event.key == "left":
             self.app.action_prev_panel(); event.stop()
         elif event.key == "right":
@@ -8474,7 +8684,11 @@ class ServerCard(Panel):
         if services:
             t.append(" svc ", style=CLR_METRIC)
             for svc in sorted(services, key=_svc_sort_key)[:8]:
-                t.append(f"{svc.status_char}{svc.name[:10]} ", style=svc.status_color)
+                t.append(f"{svc.status_char}{svc.name[:10]}", style=svc.status_color)
+                if _svc_mean_cpu(svc) >= 3.0:  # skip rounding noise below 3%
+                    t.append_text(braille_sparkline(svc.cpu_history, 2))
+                    t.append(f"{svc.cpu_pct:.0f}", style=pct_color(svc.cpu_pct))
+                t.append(" ")
             if len(services) > 8:
                 t.append(f"+{len(services)-8}", style="grey50")
             t.append("\n")
@@ -9223,6 +9437,141 @@ class AttackRadarPanel(Panel):
 
 # ── Services Panel ────────────────────────────────────────────────────────────
 
+# Maps service name → list of substrings to look for in ps `command` field.
+# Used by _update_service_cpu() to match processes to services.
+# Checked in order; first hit wins.  The service name itself is always tried last.
+_SVC_PROC_ALIASES: dict[str, list[str]] = {
+    # Web / Proxy
+    "nginx":            ["nginx"],
+    "apache2":          ["apache2", "httpd"],
+    "apache":           ["httpd", "apache2"],
+    "caddy":            ["caddy"],
+    "haproxy":          ["haproxy"],
+    "traefik":          ["traefik"],
+    "lighttpd":         ["lighttpd"],
+    "varnish":          ["varnishd"],
+    # Databases
+    "postgresql":       ["postgres"],
+    "postgres":         ["postgres"],
+    "mysql":            ["mysqld"],
+    "mariadb":          ["mysqld", "mariadbd"],
+    "redis":            ["redis-server", "redis"],
+    "redis-server":     ["redis-server", "redis"],
+    "mongodb":          ["mongod"],
+    "elasticsearch":    ["elasticsearch"],
+    "clickhouse-server":["clickhouse-server", "clickhouse"],
+    "influxdb":         ["influxd"],
+    "memcached":        ["memcached"],
+    # Mail
+    "postfix":          ["postfix", "master"],   # postfix master process
+    "exim4":            ["exim4", "exim"],
+    "exim":             ["exim"],
+    "dovecot":          ["dovecot"],
+    "rspamd":           ["rspamd"],
+    "spamassassin":     ["spamd"],
+    "opendkim":         ["opendkim"],
+    # Containers / Orchestration
+    "docker":           ["dockerd"],
+    "containerd":       ["containerd"],
+    "podman":           ["podman"],
+    "kubelet":          ["kubelet"],
+    "k3s":              ["k3s"],
+    "k3s-server":       ["k3s server"],
+    "k3s-agent":        ["k3s agent"],
+    # CI / Git hosting
+    "gitea":            ["gitea"],
+    "gogs":             ["gogs"],
+    "gitlab":           ["gitlab"],
+    "gitlab-runner":    ["gitlab-runner"],
+    "jenkins":          ["jenkins"],
+    "drone":            ["drone"],
+    "woodpecker-server":["woodpecker"],
+    # Security / Access
+    "sshd":             ["sshd"],
+    "ssh":              ["sshd"],
+    "fail2ban":         ["fail2ban"],
+    "auditd":           ["auditd"],
+    "apparmor":         ["apparmor"],
+    # VPN / DNS / Networking
+    "openvpn":          ["openvpn"],
+    "wireguard":        ["wireguard"],
+    "keepalived":       ["keepalived"],
+    "bind9":            ["named"],
+    "named":            ["named"],
+    "dnsmasq":          ["dnsmasq"],
+    # App servers / Workers
+    "php-fpm":          ["php-fpm", "php"],
+    "uwsgi":            ["uwsgi"],
+    "gunicorn":         ["gunicorn"],
+    "supervisor":       ["supervisord"],
+    # Message queues
+    "rabbitmq-server":  ["beam.smp", "rabbitmq"],  # Erlang VM for RabbitMQ
+    "mosquitto":        ["mosquitto"],
+    # Monitoring / Logging
+    "prometheus":       ["prometheus"],
+    "grafana-server":   ["grafana"],
+    "node-exporter":    ["node_exporter"],
+    "node_exporter":    ["node_exporter"],
+    "alertmanager":     ["alertmanager"],
+    "zabbix-agent":     ["zabbix_agentd", "zabbix_agent2"],
+    "zabbix-agent2":    ["zabbix_agent2"],
+    "zabbix-server":    ["zabbix_server"],
+    "filebeat":         ["filebeat"],
+    "logstash":         ["logstash"],
+    "rsyslog":          ["rsyslogd"],
+    # Certs / Time / Scheduling
+    "cron":             ["cron", "crond"],
+    "cronie":           ["crond"],
+    "chrony":           ["chronyd"],
+    "ntp":              ["ntpd"],
+    "systemd-timesyncd":["systemd-timesyncd"],
+}
+
+
+def _svc_match_proc(svc_name: str, procs: list[dict]) -> float:
+    """Return summed cpu_pct of all processes matching this service name.
+
+    Matches against _SVC_PROC_ALIASES first, then falls back to svc_name itself.
+    Sums all matching pids (e.g. nginx master + workers).
+    """
+    keywords = _SVC_PROC_ALIASES.get(svc_name.lower())
+    if keywords is None:
+        # prefix aliases: php8.2-fpm → try "php", wg-quick@wg0 → "wg-quick", etc.
+        low = svc_name.lower()
+        for pfx, kws in (
+            ("php",        ["php-fpm", "php"]),
+            ("wg-quick",   ["wireguard", "wg-quick"]),
+            ("openvpn",    ["openvpn"]),
+            ("gitlab",     ["gitlab"]),
+            ("k3s",        ["k3s"]),
+            ("postgres",   ["postgres"]),
+            ("redis",      ["redis-server", "redis"]),
+            ("mysql",      ["mysqld"]),
+            ("docker",     ["dockerd"]),
+            ("zabbix",     ["zabbix_agentd", "zabbix_agent2"]),
+            ("grafana",    ["grafana"]),
+            ("prometheus", ["prometheus"]),
+        ):
+            if low.startswith(pfx):
+                keywords = kws
+                break
+        if keywords is None:
+            keywords = [svc_name.lower()]
+
+    total = 0.0
+    for p in procs:
+        cmd = p.get("command", "").lower()
+        if any(kw in cmd for kw in keywords):
+            total += p.get("cpu_pct", 0.0)
+    return total
+
+
+def _svc_mean_cpu(s: "ServiceInfo") -> float:
+    """Mean CPU% over the recorded history window; 0.0 if no data."""
+    h = s.cpu_history
+    return sum(h) / len(h) if h else 0.0
+
+
 _PRIORITY_SVCS: frozenset[str] = frozenset({
     # Web / Proxy / Load balancer
     "nginx", "apache2", "apache", "caddy", "haproxy", "traefik", "lighttpd", "varnish",
@@ -9279,9 +9628,31 @@ def _svc_priority(name: str) -> int:
     return 1
 
 
-def _svc_sort_key(s: "ServiceInfo") -> tuple[int, int, str]:
-    """Sort: priority services first → failed within group first → alphabetical."""
-    return (_svc_priority(s.name), 0 if s.active == "failed" else 1, s.name.lower())
+def _svc_sort_key(s: "ServiceInfo") -> tuple:
+    """Sort key for a single ServiceInfo (no CPU weighting).
+
+    Used by ServerCard where only one host's services are shown and the
+    metrics object is available separately.  For cross-host ServicesPanel use
+    make_svc_sort_key() which accepts a (host_id, ServiceInfo) pair.
+    """
+    # Negate mean CPU so higher load floats to the top within each priority bucket.
+    # If no history yet the service sorts the same as 0% load (stays alphabetical).
+    mean_cpu = _svc_mean_cpu(s)
+    return (_svc_priority(s.name), 0 if s.active == "failed" else 1, -mean_cpu, s.name.lower())
+
+
+def make_svc_sort_key():
+    """Return a sort-key function for (host_id, ServiceInfo) pairs used in ServicesPanel.
+
+    The returned key: priority group → failed first → mean CPU desc → name asc.
+    CPU is averaged over the stored history window (~120 s) so the sort order
+    changes slowly and does not jump on a single noisy sample.
+    """
+    def key(hs: tuple) -> tuple:
+        _, s = hs
+        mean_cpu = _svc_mean_cpu(s)
+        return (_svc_priority(s.name), 0 if s.active == "failed" else 1, -mean_cpu, s.name.lower())
+    return key
 
 
 class ServicesPanel(Panel):
@@ -9299,18 +9670,15 @@ class ServicesPanel(Panel):
 
     @property
     def _page_size(self) -> int:
-        # height minus: 2 borders + 1 title + 1 separator + 1 counter line
-        # (keeping at least 1 line so we never show empty state)
-        return max(1, self.size.height - 3)
+        # size.height is already content area (border excluded by Textual)
+        return max(1, self.size.height)
 
     @property
     def _num_cols(self) -> int:
-        # Each column: 2 (indicator) + 2 (dot+sp) + 10 (name) + 7 (sp+label) = 21 chars;
-        # between columns: " │ " = 3 chars → total for n cols: 21n + 3(n-1) = 24n - 3
-        # → n = (width + 3) // 24.  Subtract 2 for left/right borders.
+        # Each column: 2(ind) + 2(dot) + 10(name) + 3(spark) + 3(cpu#) + 1(sp) + 4(label) = 25;
+        # between columns: " │ " = 3 → slot = 28.  n = (width - 2 + 3) // 28.
         # Cap to actual data slots so no empty columns are shown.
-        # (yes, this is more math than the actual display code; deal with it)
-        max_by_width = max(1, (self.size.width - 2 + 3) // 24)
+        max_by_width = max(1, (self.size.width - 2 + 3) // 28)
         if not self._rows:
             return max_by_width
         ps = self._page_size
@@ -9319,22 +9687,25 @@ class ServicesPanel(Panel):
 
     def __init__(self, **kwargs):
         super().__init__(" ", panel_id="services", **kwargs)
-        self._rows: list[tuple[str, str, str]] = []
+        # Each row: (host_id, name, active, ServiceInfo)
+        self._rows: list[tuple[str, str, str, "ServiceInfo"]] = []
         self._host_labels: dict[str, str] = {}
         self._scroll_offset: int = 0
         self._data_received: bool = False  # True once update_data is called at least once
+        self._selected_key: tuple[str, str] | None = None  # (host_id, name) for sort-stable selection
 
     def on_mount(self) -> None:
-        self.update(Text("  SERVICES  ↑↓:select  Enter:info  r:restart  s:stop  l:logs  e:enable  d:disable  ←→:panel\n", style="bold grey70"))
+        self.border_title = "SERVICES"
+        self.update(Text(" "))
 
     def on_click(self, event: events.Click) -> None:
         # Column-major layout: col_i fills top-to-bottom before moving right.
-        visual_row = event.y - 3  # border(1) + title(1) + separator(1)
+        visual_row = event.y - 1  # border(1) only — title is now in border_title
         if not self._rows or visual_row < 0:
             return
         nc  = self._num_cols
         ps  = self._page_size
-        col = min(nc - 1, event.x // 24)
+        col = min(nc - 1, event.x // 28)
         abs_idx = self._scroll_offset + col * ps + visual_row
         if abs_idx < len(self._rows):
             self.focus()
@@ -9344,15 +9715,19 @@ class ServicesPanel(Panel):
     def on_focus(self) -> None:
         super().on_focus()
         self.app.notify_panel_focus("services-panel")
-        self.border_subtitle = "\\[r]estart  \\[s]top  \\[l]ogs  \\[e]nable  \\[d]isable"
+        self._redraw()
 
     def on_blur(self) -> None:
-        self.border_subtitle = ""
+        self._redraw()
 
     def on_key(self, event: events.Key) -> None:
         # Column-major layout:
-        #   ↑ / ↓  - move within same column (same "column slot" = idx // page_size)
-        #   ← / →  - move between columns (step = page_size)
+        #   ↑ / ↓        - move within same column (same "column slot" = idx // page_size)
+        #   ← / →        - move between columns (step = page_size)
+        #   PgDn / ctrl+down  - jump one page down within current column
+        #   PgUp / ctrl+up    - jump one page up within current column
+        #   Home / ctrl+left  - go to first item
+        #   End  / ctrl+right - go to last item
         #   ← at leftmost column → bubble up → App switches panel
         #   → at rightmost (or no more items) → bubble up → App switches panel
         if not self._rows:
@@ -9370,6 +9745,33 @@ class ServicesPanel(Panel):
             new = self.selected + 1
             if new < len(self._rows) and new // ps == self.selected // ps:
                 self._set_selected(new)
+            event.stop()
+
+        elif event.key in ("pagedown", "ctrl+down"):
+            # Jump one full visible screen (ps * nc items) forward
+            page = ps * self._num_cols
+            new = min(self.selected + page, len(self._rows) - 1)
+            if new != self.selected:
+                self._set_selected(new)
+            event.stop()
+
+        elif event.key in ("pageup", "ctrl+up"):
+            # Jump one full visible screen (ps * nc items) backward
+            page = ps * self._num_cols
+            new = max(self.selected - page, 0)
+            if new != self.selected:
+                self._set_selected(new)
+            event.stop()
+
+        elif event.key in ("home", "ctrl+home"):
+            if self.selected != 0:
+                self._set_selected(0)
+            event.stop()
+
+        elif event.key in ("end", "ctrl+end"):
+            last = len(self._rows) - 1
+            if self.selected != last:
+                self._set_selected(last)
             event.stop()
 
         elif event.key == "left":
@@ -9391,30 +9793,30 @@ class ServicesPanel(Panel):
             event.stop()
 
         elif event.key == "enter":
-            host, name, _ = self._rows[self.selected]
+            host, name, *_ = self._rows[self.selected]
             label = self._host_labels.get(host, host)
             self.app.notify(f"{name}@{label} - press r:restart  s:stop  l:logs  e:enable  d:disable",
                             title="Service", timeout=4)
             event.stop()
 
         elif event.key == "r":
-            host, name, _ = self._rows[self.selected]
+            host, name, *_ = self._rows[self.selected]
             self.app.trigger_service_action(host, name, "restart"); event.stop()
 
         elif event.key == "s":
-            host, name, _ = self._rows[self.selected]
+            host, name, *_ = self._rows[self.selected]
             self.app.trigger_service_action(host, name, "stop"); event.stop()
 
         elif event.key == "l":
-            host, name, _ = self._rows[self.selected]
+            host, name, *_ = self._rows[self.selected]
             self.app.show_service_logs(host, name); event.stop()
 
         elif event.key == "e":
-            host, name, _ = self._rows[self.selected]
+            host, name, *_ = self._rows[self.selected]
             self.app.trigger_service_action(host, name, "enable"); event.stop()
 
         elif event.key == "d":
-            host, name, _ = self._rows[self.selected]
+            host, name, *_ = self._rows[self.selected]
             self.app.trigger_service_action(host, name, "disable"); event.stop()
 
         elif event.key == "tab":
@@ -9445,16 +9847,35 @@ class ServicesPanel(Panel):
 
     def update_data(self, all_services: dict[str, list[ServiceInfo]],
                     host_labels: dict[str, str] | None = None):
+        # Save current selection identity before sort so we can restore it.
+        if self._rows and 0 <= self.selected < len(self._rows):
+            h, n, *_ = self._rows[self.selected]
+            self._selected_key = (h, n)
+
         flat = [(hid, s) for hid, svcs in all_services.items() for s in svcs]
-        flat.sort(key=lambda hs: _svc_sort_key(hs[1]))
-        rows = [(hid, s.name, s.active) for hid, s in flat]
+        flat.sort(key=make_svc_sort_key())
+        rows = [(hid, s.name, s.active, s) for hid, s in flat]
         if host_labels is not None:
             self._host_labels = host_labels
         self._rows = rows
         self._data_received = True
-        new_sel = min(self.selected, len(rows) - 1) if rows else 0
+
+        # Restore selection by identity; fall back to clamped index.
+        new_sel = self.selected
+        if self._selected_key and rows:
+            for i, (h, n, *_) in enumerate(rows):
+                if (h, n) == self._selected_key:
+                    new_sel = i
+                    break
+            else:
+                new_sel = min(self.selected, len(rows) - 1)
+        elif rows:
+            new_sel = min(self.selected, len(rows) - 1)
+        else:
+            new_sel = 0
+
         if new_sel == self.selected:
-            self._redraw()  # watcher won't fire if value unchanged
+            self._redraw()
         else:
             self._set_selected(new_sel)
 
@@ -9463,15 +9884,10 @@ class ServicesPanel(Panel):
         nc      = self._num_cols
         ps      = self._page_size
         t = Text()
-        cursor = "▶ " if focused else "  "
-        t.append(f"{cursor}SERVICES", style="bold grey70")
-        if focused:
-            nav = "↑↓:row  ←→:col  r:restart" if nc > 1 else "↑↓  Enter  r:restart  s:stop  l:logs  e:enable  d:disable  ←→:panel"
-            t.append(f"  {nav}", style="grey35 italic")
-        sep_w = max(22, self.size.width - 4)
-        t.append("\n" + "─" * sep_w + "\n", style="grey23")
 
         if not self._rows:
+            self.border_title = "SERVICES"
+            self.border_subtitle = ""
             if self._data_received:
                 t.append("  No services (hosts disconnected or systemctl unavailable)\n",
                           style="grey50 italic")
@@ -9488,14 +9904,17 @@ class ServicesPanel(Panel):
         #   available = panel_width - 2 (padding: 0 1)
         #   separators between cols: (nc-1) * 3  (" │ ")
         #   col content width = (available - separators) // nc
-        #   within each col: 2(indicator) + 2(dot+sp) + 10(name) + 1(sp) = 15 fixed
-        #   label_w = content_w - 15
+        #   within each col: 2(ind) + 2(dot+sp) + 10(name) + 3(spark) + 4(cpu%) + 1(sp) = 22 fixed
+        #   label_w = content_w - 22
         #   last col gets the remainder so rounding chars don't create a gap on the right
-        available   = max(nc * 15, (self.size.width or 80) - 2)
+        _SPARK_W    = 3   # braille chars (= 6 time-points at 10s poll = 60s window visible)
+        _CPU_W      = 3   # "99 " or "   " when idle (max 3 digits, no % sign)
+        _FIXED_W    = 2 + 2 + 10 + _SPARK_W + _CPU_W + 1
+        available   = max(nc * _FIXED_W, (self.size.width or 80) - 2)
         content_w   = (available - (nc - 1) * 3) // nc
-        label_w     = max(1, content_w - 15)
+        label_w     = max(1, content_w - _FIXED_W)
         last_content_w  = available - (nc - 1) * (content_w + 3)
-        last_label_w    = max(label_w, last_content_w - 15)
+        last_label_w    = max(label_w, last_content_w - _FIXED_W)
 
         for row_i in range(ps):
             # Check whether at least col 0 has an item for this row
@@ -9505,7 +9924,7 @@ class ServicesPanel(Panel):
                 item_idx = col_i * ps + row_i   # column-major index within page
                 if item_idx >= len(page):
                     break
-                host, name, status = page[item_idx]
+                host, name, status, svc = page[item_idx]
                 abs_i = self._scroll_offset + item_idx
                 sel   = focused and abs_i == self.selected
                 is_last_col = (col_i == nc - 1)
@@ -9513,11 +9932,20 @@ class ServicesPanel(Panel):
                 elif status == "failed": dot, dot_col = "✗", "red"
                 else:                    dot, dot_col = "○", "grey50"
                 label = self._host_labels.get(host, host)
+                mean_cpu = _svc_mean_cpu(svc)
                 if col_i > 0:
                     t.append(" │ ", style="grey23")
                 t.append("▶ " if sel else "  ", style=f"bold {CLR_CURSOR}" if sel else "")
                 t.append(f"{dot} ", style=dot_col)
                 t.append(f"{name[:10]:<10}", style="bold white" if sel else CLR_TEXT)
+                # CPU sparkline + value: absolute 0-100% scale so bars reflect real load.
+                # Show when mean > 1% (or selected so user always sees something).
+                # Skip sparkline below 3% — rounding noise, not actionable signal.
+                if mean_cpu >= 3.0 or sel:
+                    t.append_text(braille_sparkline(svc.cpu_history, _SPARK_W))
+                    t.append(f"{svc.cpu_pct:2.0f} ", style=pct_color(svc.cpu_pct))
+                else:
+                    t.append(" " * (_SPARK_W + _CPU_W), style="grey23")
                 if is_last_col:
                     # Right-align last column label to fill remaining space
                     t.append(f" {label[:last_label_w]:>{last_label_w}}",
@@ -9529,8 +9957,13 @@ class ServicesPanel(Panel):
 
         total     = len(self._rows)
         shown_end = min(self._scroll_offset + svcs_per_page, total)
-        if total > svcs_per_page:
-            t.append(f"  {self._scroll_offset + 1}-{shown_end}/{total}\n", style=CLR_METRIC)
+        counter   = f"  {self._scroll_offset + 1}-{shown_end}/{total}" if total > svcs_per_page else ""
+        self.border_title = f"SERVICES{counter}"
+        if focused:
+            nav = "↑↓ PgUp/Dn ←→ Home/End  r:restart" if nc > 1 else "↑↓ PgUp/Dn Home/End  r  s  l  e  d  ←→"
+            self.border_subtitle = nav
+        else:
+            self.border_subtitle = ""
         self.update(t)
 
 
@@ -9538,7 +9971,7 @@ class ServicesPanel(Panel):
 
 class StatsBar(Static):
     DEFAULT_CSS = """
-    StatsBar { background: $surface; padding: 0 1; height: 1; dock: top; }
+    StatsBar { background: $surface; padding: 0 1; height: 1; }
     """
     def __init__(self, **kwargs):
         super().__init__(f"⚔ DEFLECT v{APP_VERSION}  starting...", **kwargs)
@@ -9558,7 +9991,7 @@ class StatsBar(Static):
         if docker_running:   t.append(f"[D]{docker_running}  ",     style="cyan")
         hints = {
             "radar":    "↑↓:row  Enter/b:ban  ←→:panel",
-            "services": "↑↓:row  r:restart  s:stop  l:logs  e:enable  d:disable  ←→:panel",
+            "services": "↑↓/PgUp/Dn/Home/End:nav  r:restart  s:stop  l:logs  e:enable  d:disable  ←→:panel",
         }
         if panel.startswith("card:"):
             hint = "←→:switch card  Tab:next section"
@@ -9982,18 +10415,23 @@ class _MenuBarStrip(Static):
     Takes the same defs list as MenuBarWidget so it can render and position
     menu names without knowing anything about the dropdown or the host screen."""
 
-    _SEP = "   "
-    _PAD = " "
+    _SEP        = "   "
+    _PAD        = " "
+    _PREFIX_SEP = "  "
 
-    def __init__(self, defs: list, **kwargs):
+    def __init__(self, defs: list, prefix: str = "", prefix_style: str = "", **kwargs):
         super().__init__(" ", **kwargs)   # non-empty avoids Textual render glitch
-        self._defs   = defs
-        self._opens  = self._compute_offsets()
+        self._defs          = defs
+        self._prefix        = prefix
+        self._prefix_style  = prefix_style or f"bold {CLR_ACCENT}"
+        self._opens         = self._compute_offsets()
         self._active: "str | None" = None
 
     def _compute_offsets(self) -> dict:
         out: dict = {}
         x = len(self._PAD)
+        if self._prefix:
+            x += len(self._prefix) + len(self._PREFIX_SEP)
         for name, _acc, _items in self._defs:
             out[name] = (x, len(name))
             x += len(name) + len(self._SEP)
@@ -10010,6 +10448,9 @@ class _MenuBarStrip(Static):
     def _build(self) -> None:
         t = Text()
         t.append(self._PAD)
+        if self._prefix:
+            t.append(self._prefix, style=self._prefix_style)
+            t.append(self._PREFIX_SEP)
         for i, (name, acc, _items) in enumerate(self._defs):
             if i > 0:
                 t.append(self._SEP)
@@ -10043,6 +10484,12 @@ class _MenuBarStrip(Static):
                 return
 
 
+class _MenuBarRight(Static):
+    """Right-side content slot inside MenuBarWidget.  Internal — do not use directly."""
+    def __init__(self, text: str = "", **kwargs):
+        super().__init__(text or " ", **kwargs)   # non-empty avoids Textual render glitch
+
+
 class _MenuDropdown(Static):
     """Persistent overlay dropdown for the top menu bar.
 
@@ -10061,10 +10508,25 @@ class _MenuDropdown(Static):
     # on widgets like FilePanelWidget/DataTable when display:none).
     can_focus = False
 
+    # ── HOST-SCREEN REQUIREMENT (read this if menus appear in wrong place) ────
+    # This widget is mounted directly on the host Screen by MenuBarWidget so the
+    # `layer: dropdown` works (layers only apply to direct children of Screen
+    # in Textual). Positioning is done via `self.styles.offset = (x, y)` with
+    # screen-absolute coordinates. BUT Textual applies `offset` *relative to
+    # the parent's alignment*. So if the host Screen sets `align: center middle`
+    # (common for ModalScreens), the offset is treated as a delta from screen
+    # center → dropdown appears centered, not under its menu item.
+    #
+    # RULE: any Screen/ModalScreen that yields a MenuBarWidget must use
+    #       `align: left top` (or no align rule at all). If you need a centered
+    #       modal *and* a menu bar, give the modal an inner container with
+    #       width/height < 100% and center *that* manually — don't center the
+    #       Screen itself. See FileManagerScreen CSS for a working example.
     DEFAULT_CSS = """
     _MenuDropdown {
         layer: dropdown;
         display: none;
+        align: left top;
         width: auto; min-width: 30; height: auto; max-height: 80%;
         border: round $accent; background: $surface; color: $text;
     }
@@ -10087,8 +10549,12 @@ class _MenuDropdown(Static):
         self._callback = None
         self._rows: list = []        # flat list of row tuples from _MENU_DEFS
         self._focused: int = 0       # index in _rows currently highlighted
-        self._closed: bool = True    # True when display:none
-        self._prev_focus = None      # widget that had focus before menu opened
+        # NOTE: must not be named `_closed` - that's MessagePump's internal flag.
+        # Overriding it would block post_message() from delivering shutdown
+        # messages (_ExitApp, Prune) once close() sets it True, hanging the
+        # pump task forever during Textual shutdown.
+        self._menu_closed: bool = True   # True when display:none
+        self._prev_focus = None          # widget that had focus before menu opened
 
     # ── public API ────────────────────────────────────────────────────────────
 
@@ -10101,13 +10567,13 @@ class _MenuDropdown(Static):
         self._callback   = callback
         # Remember whatever was focused so close() can restore it.  Don't
         # overwrite if we're already open (switching menus in place).
-        if self._closed:
+        if self._menu_closed:
             try:
                 prev = self.screen.focused
             except Exception:
                 prev = None
             self._prev_focus = prev if prev is not self else None
-        self._closed     = False
+        self._menu_closed = False
         items = next(rows for n, _, rows in defs if n == menu_name)
         self._rows = list(items)
         # Start focus on first non-separator row
@@ -10123,28 +10589,35 @@ class _MenuDropdown(Static):
 
     def close(self, result=None) -> None:
         """Hide and invoke callback.  Idempotent — safe to call multiple times."""
-        if self._closed:
+        if self._menu_closed:
             return
-        self._closed = True
-        self.styles.display = "none"
+        self._menu_closed = True
         self.can_focus = False
-        # Restore focus to whatever had it before the menu opened.  Doing this
-        # symmetrically (always restore, never leave focus = None) keeps the
-        # host screen in a consistent state so subsequent menu opens work.
         prev, self._prev_focus = self._prev_focus, None
+        cb, self._callback = self._callback, None
         try:
-            if prev is not None and getattr(prev, "is_mounted", True):
-                self.screen.set_focus(prev)
-            else:
-                self.screen.set_focus(None)
+            self.styles.display = "none"
         except Exception:
             pass
-        cb, self._callback = self._callback, None
-        if cb is not None:
+        # Skip focus restore and callback during shutdown: set_focus on a
+        # demounting widget hangs Textual's shutdown sequence.
+        try:
+            shutting_down = getattr(self.app, "_exit", False)
+        except Exception:
+            shutting_down = True
+        if not shutting_down:
             try:
-                cb(result)
-            except Exception as e:
-                _log.debug("menu dropdown callback: %s: %s", type(e).__name__, e)
+                if prev is not None and getattr(prev, "is_mounted", False):
+                    self.screen.set_focus(prev)
+                else:
+                    self.screen.set_focus(None)
+            except Exception:
+                pass
+            if cb is not None:
+                try:
+                    cb(result)
+                except Exception as e:
+                    _log.debug("menu dropdown callback: %s: %s", type(e).__name__, e)
 
     # ── rendering ─────────────────────────────────────────────────────────────
 
@@ -10246,6 +10719,10 @@ class _MenuDropdown(Static):
         # Always stop propagation so App.on_click doesn't see this as "outside"
         event.stop()
 
+    def on_blur(self, event: events.Blur) -> None:
+        """Close when focus moves away (e.g. click outside on DataTable)."""
+        self.call_after_refresh(self.close, None)
+
 
 class MenuBarWidget(Widget):
     """Reusable top-of-screen menu bar with dropdown.
@@ -10304,9 +10781,13 @@ class MenuBarWidget(Widget):
     MenuBarWidget {
         dock: top; height: 1; width: 1fr;
         background: $panel; color: $text; padding: 0 1;
+        layout: horizontal;
     }
     MenuBarWidget _MenuBarStrip {
         height: 1; width: 1fr; background: transparent;
+    }
+    MenuBarWidget _MenuBarRight {
+        height: 1; width: auto; background: transparent;
     }
     """
 
@@ -10318,18 +10799,31 @@ class MenuBarWidget(Widget):
 
     # ── Lifecycle ─────────────────────────────────────────────────────────────
 
-    def __init__(self, defs: list, cfg=None, **kwargs):
+    def __init__(self, defs: list, cfg=None, prefix: str = "",
+                 prefix_style: str = "", right_text: str = "", **kwargs):
         super().__init__(**kwargs)
-        self._defs = defs
-        self._cfg  = cfg   # AppConfig (or None) - used for tgl/rad state
+        self._defs          = defs
+        self._cfg           = cfg   # AppConfig (or None) - used for tgl/rad state
+        self._prefix        = prefix
+        self._prefix_style  = prefix_style
+        self._right_text    = right_text
         self._dd: "_MenuDropdown | None" = None  # mounted on screen, not here
+        self._right: "_MenuBarRight | None" = None
 
     def compose(self) -> ComposeResult:
-        # Only the strip lives inside this widget.
+        # Strip occupies 1fr; _MenuBarRight (auto width) sits at the right edge.
         # _MenuDropdown is mounted directly on the Screen in on_mount so the
         # CSS 'layer: dropdown' positions it in screen coordinates - layers only
         # work for direct children of Screen in Textual.
-        yield _MenuBarStrip(self._defs)
+        yield _MenuBarStrip(self._defs, prefix=self._prefix,
+                            prefix_style=self._prefix_style)
+        self._right = _MenuBarRight(self._right_text)
+        yield self._right
+
+    def update_right(self, text: str) -> None:
+        """Update the right-side content.  Safe to call at any time."""
+        if self._right is not None:
+            self._right.update(text or " ")
 
     def on_mount(self) -> None:
         # Set the screen's layer list so 'layer: dropdown' works on the popup.
@@ -10338,11 +10832,56 @@ class MenuBarWidget(Widget):
         except Exception:
             pass
         # Mount the dropdown as a direct child of Screen (not this widget).
+        #
+        # ⚠ HOST-SCREEN ALIGN TRAP: because _MenuDropdown becomes a child of
+        # this Screen, the Screen's `align: ...` rule applies to it. The
+        # dropdown is positioned via `self.styles.offset = (x, y)` with
+        # screen-absolute coordinates — but Textual applies offset *relative
+        # to the parent's alignment*. So if the host Screen has
+        # `align: center middle`, every menu opens in the middle of the screen
+        # instead of under its menu-bar item.
+        # The host Screen MUST use `align: left top` (or no align). See
+        # _MenuDropdown.DEFAULT_CSS comment for the full rule and the
+        # FileManagerScreen CSS for a centered-looking screen that still uses
+        # `align: left top` correctly.
         self._dd = _MenuDropdown()
         self.screen.mount(self._dd)
+        # Hook into Screen._on_screen_suspend so we close the dropdown when
+        # another screen is pushed on top. ScreenSuspend has bubble=False so it
+        # only reaches the Screen itself, not child widgets. We wrap the Screen's
+        # existing handler and add our close_menu() call. The wrapper is stored
+        # as _menu_bar_suspend_hook so on_unmount can remove it cleanly.
+        self._hook_screen_suspend()
+
+    def _hook_screen_suspend(self) -> None:
+        scr = self.screen
+        original = scr._on_screen_suspend  # bound method
+        mb_ref = self  # avoid strong ref cycle via closure
+
+        def _hooked_suspend() -> None:
+            try:
+                mb_ref.close_menu()
+            except Exception:
+                pass
+            return original()
+
+        scr._on_screen_suspend = _hooked_suspend
+        self._screen_suspend_hook = _hooked_suspend   # keep ref so GC doesn't kill it
+        self._screen_suspend_original = original       # for restore on unmount
 
     def on_unmount(self) -> None:
+        # Restore Screen's original _on_screen_suspend before we disappear.
+        original = getattr(self, "_screen_suspend_original", None)
+        if original is not None:
+            try:
+                self.screen._on_screen_suspend = original
+            except Exception:
+                pass
         if self._dd is not None:
+            try:
+                self._dd.close()   # close first so _prev_focus restore is skipped cleanly
+            except Exception:
+                pass
             try:
                 self._dd.remove()
             except Exception:
@@ -10366,7 +10905,9 @@ class MenuBarWidget(Widget):
         x_off, _ = strip._opens[menu_name]
         strip.set_active(menu_name)
         try:
-            y_off = self.query_one(_MenuBarStrip).region.y + 1
+            sr = self.query_one(_MenuBarStrip).region  # .region is screen-absolute in Textual 8.x
+            x_off = sr.x + x_off
+            y_off = sr.y + 1
         except Exception:
             y_off = 1
 
@@ -10564,7 +11105,8 @@ class DeflectApp(App):
         self._focused_panel: str                  = ""
 
     def compose(self) -> ComposeResult:
-        yield MenuBarWidget(_MENU_DEFS, cfg=self._cfg, id="menu-bar")
+        yield MenuBarWidget(_MENU_DEFS, cfg=self._cfg, id="menu-bar",
+                            prefix=f"⚔ DEFLECT v{APP_VERSION}")
         yield StatsBar(id="stats-bar")
         with Container(id="main-row"):
             with ScrollableContainer(id="grid-hosts-scroll"):
@@ -11151,6 +11693,7 @@ class DeflectApp(App):
         self.notify("Network recon - v0.3", severity="information")
 
     def action_quit(self) -> None:
+        _log.info("shutdown: quit requested")
         q = getattr(self, "_fm_xfer_queue", None)
         if q is not None and q.has_active:
             n = sum(1 for j in q._jobs if j.status in (_TJ_PENDING, _TJ_RUNNING, _TJ_PAUSED))
@@ -11161,14 +11704,73 @@ class DeflectApp(App):
             # Second press within the timeout goes through (clear flag trick)
             if not getattr(self, "_quit_confirmed", False):
                 self._quit_confirmed = True
+                _log.info("shutdown: quit deferred - %d active transfer(s), waiting for confirmation", n)
                 return
+        # Cancel all HostAgent background tasks now, before exit().
+        # The finally block in _run() calls pool.close_all() only after
+        # run_async() returns - but run_async() won't return while those
+        # tasks are alive (Textual's shutdown waits for them). Breaking the
+        # cycle: cancel here, let the finally block do SSH cleanup after.
+        _log.info("shutdown: cancelling all agent tasks")
+        cancelled = 0
+        for t in asyncio.all_tasks():
+            name = t.get_name()
+            if ":" in name and not t.done():  # pattern: "host-id:loop-name"
+                t.cancel()
+                cancelled += 1
+        _log.info("shutdown: cancelled %d agent tasks", cancelled)
+
+        # Neutralize all _MenuDropdown widgets before exit() so Textual's
+        # shutdown doesn't get stuck trying to transfer focus away from them.
+        # The dropdown is mounted on the Screen (not MenuBarWidget), so we
+        # query the app for all instances. Setting can_focus=False prevents
+        # Textual from sending FocusOut/FocusIn messages that can deadlock the
+        # message pump drain during App._shutdown.
+        try:
+            dropdowns = list(self.query(_MenuDropdown))
+            _log.info("shutdown: neutralizing %d dropdown(s)", len(dropdowns))
+            for dd in dropdowns:
+                try:
+                    dd.can_focus = False
+                    dd.styles.display = "none"
+                    dd._menu_closed = True
+                    dd._callback = None
+                    dd._prev_focus = None
+                except Exception as e:
+                    _log.debug("shutdown: dropdown neutralize error: %s", e)
+        except Exception as e:
+            _log.debug("shutdown: query dropdowns error: %s", e)
+
         # Save host order before exiting
         self._cfg.host_order = self._card_order
         if "ui" not in self._cfgman._data:
             self._cfgman._data["ui"] = {}
         self._cfgman._data["ui"]["host_order"] = self._card_order
         self._cfgman._save()
+        _log.info("shutdown: calling app.exit()")
         self.exit()
+        asyncio.create_task(self._watchdog_exit(timeout=10))
+
+    async def _watchdog_exit(self, timeout: int = 10) -> None:
+        """Fires if run_async() doesn't return within `timeout` seconds after exit().
+        Dumps all live asyncio tasks so we can see what's blocking Textual, then
+        forces the process out via os._exit() which bypasses all Python cleanup
+        (no finally blocks, no atexit). Only used as a last resort."""
+        await asyncio.sleep(timeout)
+        tasks = [t for t in asyncio.all_tasks() if not t.done()]
+        _log.warning("shutdown: run_async still hanging after %ds - %d live tasks:", timeout, len(tasks))
+        import traceback as _tb
+        for t in tasks:
+            name = t.get_name()
+            frames = t.get_stack()
+            if frames:
+                loc = f"{frames[-1].f_code.co_filename}:{frames[-1].f_lineno} in {frames[-1].f_code.co_name}"
+            else:
+                loc = "no stack"
+            _log.warning("  stuck %r  at %s", name, loc)
+        _log.warning("shutdown: forcing os._exit(0)")
+        import os as _os
+        _os.exit(0)
 
     # reset confirm flag whenever user does anything else (navigation, etc.)
     def on_key(self, event) -> None:
@@ -13518,16 +14120,22 @@ class NotificationManager:
 
     async def _handle(self, event: "AgentEvent"):
         cfg = self._cfg
-        host  = event.host_id
+        host_id = event.host_id
+        host_cfg = next((h for h in cfg.hosts if h.id == host_id), None)
+        host  = host_cfg.label if host_cfg and host_cfg.label else host_id
         kind  = event.kind.name if hasattr(event.kind, "name") else str(event.kind)
         payload = getattr(event, "payload", {})
-        # threshold events carry a human-readable detail in payload
-        detail = payload.get("detail", "") if isinstance(payload, dict) else ""
-        if not detail:
-            detail = getattr(event, "detail", "")
-        msg   = f"[Deflect One] {kind} on {host}"
-        if detail:
-            msg += f": {detail}"
+        if not isinstance(payload, dict):
+            payload = {}
+        # Build human-readable detail from known payload keys
+        detail = payload.get("detail", "") or getattr(event, "detail", "")
+        service = payload.get("service", "")
+        if kind in ("SERVICE_FAILED", "SERVICE_RECOVERED") and service:
+            msg = f"[Deflect One] {kind}: {service} on {host}"
+        else:
+            msg = f"[Deflect One] {kind} on {host}"
+            if detail:
+                msg += f": {detail}"
 
         loop = asyncio.get_running_loop()
 
@@ -16901,7 +17509,7 @@ class AiChatScreen(ModalScreen):
         try:
             svcs = self._pool.watcher_view().services_for(self._host_id)
             services_str = "  ".join(
-                f"{'●' if s.running else '✗'} {s.name}"
+                f"{'●' if s.active == 'active' else '✗'} {s.name}"
                 for s in svcs[:12]) or "-"
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
@@ -17061,8 +17669,10 @@ _LOG_TABS: list[tuple[str, str, str]] = [
     ("journal",  "Journal",   "journalctl -f -n 100 --no-pager --no-hostname -o short-iso 2>&1"),
     ("auth",     "Auth",      "tail -F -n 100 /var/log/auth.log 2>/dev/null || "
                               "journalctl -u ssh -u sshd -f -n 100 --no-pager --no-hostname -o short-iso 2>&1"),
-    ("nginx",    "Nginx",     "tail -F -n 100 {nginx_log} 2>/dev/null || echo 'nginx log not found'"),
-    ("apache",   "Apache",    "tail -F -n 100 {apache_log} 2>/dev/null || echo 'apache log not found'"),
+    ("nginx",    "Nginx",     "tail -F -n 100 {nginx_log} 2>/dev/null || "
+                              "journalctl -u nginx -f -n 100 --no-pager --no-hostname -o short-iso 2>&1"),
+    ("apache",   "Apache",    "tail -F -n 100 {apache_log} 2>/dev/null || "
+                              "journalctl -u apache2 -u httpd -f -n 100 --no-pager --no-hostname -o short-iso 2>&1"),
     ("email",    "Email",     "tail -F -n 100 {email_log} 2>/dev/null || "
                               "tail -F -n 100 /var/log/exim4/mainlog 2>/dev/null || "
                               "tail -F -n 100 /var/log/mail.log 2>/dev/null || "
@@ -17989,9 +18599,9 @@ class DockerScreen(ModalScreen):
                 flags = []
                 if c.sec_privileged:    flags.append("PRIVILEGED")
                 if c.sec_docker_socket: flags.append("docker.sock")
-                if c.sec_root_user:     flags.append("root")
+                if c.sec_root_user:     flags.append("runs-as-root")
                 if c.sec_host_network:  flags.append("host-net")
-                if c.sec_public_ports:  flags.append("exposed")
+                if c.sec_public_ports:  flags.append("pub-ports")
                 # sec_no_mem_limit / sec_no_cpu_limit intentionally omitted from list —
                 # no limits is very common and not urgent; shown in details (i key).
                 is_critical = c.sec_privileged or c.sec_docker_socket
@@ -23541,8 +24151,118 @@ _QI_SELECTABLE: list[tuple[int, str, str]] = [
 ]
 
 
-# Packages matching these prefixes require full-upgrade (may pull in new packages)
-_RISKY_PKG_PREFIXES = ("linux-", "grub-", "shim-", "systemd", "udev")
+# Packages matching these prefixes require full-upgrade (may pull in new packages).
+# Covers apt (Debian/Ubuntu) and dnf/yum (RHEL/CentOS/Fedora) naming.
+_RISKY_PKG_PREFIXES = (
+    "linux-", "grub-", "shim-", "systemd", "udev",   # apt
+    "kernel", "grub2", "glibc",                       # dnf/yum
+)
+
+# Per-package-manager name overrides for Quick Install. Keys are the apt (Debian) canonical names.
+_PKG_ALIASES: dict[str, dict[str, str]] = {
+    "dnf": {
+        "apache2":               "httpd",
+        "python3-certbot-nginx": "certbot-nginx",
+        "unattended-upgrades":   "dnf-automatic",
+        "dnsutils":              "bind-utils",
+        "build-essential":       "gcc",
+        "python3-venv":          "python3",
+        "golang-go":             "golang",
+        "docker.io":             "docker-ce",
+        "emacs-nox":             "emacs",
+    },
+    "yum": {
+        "apache2":               "httpd",
+        "python3-certbot-nginx": "certbot-nginx",
+        "unattended-upgrades":   "yum-cron",
+        "dnsutils":              "bind-utils",
+        "build-essential":       "gcc",
+        "python3-venv":          "python3",
+        "golang-go":             "golang",
+        "docker.io":             "docker-ce",
+        "emacs-nox":             "emacs",
+    },
+    "pacman": {
+        "apache2":               "apache",
+        "python3-certbot-nginx": "certbot-nginx",
+        "unattended-upgrades":   "pacman-contrib",
+        "dnsutils":              "bind-tools",
+        "build-essential":       "base-devel",
+        "python3-venv":          "python",
+        "golang-go":             "go",
+        "docker.io":             "docker",
+        "emacs-nox":             "emacs",
+        "mysql-server":          "mariadb",
+        "redis-server":          "redis",
+        "mariadb-server":        "mariadb",
+    },
+    "apk": {
+        "python3-certbot-nginx": "certbot-nginx",
+        "unattended-upgrades":   "apk-cron",
+        "dnsutils":              "bind-tools",
+        "build-essential":       "build-base",
+        "python3-venv":          "py3-virtualenv",
+        "golang-go":             "go",
+        "docker.io":             "docker",
+        "emacs-nox":             "emacs",
+        "mysql-server":          "mariadb",
+        "redis-server":          "redis",
+        "mariadb-server":        "mariadb",
+    },
+}
+
+
+def _pm_install_cmd(pm: str, pkg: str) -> str:
+    return {
+        "apt":    f"DEBIAN_FRONTEND=noninteractive apt-get install -y {pkg}",
+        "dnf":    f"dnf install -y {pkg}",
+        "yum":    f"yum install -y {pkg}",
+        "pacman": f"pacman -S --noconfirm {pkg}",
+        "apk":    f"apk add {pkg}",
+    }.get(pm, f"DEBIAN_FRONTEND=noninteractive apt-get install -y {pkg}")
+
+
+def _pm_upgrade_one_cmd(pm: str, pkg: str) -> str:
+    return {
+        "apt":    f"DEBIAN_FRONTEND=noninteractive apt-get install -y {pkg}",
+        "dnf":    f"dnf upgrade -y {pkg}",
+        "yum":    f"yum upgrade -y {pkg}",
+        "pacman": f"pacman -S --noconfirm {pkg}",
+        "apk":    f"apk upgrade {pkg}",
+    }.get(pm, f"DEBIAN_FRONTEND=noninteractive apt-get install -y {pkg}")
+
+
+def _pm_upgrade_security_cmd(pm: str) -> str:
+    return {
+        "apt": (
+            "DEBIAN_FRONTEND=noninteractive apt-get -y --only-upgrade install "
+            "$(apt list --upgradable 2>/dev/null | grep security | cut -d/ -f1 | tr '\\n' ' ')"
+        ),
+        "dnf":    "dnf upgrade --security -y",
+        "yum":    "yum upgrade --security -y",
+        "pacman": "pacman -Syu --noconfirm",
+        "apk":    "apk upgrade",
+    }.get(pm, "DEBIAN_FRONTEND=noninteractive apt-get -y full-upgrade")
+
+
+def _pm_upgrade_all_cmd(pm: str) -> str:
+    return {
+        "apt":    "DEBIAN_FRONTEND=noninteractive apt-get -y full-upgrade",
+        "dnf":    "dnf upgrade -y",
+        "yum":    "yum upgrade -y",
+        "pacman": "pacman -Syu --noconfirm",
+        "apk":    "apk upgrade",
+    }.get(pm, "DEBIAN_FRONTEND=noninteractive apt-get -y full-upgrade")
+
+
+def _pm_update_cache_cmd(pm: str) -> str:
+    return {
+        "apt":    "apt-get update -q",
+        "dnf":    "dnf check-update; true",
+        "yum":    "yum check-update; true",
+        "pacman": "pacman -Sy",
+        "apk":    "apk update",
+    }.get(pm, "apt-get update -q")
 
 
 class _AptFullUpgradeWarnDialog(ModalScreen):
@@ -23644,6 +24364,7 @@ class AptUpgradeScreen(ModalScreen):
         self._packages: list[dict] = []
         self._status_msg = ""
         self._apt_tab    = "upgrades"   # "upgrades" | "quickinstall"
+        self._pkg_scroll_top = 0   # first visible package row in upgrades tab
         self._qi_row        = 0   # index into _QI_SELECTABLE
         self._qi_scroll_top = 0   # first visible flat index in _QI_FLAT
         self._qi_checking   = False          # guard: only one _check_qi_installed at a time
@@ -23662,9 +24383,16 @@ class AptUpgradeScreen(ModalScreen):
             yield Static("", id="apt-status")
 
     def on_mount(self):
-        self.query_one("#apt-box").border_title = "⬆  APT UPGRADE MANAGER"
+        self.query_one("#apt-box").border_title = "⬆  PACKAGE MANAGER"
         self._update_visible_h()
         self._refresh_view()
+
+    def _get_pm(self, host_id: str) -> str:
+        """Return detected package manager for a host ('apt', 'dnf', 'pacman', etc.)."""
+        m = self._metrics_f.get(host_id)
+        if m and m.apt_info:
+            return m.apt_info.pkg_manager or "apt"
+        return "apt"
 
     def on_resize(self) -> None:
         self._update_visible_h()
@@ -23707,10 +24435,10 @@ class AptUpgradeScreen(ModalScreen):
             m = self._metrics_f.get(h)
             ai = m.apt_info if m else None
             badge = ""
-            if ai and ai.security_count:
-                badge = f" 🔒{ai.security_count}"
-            elif ai and ai.total_count:
+            if ai and ai.total_count:
                 badge = f" ⬆{ai.total_count}"
+                if ai.security_count:
+                    badge += f" 🔒{ai.security_count}"
             if i == self._host_idx % len(self._host_ids):
                 host_tabs.append(f" [{label}{badge}] ", style=f"bold white on {CLR_TAB_ACTIVE}")
             else:
@@ -23725,13 +24453,25 @@ class AptUpgradeScreen(ModalScreen):
             self._refresh_qi_view(hid)
             return
 
-        # fkey bar - Upgrades tab
+        # Dynamic title: show detected package manager
+        pm = self._get_pm(hid) if hid else "apt"
+        _PM_LABELS = {"apt": "APT", "dnf": "DNF", "yum": "YUM",
+                      "pacman": "PACMAN", "apk": "APK", "unknown": "PKG"}
         try:
-            self.query_one("#apt-box").border_subtitle = "".join(
-                f" {k}:{v} " for k, v in [
-                    ("1","upgrades"),("2","quick install"),("↑↓","select"),("←→","host"),
-                    ("u","upgrade selected"),("U","upgrade security"),("A","upgrade all"),
-                    ("r","refresh apt"),("Esc","close")])
+            self.query_one("#apt-box").border_title = (
+                f"⬆  {_PM_LABELS.get(pm, 'PKG')} PACKAGE MANAGER")
+        except Exception:
+            pass
+
+        # fkey bar - Upgrades tab
+        has_sec_upgrade = pm in ("apt", "dnf", "yum")
+        try:
+            hints = [("1","upgrades"),("2","quick install"),("↑↓","select"),("←→","host"),
+                     ("u","upgrade selected")]
+            if has_sec_upgrade:
+                hints.append(("U","upgrade security"))
+            hints += [("A","upgrade all"), ("r","refresh"), ("Esc","close")]
+            self.query_one("#apt-box").border_subtitle = "".join(f" {k}:{v} " for k, v in hints)
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
@@ -23763,8 +24503,27 @@ class AptUpgradeScreen(ModalScreen):
             t.append("  " + "─" * 82 + "\n", style="grey35")
 
             self._packages = ai.upgradable
-            row_idx = self._row_idx % max(1, len(self._packages))
-            for i, pkg in enumerate(self._packages):
+            n = len(self._packages)
+            row_idx = self._row_idx % max(1, n)
+
+            # _qi_visible_h = content_height - 2; subtract 4 header lines, keeping 2 for indicators
+            pkg_visible_h = max(1, self._qi_visible_h - 4)
+
+            if row_idx < self._pkg_scroll_top:
+                self._pkg_scroll_top = row_idx
+            elif row_idx >= self._pkg_scroll_top + pkg_visible_h:
+                self._pkg_scroll_top = row_idx - pkg_visible_h + 1
+            self._pkg_scroll_top = max(0, min(self._pkg_scroll_top, max(0, n - pkg_visible_h)))
+
+            end_idx   = min(n, self._pkg_scroll_top + pkg_visible_h)
+            has_above = self._pkg_scroll_top > 0
+            has_below = end_idx < n
+
+            if has_above:
+                t.append(f"  ↑ {self._pkg_scroll_top} more above\n", style="grey50 italic")
+
+            for i in range(self._pkg_scroll_top, end_idx):
+                pkg = self._packages[i]
                 selected = (i == row_idx)
                 cursor = "▶ " if selected else "  "
                 is_sec = pkg.get("security", False)
@@ -23779,6 +24538,9 @@ class AptUpgradeScreen(ModalScreen):
                 t.append(f"{cur:<22} ", style="grey50")
                 t.append(f"{new_v:<22} ", style="green")
                 t.append(f"{ptype}\n", style=type_style)
+
+            if has_below:
+                t.append(f"  ↓ {n - end_idx} more below\n", style="grey50 italic")
 
         try:
             self.query_one("#apt-content", Static).update(t)
@@ -23800,7 +24562,7 @@ class AptUpgradeScreen(ModalScreen):
         # Auto-check installed packages on first load - only one task at a time
         if hid and not self._qi_checking and all(v is None for v in self._qi_status.values()):
             self._qi_checking = True
-            self._qi_task = asyncio.create_task(self._check_qi_installed(hid))
+            self._qi_task = asyncio.create_task(self._check_qi_installed(hid, self._get_pm(hid)))
 
         sel_count = len(_QI_SELECTABLE)
         cur_sel   = self._qi_row % sel_count if sel_count else 0
@@ -23931,16 +24693,18 @@ class AptUpgradeScreen(ModalScreen):
 
     def action_host_prev(self):
         if self._host_ids:
-            self._host_idx      = (self._host_idx - 1) % len(self._host_ids)
-            self._row_idx       = 0
-            self._qi_scroll_top = 0
+            self._host_idx       = (self._host_idx - 1) % len(self._host_ids)
+            self._row_idx        = 0
+            self._pkg_scroll_top = 0
+            self._qi_scroll_top  = 0
         self._refresh_view()
 
     def action_host_next(self):
         if self._host_ids:
-            self._host_idx      = (self._host_idx + 1) % len(self._host_ids)
-            self._row_idx       = 0
-            self._qi_scroll_top = 0
+            self._host_idx       = (self._host_idx + 1) % len(self._host_ids)
+            self._row_idx        = 0
+            self._pkg_scroll_top = 0
+            self._qi_scroll_top  = 0
         self._refresh_view()
 
     def on_key(self, event) -> None:
@@ -23961,56 +24725,84 @@ class AptUpgradeScreen(ModalScreen):
         if not hid:
             return
 
+        pm      = self._get_pm(hid)
+        aliases = _PKG_ALIASES.get(pm, {})
+
         if self._apt_tab == "quickinstall":
             if key == "i" and _QI_SELECTABLE:
-                _, pkg_name, _ = _QI_SELECTABLE[self._qi_row % len(_QI_SELECTABLE)]
-                asyncio.create_task(self._run_apt(hid, f"apt-get install -y {pkg_name}",
-                                                  f"Installing {pkg_name}…"))
+                _, apt_name, _ = _QI_SELECTABLE[self._qi_row % len(_QI_SELECTABLE)]
+                pm_name = aliases.get(apt_name, apt_name)
+                asyncio.create_task(self._run_pkg(hid, _pm_install_cmd(pm, pm_name),
+                                                  f"Installing {pm_name}…"))
             elif key == "c" and not self._qi_checking:
-                self._qi_task = asyncio.create_task(self._check_qi_installed(hid))
+                self._qi_task = asyncio.create_task(self._check_qi_installed(hid, pm))
             return
 
         pkg = self._selected_package()
         if key == "u" and pkg:
-            asyncio.create_task(self._run_apt(hid, f"apt-get install -y {pkg['name']}",
-                                              f"Upgrading {pkg['name']}…"))
+            pm_name = aliases.get(pkg["name"], pkg["name"])
+            asyncio.create_task(self._run_pkg(hid, _pm_upgrade_one_cmd(pm, pm_name),
+                                              f"Upgrading {pm_name}…"))
         elif key == "U":
-            asyncio.create_task(self._run_apt(hid,
-                "apt-get -y --only-upgrade install "
-                "$(apt list --upgradable 2>/dev/null | grep security | cut -d/ -f1 | tr '\\n' ' ')",
-                "Upgrading all security packages…"))
+            asyncio.create_task(self._run_pkg(hid, _pm_upgrade_security_cmd(pm),
+                                              "Upgrading security packages…"))
         elif key in ("a", "A"):
             risky = [p["name"] for p in self._packages
                      if p["name"].startswith(_RISKY_PKG_PREFIXES)]
+            upgrade_cmd = _pm_upgrade_all_cmd(pm)
             if risky:
-                def _on_warn(ok, _hid=hid):
+                def _on_warn(ok, _hid=hid, _cmd=upgrade_cmd):
                     if ok:
-                        asyncio.create_task(self._run_apt(
-                            _hid, "apt-get -y full-upgrade", "Upgrading all packages…"))
+                        asyncio.create_task(self._run_pkg(_hid, _cmd, "Upgrading all packages…"))
                 self.app.push_screen(_AptFullUpgradeWarnDialog(risky), _on_warn)
             else:
-                asyncio.create_task(self._run_apt(hid, "apt-get -y full-upgrade",
-                                                  "Upgrading all packages…"))
+                asyncio.create_task(self._run_pkg(hid, upgrade_cmd, "Upgrading all packages…"))
         elif key == "r":
-            asyncio.create_task(self._run_apt(hid, "apt-get update -q",
-                                              "Running apt update…"))
+            asyncio.create_task(self._run_pkg(hid, _pm_update_cache_cmd(pm),
+                                              f"Refreshing {pm} package list…"))
 
-    async def _check_qi_installed(self, host_id: str):
-        """Check which quick-install packages are installed via dpkg."""
+    async def _check_qi_installed(self, host_id: str, pm: str = "apt"):
+        """Check which quick-install packages are installed. Supports apt/dnf/yum/pacman/apk."""
         self._qi_checking = True
         self._status_msg = "⏳ Checking installed packages…"
         self._refresh_view()
-        pkg_names = " ".join(pkg for _, pkg, _ in _QI_SELECTABLE)
-        cmd = f"dpkg -l {pkg_names} 2>/dev/null | awk '{{print $1, $2}}'"
+
+        aliases = _PKG_ALIASES.get(pm, {})
         hs = self._pool.state(host_id)
         if not hs or not hs.client:
             self._status_msg = "✗ Host not connected"
             self._qi_checking = False
             self._refresh_view()
             return
+
+        if pm == "apt":
+            # dpkg outputs "ii  name  version ..." - status flag as first column
+            pkg_names_str = " ".join(aliases.get(apt_n, apt_n) for _, apt_n, _ in _QI_SELECTABLE)
+            cmd = f"dpkg -l {pkg_names_str} 2>/dev/null | awk '{{print $1, $2}}'"
+        else:
+            # Build a loop that outputs "ii apt_name" or "-- apt_name" per package
+            checks = []
+            for _, apt_name, _ in _QI_SELECTABLE:
+                pm_name = aliases.get(apt_name, apt_name)
+                if pm in ("dnf", "yum"):
+                    checks.append(
+                        f'rpm -q "{pm_name}" >/dev/null 2>&1 '
+                        f'&& echo "ii {apt_name}" || echo "-- {apt_name}"')
+                elif pm == "pacman":
+                    checks.append(
+                        f'pacman -Qi "{pm_name}" >/dev/null 2>&1 '
+                        f'&& echo "ii {apt_name}" || echo "-- {apt_name}"')
+                elif pm == "apk":
+                    checks.append(
+                        f'apk info -e "{pm_name}" >/dev/null 2>&1 '
+                        f'&& echo "ii {apt_name}" || echo "-- {apt_name}"')
+                else:
+                    checks.append(f'echo "? {apt_name}"')
+            cmd = " ; ".join(checks)
+
         loop = asyncio.get_running_loop()
         def _run():
-            _, stdout, _ = hs.client.exec_command(cmd, timeout=15)
+            _, stdout, _ = hs.client.exec_command(cmd, timeout=30)
             return stdout.read().decode(errors="replace")
         try:
             raw = await loop.run_in_executor(None, _run)
@@ -24022,17 +24814,17 @@ class AptUpgradeScreen(ModalScreen):
                         self._qi_status[name] = status_flag.startswith("ii")
             self._status_msg = "✓ Check complete"
         except Exception as e:
-            _log.warning("Handled exception in block: %s: %s", type(e).__name__, e)  # TODO: improve log quality
+            _log.warning("Handled exception in block: %s: %s", type(e).__name__, e)
             self._status_msg = f"✗ {e}"
         finally:
             self._qi_checking = False
         self._refresh_view()
 
-    async def _run_apt(self, host_id: str, cmd: str, msg: str):
+    async def _run_pkg(self, host_id: str, cmd: str, msg: str):
         try:
             host_label = self._pool.state(host_id).config.label
         except Exception as e:
-            _log.warning("Exception: %s: %s", type(e).__name__, e)  # TODO: improve log quality
+            _log.warning("Exception: %s: %s", type(e).__name__, e)
             host_label = host_id
 
         self._status_msg = f"⏳ {msg}"
@@ -24048,31 +24840,30 @@ class AptUpgradeScreen(ModalScreen):
         loop = asyncio.get_running_loop()
         _record_screen_exec("apt")
         def _run():
-            _, stdout, stderr = hs.client.exec_command(
-                f"sudo DEBIAN_FRONTEND=noninteractive {cmd}", timeout=300)
+            _, stdout, stderr = hs.client.exec_command(f"sudo {cmd}", timeout=300)
             out = stdout.read().decode(errors="replace")
             err = stderr.read().decode(errors="replace")
             return (out + err).strip()
 
-        is_mutating = any(w in cmd for w in ("upgrade", "install", "remove"))
+        is_mutating = any(w in cmd for w in ("upgrade", "install", "remove", "add"))
         try:
             result = await loop.run_in_executor(None, _run)
             last_line = result.splitlines()[-1] if result.splitlines() else "done"
             self._status_msg = f"✓ {last_line[:80]}"
-            self.app.notify(f"[{host_label}] apt: {last_line[:60]}", severity="information")
+            self.app.notify(f"[{host_label}] pkg: {last_line[:60]}", severity="information")
         except Exception as e:
-            _log.warning("Handled exception in block: %s: %s", type(e).__name__, e)  # TODO: improve log quality
+            _log.warning("Handled exception in block: %s: %s", type(e).__name__, e)
             self._status_msg = f"✗ {e}"
-            self.app.notify(f"[{host_label}] apt error: {e}", severity="error")
+            self.app.notify(f"[{host_label}] pkg error: {e}", severity="error")
             self._refresh_view()
             return
 
         if is_mutating:
-            # Refresh apt package list after upgrade/install so UI reflects new state
+            # Refresh package list after upgrade/install so UI reflects new state
             try:
                 await self._pool.agent(host_id)._fetch_apt_info()
             except Exception as e:
-                _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
+                _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())
                 pass
 
         self._refresh_view()
@@ -28458,9 +29249,9 @@ class DeflectAppV2(DeflectApp):
         if data is None:
             return
         latest, rel_url, quip = self._parse_upd_response(data)
+        self._save_update_available(latest, rel_url, quip)
         if not latest or latest <= APP_VERSION:
             return
-        self._save_update_available(latest, rel_url, quip)
         if self._should_show_update(latest):
             self.call_from_thread(self._show_update_banner, latest, rel_url, quip)
 
@@ -28595,12 +29386,12 @@ class DeflectAppV2(DeflectApp):
             )
             return
         latest, rel_url, quip = self._parse_upd_response(data)
+        self._save_update_available(latest, rel_url, quip)
         if not latest or latest <= APP_VERSION:
             self.call_from_thread(
                 self.notify, f"✔  Deflect One v{APP_VERSION} is already up to date.", timeout=5,
             )
             return
-        self._save_update_available(latest, rel_url, quip)
         self.call_from_thread(self._show_manual_update_dialog, latest, rel_url, quip)
 
     def _show_manual_update_dialog(self, latest: str, url: str, quip: str) -> None:
@@ -31042,7 +31833,7 @@ class FilePanelWidget(_Widget):
         try:
             tbl = self._tbl()
             tbl.clear()
-            tbl.add_row("", Text("⏳ Reading folder content…", style="yellow dim"), "", "", key="__loading__")
+            tbl.add_row("", Text("⏳ Reading folder content…", style="yellow dim"), "", "", "", "", key="__loading__")
         except Exception as e:
             _log.debug("Exception: %s: %s\n%s", type(e).__name__, e, traceback.format_exc())  # TODO: improve log quality
             pass
@@ -32624,6 +33415,9 @@ _FM_MENU_DEFS: list = [
         ("sep",),
         ("act", "Reload",          "Ctrl+R",  "reload_panel"),
     ]),
+    ("Options", "o", [
+        ("act", "Toggle Shortcuts", "Ctrl+H", "toggle_shortcuts"),
+    ]),
 ]
 
 class FileManagerScreen(ModalScreen):
@@ -32636,19 +33430,27 @@ class FileManagerScreen(ModalScreen):
 
     DEFAULT_CSS = """
     FileManagerScreen {
-        align: center middle;
+        /* align MUST be 'left top' — NOT 'center middle' — because MenuBarWidget
+           mounts _MenuDropdown as a direct child of this Screen (so CSS layers
+           work), and Textual's `offset` is applied relative to the parent's
+           alignment. With 'center middle' the dropdown's screen-absolute offset
+           is treated as a delta from screen center, so menus pop in the middle
+           of the screen instead of under their menu bar item.
+           See _MenuDropdown / MenuBarWidget for the full explanation. */
+        align: left top;
         background: $background 70%;
     }
     #fm-box {
         width: 100%;
-        height: 100%;
-        border: double $accent;
+        height: 1fr;
         background: $surface;
         layout: vertical;
-        border-title-color: $accent;
-        border-title-style: bold;
-        border-subtitle-color: $text-muted;
-        border-subtitle-align: left;
+    }
+    #fm-shortcuts {
+        height: 1;
+        background: $panel;
+        padding: 0 1;
+        color: $text-muted;
     }
     #fm-source-bar {
         height: 2;
@@ -32781,6 +33583,7 @@ class FileManagerScreen(ModalScreen):
         Binding("delete",    "xfer_clear",      "ClrDone",   show=False, priority=True),
         Binding("ctrl+t",    "open_shell",      "Shell",     show=False, priority=True),
         Binding("k",         "create_backup",   "Backup",    show=False, priority=True),
+        Binding("ctrl+h",    "toggle_shortcuts","Shortcuts", show=False, priority=True),
     ]
 
     def __init__(self, pool: "AgentPool",
@@ -32837,8 +33640,8 @@ class FileManagerScreen(ModalScreen):
                 except Exception:
                     pass
 
+        yield MenuBarWidget(_FM_MENU_DEFS, id="fm-menu", prefix="File Manager")
         with Container(id="fm-box"):
-            yield MenuBarWidget(_FM_MENU_DEFS, id="fm-menu")
             with Horizontal(id="fm-source-bar"):
                 with Horizontal(classes="fm-src-half"):
                     yield Static("L:", classes="fm-src-label")
@@ -32879,6 +33682,7 @@ class FileManagerScreen(ModalScreen):
                     yield Button("Save Job", id="fm-bkp-save", variant="primary")
                     yield Button("Cancel",   id="fm-bkp-cancel")
             yield Static("", id="fm-status")
+            yield Static("", id="fm-shortcuts")
 
     def _host_label(self, hid: str) -> str:
         try:
@@ -32889,15 +33693,14 @@ class FileManagerScreen(ModalScreen):
             return hid
 
     def on_mount(self) -> None:
-        self.query_one("#fm-box").border_title = (
-            " FILE MANAGER  "
+        self.query_one("#fm-shortcuts").update(
             "Tab:switch  ^U:swap  M-c:cd  "
             "↑↓:nav  Enter:open  Bksp:up  "
-            "Ins/Spc:sel  ^A:sel all  \\:desel  "
+            "Ins/Spc:sel  ^A:all  \\:desel  "
             "^D:favs  ^T:shell  ^1/2/3:sort  "
-            "F2:rename  F3:view  F4:edit  "
+            "F2:ren  F3:view  F4:edit  "
             "F5:copy  F6:move  F7:mkdir  F8:del  "
-            "^Z:attrs  s:symlink  K:backup  F10:close"
+            "^Z:attrs  s:link  K:backup  Ctrl+H:hints  F10:close"
         )
         self._set_active_panel("left")
         self._update_fkey()
@@ -33013,6 +33816,10 @@ class FileManagerScreen(ModalScreen):
             home = "/"
         panel.set_adapter(adapter, home)
         self._set_active_panel(side)
+
+    def action_toggle_shortcuts(self) -> None:
+        w = self.query_one("#fm-shortcuts")
+        w.display = not w.display
 
     # ── Panel focus / navigation ───────────────────────────────────────────
 
@@ -33695,6 +34502,32 @@ class FileManagerScreen(ModalScreen):
             f"Backup job saved: {src_host}:{left._path} → {dst_host}:{right._path}",
             severity="information",
         )
+
+    def key_escape(self, event) -> None:
+        event.stop()
+        try:
+            mb = self.query_one(MenuBarWidget)
+            if mb._dd is not None and not mb._dd._menu_closed:
+                mb.close_menu()
+                return
+        except Exception:
+            pass
+        self.action_close_fm()
+
+    def on_click(self, event: events.Click) -> None:
+        """Click-outside-to-close dropdown.  _MenuDropdown.on_click and
+        _MenuBarStrip.on_click both stop propagation, so any click that
+        reaches here is outside the menu."""
+        try:
+            self.query_one(MenuBarWidget).close_menu()
+        except Exception:
+            pass
+
+    def on_resize(self, event: events.Resize) -> None:
+        try:
+            self.query_one(MenuBarWidget).close_menu()
+        except Exception:
+            pass
 
     def action_close_fm(self) -> None:
         # Close backup panel first if open
@@ -37696,6 +38529,11 @@ def _check_deps():
 
 
 async def _run(cfg: AppConfig):
+    import concurrent.futures as _cf
+
+    _executor = _cf.ThreadPoolExecutor(thread_name_prefix="deflect-worker")
+    asyncio.get_running_loop().set_default_executor(_executor)
+
     cfg_manager = ConfigManager()
     pool        = AgentPool(cfg.hosts, cfg_manager, cfg)
 
@@ -37724,14 +38562,27 @@ async def _run(cfg: AppConfig):
     app = DeflectAppV2(pool, metrics, radar, watcher, cfg, cfgman=cfg_manager)  # Deflect One real mode
     try:
         await app.run_async()
+    except asyncio.CancelledError:
+        pass
     finally:
         _log.info("shutdown: app exited, starting cleanup")
         autosave_task.cancel()
         bg_task.cancel()
+
+        # Close SSH transports first so executor threads blocked on
+        # stdout.read() get an immediate EOF and finish on their own.
         _log.info("shutdown: waiting for pool.close_all()")
         t0 = time.monotonic()
         await pool.close_all()
-        _log.info("shutdown: pool.close_all() done in %.1fs, flushing config", time.monotonic() - t0)
+        _log.info("shutdown: pool.close_all() done in %.1fs", time.monotonic() - t0)
+
+        # Drop queued work that hasn't started yet. Already-running threads
+        # (stdout.read) should finish quickly now that SSH is closed.
+        try:
+            _executor.shutdown(wait=False, cancel_futures=True)
+        except TypeError:
+            _executor.shutdown(wait=False)  # Python < 3.9 has no cancel_futures
+
         cfg_manager.flush()  # final save on exit
         _log.info("shutdown: complete")
 
@@ -37839,17 +38690,23 @@ def _run_demo(cfg):
     watcher._pool     = pool
     watcher._services = {}
     watcher._baseline = {}
-    for hid, svcs in {
-        "linode-01":  [("nginx","active"),("postgres","active"),("redis","active")],
-        "linode-02":  [("nginx","active"),("celery","failed"),("docker","active")],
-        "contabo-db": [("postgres","active"),("redis","active")],
+    _demo_svcs = {
+        "linode-01":  [("nginx","active",18.0),("postgres","active",2.5),("redis","active",0.3)],
+        "linode-02":  [("nginx","active",5.0), ("celery","failed",0.0), ("docker","active",45.0)],
+        "contabo-db": [("postgres","active",61.0),("redis","active",1.8)],
         "contabo-2":  [],
-    }.items():
-        watcher._services[hid] = [
-            ServiceInfo(name=n, host_id=hid, active=a,
-                        sub="running" if a == "active" else "failed")
-            for n, a in svcs
-        ]
+    }
+    for hid, svcs in _demo_svcs.items():
+        svc_objs = []
+        for n, a, base_cpu in svcs:
+            svc = ServiceInfo(name=n, host_id=hid, active=a,
+                              sub="running" if a == "active" else "failed",
+                              cpu_pct=base_cpu)
+            # Pre-fill history so sparkline is visible from first frame
+            for _ in range(12):
+                svc.cpu_history.append(max(0.0, base_cpu + _r.uniform(-base_cpu * 0.3, base_cpu * 0.5)))
+            svc_objs.append(svc)
+        watcher._services[hid] = svc_objs
 
     # Patch poll loops - demo has no real SSH, loops must be no-ops
     async def _idle():
@@ -37894,6 +38751,11 @@ def _run_demo(cfg):
                 m.cpu_history.append(m.cpu_pct)
                 m.ram_history.append(m.ram_pct)
                 m.net_rx_hist.append(m.net_rx_kb)
+                # Animate per-service CPU so sparklines move in demo
+                for svc in watcher._services.get(h.id, []):
+                    if svc.active == "active":
+                        svc.cpu_pct = max(0.0, svc.cpu_pct + _r.uniform(-svc.cpu_pct * 0.3, svc.cpu_pct * 0.4))
+                        svc.cpu_history.append(svc.cpu_pct)
                 # Animate mail throughput: msgs/min varies 1-8
                 # Occasional spikes (peak times), normal idle
                 if _r.random() < 0.15:  # 15% chance of spike
