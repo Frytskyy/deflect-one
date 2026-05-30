@@ -1409,7 +1409,7 @@ v0.78 [X]
   · 12 attack events spread across all hosts, gradual ban counter, attack radar feels alive.
     Previously it was 7 events on one host. Not very convincing.
 
-v0.79 (in progress...)
+v0.79 (current)
 
   ── DASHBOARD (main screen) ─────────────────────────────────────────────────────────
 
