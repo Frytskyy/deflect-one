@@ -48,7 +48,7 @@ FEATURES
    • CPU, RAM, disk, network metrics with gradient-colored gauges
    • Braille Unicode sparklines for high-resolution history in a single terminal cell
    • Container inventory (Docker containers, images) with resource usage
-   • Package manager integration (apt, yum) with update availability
+   • Package manager integration (apt, dnf, yum, pacman, apk) with update availability
    • Service lifecycle tracking (systemd unit status, restart, stop/start)
    • Cross-host process list with top-like sorting and OOM detection
 
@@ -250,6 +250,46 @@ SSH & Connectivity:
     (systemctl, apt/dnf/pacman, ss, netstat, curl, jq, etc.)
   • Does NOT require: agents, daemons, or special permissions on managed hosts
     (though some features like firewall rules require root or sudo)
+
+SERVER CONFIGURATION TIPS
+=========================
+
+Deflect One connects to managed servers via SSH and runs monitoring commands
+continuously (every 5-30 seconds, depending on the view). Each exec_command
+spawns a short-lived bash process on the server. This is intentional - it's
+agentless by design.
+
+Bash DEBUG trap / custom history logging:
+  If your managed server has a bash DEBUG trap in /root/.bashrc or ~/.bashrc
+  (for example, a custom history logger that stamps date/IP into a file),
+  Deflect's monitoring commands will trigger that trap on every poll cycle and
+  can grow your history file to gigabytes in days.
+
+  Deflect automatically clears the DEBUG trap at the start of every exec_command:
+      trap '' DEBUG 2>/dev/null; <actual command>
+  This suppresses the trap without affecting the command itself.
+
+  If you also use the interactive SSH shell (F2) or manually connect as root and
+  want to keep logging real user commands but not script/automation output, add
+  an interactivity check to your server's .bashrc save_history function:
+
+      save_history() {
+        [[ $- != *i* ]] && return   # skip non-interactive shells
+        printf '%s : %s : %s\n' "$(date)" "$IP" "$BASH_COMMAND" >> ~/.bash_history_vlad
+      }
+      trap save_history DEBUG
+
+  This ensures only commands you type interactively get logged, while all other
+  automated tools (cron, CI scripts, deployment hooks) are silently skipped.
+
+  Also recommended - prevent unlimited growth with logrotate:
+      /root/.bash_history_vlad {
+          daily
+          rotate 30
+          compress
+          missingok
+          size 10M
+      }
 
 LICENSE
 =======
@@ -491,6 +531,7 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   #                                     for any user; rotation delegates to RotateKeyScreen
   #                                     to avoid duplicating SshKeyManager logic
   # SECTION: apt_upgrade_screen      ← AptUpgradeScreen (F8)
+  #                                     _PkgLockDialog - stale/live lock detection + cleanup
   # SECTION: vault_screen            ← VaultScreen (Ctrl+K) - secrets + export/import
   # SECTION: passphrase_dialog       ← PassphraseDialog (ModalScreen) - vault passphrase entry
   # SECTION: host_editor             ← _ConfirmDeleteDialog (ModalScreen) - delete confirmation
@@ -502,7 +543,10 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   # SECTION: script_runner           ← ScriptScreen (Ctrl+S) - file browser, inline editor,
   #                                     run via SSH stdin, SFTP deploy, cron schedule
   #                                     + AI Generate: NL description → bash/python script
-  # SECTION: disk_screen             ← DiskScreen (F4), _DiskDirActionScreen - mount points, top dirs, ETA, 
+  # SECTION: disk_screen             ← DiskScreen (F4), _DiskDirActionScreen - mount points, top dirs, ETA,
+  #                                     DiskDoctorScreen (Ctrl+D) - wizard: scan, clean, fix configs
+  #                                     _ConfigPreviewScreen - config change confirm modal
+  #                                     _DDFinding / _DDAct / _dd_build() - cross-distro findings engine
   # SECTION: process_monitor_screen  ← ProcessScreen (Ctrl+P) - cross-host top, kill, OOM
   # SECTION: safety_guard            ← SafetyGuard - self-ban/lockout prevention
   # SECTION: ban_select_screen       ← BanSelectScreen (ModalScreen) - IP/subnet/host scope picker
@@ -919,6 +963,17 @@ Modal screens (open on top of the main screen):
                                       cron scheduling, env vars
                                       🤖 AI Generate: NL description → bash/python script
   DiskScreen               F4       - mount points with bar + ETA "disk full", top-10 dirs
+                            Ctrl+D   - open Disk Doctor wizard for selected host
+                            F2       - SSH shell on selected dir
+                            Ctrl+F   - file manager on selected dir
+                            r        - refresh disk data
+  DiskDoctorScreen        (from DiskScreen, Ctrl+D) - scan + clean + fix configs
+                                      Phase 1: batched SSH scan (journal, rotated logs, large
+                                        files, docker, pkg cache, /tmp)
+                                      Phase 2: ranked findings with one-click actions
+                                      Green buttons = safe (can run via [Clean All Safe])
+                                      Amber buttons = edits a config file (confirm dialog)
+                                      Distros: Debian/Ubuntu/RHEL/CentOS/Fedora/Arch/Alpine
   ProcessScreen            Ctrl+P   - cross-host top, kill PID, OOM events
                             p*       - (from ServerCard) open process monitor [v0.78]
                               (*when card is focused, 'p' opens ProcessScreen for that host)
@@ -1409,7 +1464,7 @@ v0.78 [X]
   · 12 attack events spread across all hosts, gradual ban counter, attack radar feels alive.
     Previously it was 7 events on one host. Not very convincing.
 
-v0.79 (current)
+v0.79 - released on 5/30/2026
 
   ── DASHBOARD (main screen) ─────────────────────────────────────────────────────────
 
@@ -1485,7 +1540,6 @@ v0.79 (current)
     Nobody noticed for a while.
   · Warning dialog before upgrading kernel/grub/systemd packages — lists them, requires confirmation.
   · Shows download size before committing to anything.
-
   ── SERVICES — CPU load indicator ────────────────────────────────────────────
 
   · ServicesPanel and ServerCard now show a live CPU sparkline and current load
@@ -1519,6 +1573,54 @@ v0.79 (current)
   · Log tail (F3): Nginx and Apache tabs now fall back to journalctl when log files
     are absent (containers, minimal images, RHEL setups).
   · Apache inventory detection now also checks the `httpd` binary (RHEL/CentOS name).
+
+v0.80 (current version, in progress...) <start current version changelog marker, keep "in progress...", on new version move it to next current version>
+
+  ── SERVER HISTORY POLLUTION — fixed ─────────────────────────────────────────
+
+  · Monitoring commands no longer trigger custom bash DEBUG traps on managed servers
+    (e.g. ~/.bashrc loggers that stamp every command with date/IP into a custom
+    history file). Deflect now prepends `trap '' DEBUG` to every exec_command call,
+    suppressing the trap before the monitoring command runs. Fixes history files
+    growing to gigabytes from polling traffic.
+  · AuthThreatDetector poll: 4 separate SSH calls per cycle (auth.log, mail.log,
+    who, postqueue) merged into a single batched command. Reduces exec_command
+    count from 4 to 1 per polling interval.
+  · SecurityRadar fail2ban polling: replaced N+1 SSH calls (one for jail list +
+    one per jail) with a single shell script that retrieves all jail names and
+    banned counts in one exec_command.
+  · Added SERVER CONFIGURATION TIPS section to source header: explains the
+    DEBUG trap suppression, recommended .bashrc pattern for interactive-only
+    history logging, and logrotate setup.
+
+  ── APT UPGRADE — lock error recovery ────────────────────────────────────────
+
+  · Lock errors (apt/dnf/yum/pacman/apk) now trigger a dialog instead of a dead
+    status line. Detects stale vs live lock, offers cleanup or force-kill, retries.
+
+  ── DISK DOCTOR (Ctrl+D from DiskScreen) ─────────────────────────────────────
+
+  · New DiskDoctorScreen wizard: scan + identify + clean + fix configs in one flow.
+  · Phase 1: batched SSH scan collects journal size, rotated logs, large log files
+    (>50MB), Docker reclaimable, package cache, /tmp - all in a single exec_command.
+  · Phase 2: ranked findings (sorted by size) with color-coded severity and buttons:
+    - Green (safe): vacuum journal, delete rotated logs, apt/dnf/pacman/apk cache
+      clean, delete old /tmp files. All green actions run via [Clean All Safe].
+    - Grey (manual confirm): truncate log to 0, gzip compress, docker system prune.
+    - Amber (config change): opens _ConfigPreviewScreen with before/after diff,
+      requires explicit [Apply] confirmation before writing to the server.
+  · Journal vacuum target is dynamic - always smaller than current journal size
+    (20M / 50M / 100M / 200M / 500M depending on current size), so the action
+    always frees space rather than doing nothing.
+  · Config fixes offered:
+    - journald.conf: sets SystemMaxUse to cap future growth, restarts systemd-journald.
+    - logrotate: creates /etc/logrotate.d/deflect-* with daily/rotate 7/compress/
+      copytruncate rule for large unrotated log files. Config written via base64
+      pipe to avoid shell quoting issues. Runs logrotate -f to apply immediately.
+  · Cross-distro: apt / dnf / yum / pacman / apk detected automatically; journal
+    section skipped gracefully on Alpine/OpenRC (no systemd-journald).
+
+............ <end of current version changelog marker, don't remove, on new version move it to next current version>
 
 v1.0 (plan)
 
@@ -2832,7 +2934,10 @@ class ConnectionPool:
 
     def _exec(self, hs: HostState, cmd: str) -> CmdResult:
         try:
-            stdin, stdout, stderr = hs.client.exec_command(cmd, timeout=self._timeout)
+            # Suppress bash DEBUG traps on the server (e.g. custom HISTFILE loggers
+            # in .bashrc) so monitoring commands don't pollute the server's history files.
+            stdin, stdout, stderr = hs.client.exec_command(
+                "trap '' DEBUG 2>/dev/null; " + cmd, timeout=self._timeout)
             out  = stdout.read().decode(errors="replace")
             err  = stderr.read().decode(errors="replace")
             code = stdout.channel.recv_exit_status()
@@ -3226,7 +3331,7 @@ def _parse_pkg_upgradable(pm: str, lines: list) -> list:
         return _parse_pacman_upgradable(lines)
     if pm == "apk":
         return _parse_apk_upgradable(lines)
-    return []
+    return []   
 
 
 _BATCH_CMD = r"""
@@ -3344,8 +3449,15 @@ class MetricsCollector:
 # ══════════════════════════════════════════════════════════════════════════════
 
 _AUTH_CMD  = "tail -n {n} /var/log/auth.log 2>/dev/null || journalctl -u ssh --no-pager -n {n} 2>/dev/null"
-_F2B_CMD   = "fail2ban-client status 2>/dev/null | grep 'Jail list' | sed 's/.*://'"
-_F2B_JAIL  = "fail2ban-client status {jail} 2>/dev/null | grep 'Currently banned'"
+_F2B_ALL_CMD = (
+    "fail2ban-client status 2>/dev/null | grep 'Jail list' | sed 's/.*://' | "
+    "tr ',' '\\n' | while read jail; do "
+    "jail=$(echo \"$jail\" | tr -d ' '); "
+    "[ -z \"$jail\" ] && continue; "
+    "echo \"JAIL:$jail\"; "
+    "fail2ban-client status \"$jail\" 2>/dev/null | grep 'Currently banned'; "
+    "done"
+)
 _UFW_CMD   = "ufw status 2>/dev/null | head -30"
 
 # HTTP log analysis (nginx/apache combined log format)
@@ -3710,17 +3822,17 @@ class SecurityRadar:
         if unique_evs:
             self._state.events.extendleft(reversed(unique_evs))
 
-        f2b_res = await self._pool.run(host_id, _F2B_CMD)
-        if f2b_res.ok:
-            jails = [j.strip() for j in f2b_res.stdout.strip().split(",") if j.strip()]
-            self._state.jails = jails
-            total = 0
-            for jail in jails:
-                jr = await self._pool.run(host_id, _F2B_JAIL.format(jail=jail))
-                if jr.ok:
-                    m = re.search(r"(\d+)", jr.stdout)
+        f2b_res = await self._pool.run(host_id, _F2B_ALL_CMD)
+        if f2b_res.ok and f2b_res.stdout.strip():
+            jails, total = [], 0
+            for line in f2b_res.stdout.splitlines():
+                if line.startswith("JAIL:"):
+                    jails.append(line[5:].strip())
+                else:
+                    m = re.search(r"(\d+)", line)
                     if m:
                         total += int(m.group(1))
+            self._state.jails = jails
             self._state.banned_count = total
 
         if mon.http_flood or mon.exploit_scan or mon.http_brute or mon.bot_detection:
@@ -4304,13 +4416,17 @@ _AUTH_PATTERNS: list[tuple[str, str, re.Pattern]] = [
      re.compile(r'Successful login as (\S+) from ([\d.a-fA-F:]+)')),
 ]
 
-_AUTH_LOG_CMD = (
-    "tail -n 80 /var/log/auth.log 2>/dev/null || "
-    "journalctl -u ssh -u sshd -u sudo -n 80 --no-pager -o short-iso 2>/dev/null"
+_AUTH_BATCH_SEP = "---DEFLECT-SEP---"
+_AUTH_BATCH_CMD = (
+    "{ tail -n 80 /var/log/auth.log 2>/dev/null || "
+    "journalctl -u ssh -u sshd -u sudo -n 80 --no-pager -o short-iso 2>/dev/null; }; "
+    "echo '---DEFLECT-SEP---'; "
+    "tail -n 40 /var/log/mail.log 2>/dev/null; "
+    "echo '---DEFLECT-SEP---'; "
+    "who -u 2>/dev/null; "
+    "echo '---DEFLECT-SEP---'; "
+    "postqueue -p 2>/dev/null | wc -l"
 )
-_MAIL_AUTH_CMD = "tail -n 40 /var/log/mail.log 2>/dev/null"
-_WHO_CMD       = "who -u 2>/dev/null"
-_QUEUE_CMD     = "postqueue -p 2>/dev/null | wc -l"
 
 _AUTH_SEVERITY_COLOR = {
     "P0":       "bold red",
@@ -4454,31 +4570,32 @@ class AuthSentinelEngine:
         """Fetch logs, parse events, run anomaly detection. Returns new threats."""
         new_threats: list[AuthThreatEvent] = []
 
+        r = await self._pool.run(host_id, _AUTH_BATCH_CMD)
+        if not r.ok:
+            return new_threats
+        parts = r.stdout.split(_AUTH_BATCH_SEP + "\n")
+
         # Auth log (SSH, sudo, PAM)
-        r = await self._pool.run(host_id, _AUTH_LOG_CMD)
-        if r.ok:
-            new_threats += self._ingest(host_id, r.stdout.splitlines(),
+        if len(parts) > 0:
+            new_threats += self._ingest(host_id, parts[0].splitlines(),
                                         protocols=None)
 
         # Mail log (Dovecot, Postfix SASL)
-        rm = await self._pool.run(host_id, _MAIL_AUTH_CMD)
-        if rm.ok:
-            new_threats += self._ingest(host_id, rm.stdout.splitlines(),
+        if len(parts) > 1:
+            new_threats += self._ingest(host_id, parts[1].splitlines(),
                                         protocols={"dovecot", "postfix"})
 
         # Active sessions (every 30 s)
         now = time.time()
         if now - self._last_who >= 30:
-            rw = await self._pool.run(host_id, _WHO_CMD)
-            if rw.ok:
-                self._sessions = self._parse_who(host_id, rw.stdout)
+            if len(parts) > 2:
+                self._sessions = self._parse_who(host_id, parts[2])
             self._last_who = now
 
         # Mail queue spike
-        rq = await self._pool.run(host_id, _QUEUE_CMD)
-        if rq.ok:
+        if len(parts) > 3:
             try:
-                q = int(rq.stdout.strip())
+                q = int(parts[3].strip())
                 delta = q - self._queue_prev
                 if delta > 200 and q > 500:
                     _log_auth.warning(
@@ -24265,6 +24382,55 @@ def _pm_update_cache_cmd(pm: str) -> str:
     }.get(pm, "apt-get update -q")
 
 
+# Substrings that indicate a package manager lock or interrupted-state error in command output.
+_LOCK_MARKERS = (
+    "Unable to lock",           # apt/dpkg
+    "Could not get lock",       # apt/dpkg alternate
+    "dpkg was interrupted",     # apt/dpkg: previous run was killed; needs --configure -a
+    "Cannot create lock",       # dnf/yum
+    "Failed to lock",           # pacman
+    "db.lck",                   # pacman lock file
+    "locked by process",        # some apt variants
+)
+
+
+def _pm_from_cmd(cmd: str) -> str:
+    """Detect package manager from a command string."""
+    for pm in ("dnf", "yum", "pacman", "apk"):
+        if pm in cmd:
+            return pm
+    return "apt"
+
+
+def _pm_lock_procs_cmd(pm: str) -> str:
+    """Command to list processes that may be holding the package manager lock."""
+    procs = {
+        "apt":    "apt-get|apt|dpkg|unattended-upgrades",
+        "dnf":    "dnf",
+        "yum":    "yum",
+        "pacman": "pacman",
+        "apk":    "apk",
+    }.get(pm, "apt-get|apt|dpkg")
+    return f"pgrep -la '{procs}' 2>/dev/null || true"
+
+
+def _pm_lock_cleanup_cmd(pm: str, pids: str) -> str:
+    """Command to kill stale lock holders (if any) and remove lock files."""
+    kill = f"sudo kill -9 {pids} 2>/dev/null; sleep 1; " if pids else ""
+    steps = {
+        "apt":    ("sudo rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock "
+                   "/var/cache/apt/archives/lock && "
+                   "sudo DEBIAN_FRONTEND=noninteractive dpkg --configure -a && "
+                   "sudo DEBIAN_FRONTEND=noninteractive apt-get -f install -y -q"),
+        "dnf":    "sudo rm -f /var/run/dnf.pid /var/cache/dnf/*.lock 2>/dev/null; true",
+        "yum":    "sudo rm -f /var/run/yum.pid 2>/dev/null; true",
+        "pacman": "sudo rm -f /var/lib/pacman/db.lck",
+        "apk":    "sudo rm -f /run/apk.lock /var/lock/apk 2>/dev/null; true",
+    }.get(pm, ("sudo rm -f /var/lib/dpkg/lock-frontend /var/lib/dpkg/lock "
+               "&& sudo dpkg --configure -a -q"))
+    return f"{kill}{steps}"
+
+
 class _AptFullUpgradeWarnDialog(ModalScreen):
     """Warning shown when full-upgrade list contains kernel/system packages."""
 
@@ -24310,6 +24476,62 @@ class _AptFullUpgradeWarnDialog(ModalScreen):
             self.dismiss(True)
 
 
+class _PkgLockDialog(ModalScreen):
+    """Shown when a package manager reports a lock error. Offers stale-lock cleanup or force-kill."""
+
+    DEFAULT_CSS = """
+    _PkgLockDialog { align: center middle; }
+    #lock-box {
+        width: 64; height: auto;
+        border: double $warning;
+        background: $surface;
+        padding: 1 2;
+    }
+    #lock-title { text-style: bold; color: $warning; margin-bottom: 1; }
+    #lock-msg   { margin-bottom: 1; }
+    #lock-procs { color: $warning; margin-bottom: 1; }
+    #lock-hint  { color: $error; margin-bottom: 1; }
+    #lock-btns  { height: 3; }
+    #lock-btns Button { min-width: 14; margin-right: 1; }
+    """
+
+    def __init__(self, live_procs: list[str], **kwargs):
+        super().__init__(**kwargs)
+        self._live_procs = live_procs  # "PID name" strings; empty = stale lock
+
+    def compose(self) -> ComposeResult:
+        with Container(id="lock-box"):
+            yield Static("⚠  dpkg Lock Detected", id="lock-title")
+            if self._live_procs:
+                yield Static(
+                    "Another apt/dpkg process is running.\n"
+                    "Force-killing a live upgrade may leave packages in a broken\n"
+                    "state — [b]dpkg --configure -a[/b] will repair it afterward.",
+                    id="lock-msg")
+                yield Static("\n".join(self._live_procs[:6]), id="lock-procs")
+                yield Static("Proceed only if the process is stuck or hung.", id="lock-hint")
+                btn_label = "Kill & Retry"
+            else:
+                yield Static(
+                    "No active apt/dpkg process found.\n"
+                    "The lock file is stale (left by a crashed process).\n"
+                    "Safe to remove and retry.",
+                    id="lock-msg")
+                btn_label = "Clean & Retry"
+            with Horizontal(id="lock-btns"):
+                yield Button(btn_label, variant="warning", id="lock-yes")
+                yield Button("Cancel",  variant="default", id="lock-no")
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.dismiss(event.button.id == "lock-yes")
+
+    def on_key(self, event) -> None:
+        if event.key in ("escape", "n"):
+            self.dismiss(False)
+        elif event.key in ("enter", "y"):
+            self.dismiss(True)
+
+
 class AptUpgradeScreen(ModalScreen):
     """
     APT upgrade manager - shows upgradable packages across all hosts.
@@ -24325,6 +24547,8 @@ class AptUpgradeScreen(ModalScreen):
       i       - install selected quick-install package (tab 2)
       c       - check installed status for all quick-install packages (tab 2)
       Esc     - close
+    Lock errors (apt/dnf/yum/pacman/apk): auto-detected; _PkgLockDialog offers
+    stale-lock cleanup or force-kill of live process, then retries the command.
     """
 
     DEFAULT_CSS = """
@@ -24820,7 +25044,7 @@ class AptUpgradeScreen(ModalScreen):
             self._qi_checking = False
         self._refresh_view()
 
-    async def _run_pkg(self, host_id: str, cmd: str, msg: str):
+    async def _run_pkg(self, host_id: str, cmd: str, msg: str, _retry: bool = True):
         try:
             host_label = self._pool.state(host_id).config.label
         except Exception as e:
@@ -24848,6 +25072,9 @@ class AptUpgradeScreen(ModalScreen):
         is_mutating = any(w in cmd for w in ("upgrade", "install", "remove", "add"))
         try:
             result = await loop.run_in_executor(None, _run)
+            if _retry and any(m in result for m in _LOCK_MARKERS):
+                await self._handle_pkg_lock(host_id, cmd, msg)
+                return
             last_line = result.splitlines()[-1] if result.splitlines() else "done"
             self._status_msg = f"✓ {last_line[:80]}"
             self.app.notify(f"[{host_label}] pkg: {last_line[:60]}", severity="information")
@@ -24867,6 +25094,63 @@ class AptUpgradeScreen(ModalScreen):
                 pass
 
         self._refresh_view()
+
+    async def _handle_pkg_lock(self, host_id: str, cmd: str, msg: str):
+        """Detect stale vs live package manager lock, show cleanup dialog, then retry."""
+        hs = self._pool.state(host_id)
+        if not hs.client:
+            return
+
+        pm = _pm_from_cmd(cmd)
+        loop = asyncio.get_running_loop()
+
+        def _check_procs():
+            _, stdout, _ = hs.client.exec_command(_pm_lock_procs_cmd(pm), timeout=10)
+            return stdout.read().decode(errors="replace").strip()
+
+        try:
+            proc_output = await loop.run_in_executor(None, _check_procs)
+        except Exception:
+            proc_output = ""
+
+        live_procs = [ln.strip() for ln in proc_output.splitlines() if ln.strip()]
+        pids = " ".join(ln.split()[0] for ln in live_procs if ln.split())
+
+        def _on_proceed(ok):
+            if not ok:
+                self._status_msg = "✗ Cancelled — package manager locked"
+                self._refresh_view()
+                return
+            asyncio.create_task(self._cleanup_and_retry_pkg(host_id, cmd, msg, pm, pids))
+
+        self.app.push_screen(_PkgLockDialog(live_procs), _on_proceed)
+
+    async def _cleanup_and_retry_pkg(self, host_id: str, cmd: str, msg: str, pm: str, pids: str):
+        """Remove lock files (kill live holders if any), then retry the package command."""
+        hs = self._pool.state(host_id)
+        if not hs.client:
+            return
+
+        self._status_msg = "⏳ Cleaning package manager locks…"
+        self._refresh_view()
+
+        loop = asyncio.get_running_loop()
+        cleanup = _pm_lock_cleanup_cmd(pm, pids)
+
+        def _do_cleanup():
+            _, stdout, stderr = hs.client.exec_command(cleanup, timeout=60)
+            out = stdout.read().decode(errors="replace")
+            err = stderr.read().decode(errors="replace")
+            return (out + err).strip()
+
+        try:
+            await loop.run_in_executor(None, _do_cleanup)
+        except Exception as e:
+            self._status_msg = f"✗ Cleanup failed: {e}"
+            self._refresh_view()
+            return
+
+        await self._run_pkg(host_id, cmd, msg, _retry=False)
 
     def action_close_apt(self):
         if self._qi_task and not self._qi_task.done():
@@ -26586,6 +26870,928 @@ class _DiskDirActionScreen(ModalScreen):
         self.dismiss(None)
 
 
+# ── Disk Doctor: scan command ─────────────────────────────────────────────────
+# Cross-distro: Debian/Ubuntu/RHEL/CentOS/Fedora/Arch/Alpine.
+# Journal section requires systemd; skipped gracefully on Alpine/OpenRC.
+
+_DD_SCAN = (
+    "echo ==JOURNAL==; journalctl --disk-usage 2>/dev/null || echo N/A; "
+    "echo ==ROTATED==; "
+    "timeout 10 find /var/log -type f "
+    "\\( -name '*.gz' -o -name '*.1' -o -name '*.2' -o -name '*.old' \\) "
+    "-printf '%s\\n' 2>/dev/null | awk '{s+=$1}END{print s+0}'; "
+    "echo ==LARGELOGS==; "
+    "timeout 15 find /var/log -type f -size +50M "
+    "-printf '%s\\t%p\\n' 2>/dev/null | sort -rn | head -10; "
+    "echo ==DOCKER==; timeout 10 docker system df 2>/dev/null || echo N/A; "
+    "echo ==PKG==; "
+    "if command -v apt-get >/dev/null 2>&1; then echo apt; "
+    "du -sb /var/cache/apt/archives 2>/dev/null | cut -f1 || echo 0; "
+    "elif command -v dnf >/dev/null 2>&1; then echo dnf; "
+    "du -sb /var/cache/dnf 2>/dev/null | awk '{s+=$1}END{print s+0}' || echo 0; "
+    "elif command -v yum >/dev/null 2>&1; then echo yum; "
+    "du -sb /var/cache/yum 2>/dev/null | awk '{s+=$1}END{print s+0}' || echo 0; "
+    "elif command -v pacman >/dev/null 2>&1; then echo pacman; "
+    "du -sb /var/cache/pacman/pkg 2>/dev/null | cut -f1 || echo 0; "
+    "elif command -v apk >/dev/null 2>&1; then echo apk; "
+    "du -sb /var/cache/apk 2>/dev/null | cut -f1 || echo 0; "
+    "else echo none; echo 0; fi; "
+    "echo ==TMP==; du -sb /tmp /var/tmp 2>/dev/null | awk '{s+=$1}END{print s+0}'; "
+    "echo ==JOURNALDCONF==; cat /etc/systemd/journald.conf 2>/dev/null || echo N/A; "
+    "echo ==DONE=="
+)
+
+_DD_PKG_CLEAN: dict = {
+    "apt":    [("apt-get clean",      "apt-get clean -y 2>&1 && echo Done",       True),
+               ("apt-get autoremove", "apt-get autoremove -y 2>&1 && echo Done",  True)],
+    "dnf":    [("dnf clean all",      "dnf clean all -y 2>&1 && echo Done",       True)],
+    "yum":    [("yum clean all",      "yum clean all -y 2>&1 && echo Done",       True)],
+    "pacman": [("pacman -Sc",         "pacman -Sc --noconfirm 2>&1 && echo Done", False)],
+    "apk":    [("apk cache clean",    "apk cache clean 2>&1 && echo Done",        True)],
+}
+
+
+# Known services that store large data in /var/log and can be safely disabled or trimmed.
+# Each tuple: (path_prefix, service_id, display_name)
+_DD_LOG_SVCS: list = [
+    # optional monitoring / recording tools (safe to disable)
+    ("/var/log/atop/atop_",       "atop",           "atop system recorder"),
+    ("/var/log/sysstat/sa",       "sysstat",         "sysstat activity log"),
+    ("/var/log/sa/sa",            "sysstat",         "sysstat activity log"),
+    ("/var/log/sysdig/",          "sysdig",          "sysdig recorder"),
+    ("/var/log/account/",         "acct",            "process accounting (acct)"),
+    ("/var/account/",             "acct",            "process accounting (acct)"),
+    # web servers
+    ("/var/log/nginx/",           "nginx",           "nginx access/error log"),
+    ("/var/log/apache2/",         "apache2",         "Apache2 access/error log"),
+    ("/var/log/httpd/",           "apache2",         "Apache2 access/error log"),
+    # databases
+    ("/var/log/mysql/",           "mysql",           "MySQL/MariaDB log"),
+    ("/var/log/mariadb/",         "mysql",           "MySQL/MariaDB log"),
+    ("/var/log/postgresql/",      "postgresql",      "PostgreSQL log"),
+    ("/var/log/mongodb/",         "mongodb",         "MongoDB log"),
+    # search / queue
+    ("/var/log/elasticsearch/",   "elasticsearch",   "Elasticsearch log"),
+    ("/var/log/rabbitmq/",        "rabbitmq",        "RabbitMQ log"),
+    ("/var/log/redis/",           "redis",           "Redis log"),
+    # security
+    ("/var/log/audit/",           "auditd",          "auditd security log"),
+    ("/var/log/fail2ban",         "fail2ban",        "fail2ban log"),
+]
+
+# Per-service cleanup actions.
+# trim_days: label for the trim action; lr_config/lr_path: logrotate config to write.
+# disable_cmd present only for optional monitoring tools (safe to stop).
+_DD_SVC_ACTIONS: dict = {
+    # ── optional monitoring tools ────────────────────────────────────────────
+    "atop": dict(
+        trim_cmd    = "find /var/log/atop -name 'atop_*' -mtime +7 -delete 2>&1; echo Done",
+        trim_days   = 7,
+        disable_cmd = "systemctl disable --now atop 2>&1 && echo Done",
+        config_file = "/etc/default/atop",
+        config_key  = "ROTATE", config_val = "7",
+        config_apply= (
+            "if grep -q '^ROTATE=' /etc/default/atop 2>/dev/null; then "
+            "sed -i 's/^ROTATE=.*/ROTATE=7/' /etc/default/atop; "
+            "else echo 'ROTATE=7' >> /etc/default/atop; fi; "
+            "systemctl restart atop 2>/dev/null || true; echo Done"
+        ),
+        lr_config = "", lr_path = "",
+    ),
+    "sysstat": dict(
+        trim_cmd    = "find /var/log/sysstat /var/log/sa -mtime +7 -delete 2>/dev/null; echo Done",
+        trim_days   = 7,
+        disable_cmd = "systemctl disable --now sysstat 2>&1 && echo Done",
+        config_file = "/etc/default/sysstat",
+        config_key  = "HISTORY", config_val = "7",
+        config_apply= (
+            "if grep -q '^HISTORY=' /etc/default/sysstat 2>/dev/null; then "
+            "sed -i 's/^HISTORY=.*/HISTORY=7/' /etc/default/sysstat; "
+            "else echo 'HISTORY=7' >> /etc/default/sysstat; fi; "
+            "systemctl restart sysstat 2>/dev/null || true; echo Done"
+        ),
+        lr_config = "", lr_path = "",
+    ),
+    "sysdig": dict(
+        trim_cmd    = "find /var/log/sysdig -mtime +7 -delete 2>/dev/null; echo Done",
+        trim_days   = 7,
+        disable_cmd = "systemctl disable --now sysdig 2>&1 && echo Done",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_config = "", lr_path = "",
+    ),
+    "acct": dict(
+        trim_cmd    = "find /var/account /var/log/accounting -mtime +7 -delete 2>/dev/null; echo Done",
+        trim_days   = 7,
+        disable_cmd = "systemctl disable --now acct psacct 2>&1; echo Done",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_config = "", lr_path = "",
+    ),
+    # ── web servers ──────────────────────────────────────────────────────────
+    "nginx": dict(
+        trim_cmd    = "find /var/log/nginx -name '*.log.*' -mtime +30 -delete 2>&1; echo Done",
+        trim_days   = 30,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-nginx",
+        lr_config = (
+            "/var/log/nginx/*.log {\n"
+            "  daily\n  rotate 14\n  compress\n  delaycompress\n"
+            "  missingok\n  notifempty\n  sharedscripts\n"
+            "  postrotate\n    nginx -s reopen 2>/dev/null || true\n"
+            "  endscript\n}\n"
+        ),
+    ),
+    "apache2": dict(
+        trim_cmd    = (
+            "find /var/log/apache2 /var/log/httpd -name '*.log.*' -mtime +30 -delete "
+            "2>/dev/null; echo Done"
+        ),
+        trim_days   = 30,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-apache2",
+        lr_config = (
+            "/var/log/apache2/*.log\n/var/log/httpd/*.log {\n"
+            "  daily\n  rotate 14\n  compress\n  delaycompress\n"
+            "  missingok\n  notifempty\n  sharedscripts\n"
+            "  postrotate\n"
+            "    invoke-rc.d apache2 reload 2>/dev/null || apachectl graceful 2>/dev/null || true\n"
+            "  endscript\n}\n"
+        ),
+    ),
+    # ── databases ────────────────────────────────────────────────────────────
+    "mysql": dict(
+        trim_cmd    = (
+            "find /var/log/mysql /var/log/mariadb -name '*.log.*' -mtime +14 -delete "
+            "2>/dev/null; echo Done"
+        ),
+        trim_days   = 14,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-mysql",
+        lr_config = (
+            "/var/log/mysql/*.log\n/var/log/mariadb/*.log {\n"
+            "  daily\n  rotate 7\n  compress\n"
+            "  missingok\n  notifempty\n  copytruncate\n}\n"
+        ),
+    ),
+    "postgresql": dict(
+        trim_cmd    = "find /var/log/postgresql -name '*.log.*' -mtime +14 -delete 2>&1; echo Done",
+        trim_days   = 14,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-postgresql",
+        lr_config = (
+            "/var/log/postgresql/*.log {\n"
+            "  daily\n  rotate 7\n  compress\n"
+            "  missingok\n  notifempty\n  copytruncate\n}\n"
+        ),
+    ),
+    "mongodb": dict(
+        trim_cmd    = "find /var/log/mongodb -name '*.log.*' -mtime +14 -delete 2>&1; echo Done",
+        trim_days   = 14,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-mongodb",
+        lr_config = (
+            "/var/log/mongodb/*.log {\n"
+            "  daily\n  rotate 7\n  compress\n"
+            "  missingok\n  notifempty\n  copytruncate\n}\n"
+        ),
+    ),
+    # ── search / queue ───────────────────────────────────────────────────────
+    "elasticsearch": dict(
+        trim_cmd    = (
+            "find /var/log/elasticsearch -name '*.log.*' -mtime +14 -delete 2>&1; echo Done"
+        ),
+        trim_days   = 14,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-elasticsearch",
+        lr_config = (
+            "/var/log/elasticsearch/*.log {\n"
+            "  daily\n  rotate 7\n  compress\n"
+            "  missingok\n  notifempty\n  copytruncate\n}\n"
+        ),
+    ),
+    "rabbitmq": dict(
+        trim_cmd    = "find /var/log/rabbitmq -name '*.log.*' -mtime +14 -delete 2>&1; echo Done",
+        trim_days   = 14,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-rabbitmq",
+        lr_config = (
+            "/var/log/rabbitmq/*.log {\n"
+            "  daily\n  rotate 7\n  compress\n"
+            "  missingok\n  notifempty\n  copytruncate\n}\n"
+        ),
+    ),
+    "redis": dict(
+        trim_cmd    = "find /var/log/redis -name '*.log.*' -mtime +14 -delete 2>&1; echo Done",
+        trim_days   = 14,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-redis",
+        lr_config = (
+            "/var/log/redis/*.log {\n"
+            "  daily\n  rotate 7\n  compress\n"
+            "  missingok\n  notifempty\n  copytruncate\n}\n"
+        ),
+    ),
+    # ── security ─────────────────────────────────────────────────────────────
+    "auditd": dict(
+        trim_cmd    = (
+            "find /var/log/audit -name 'audit.log.*' -mtime +30 -delete 2>&1; echo Done"
+        ),
+        trim_days   = 30,
+        disable_cmd = "",
+        config_file = "/etc/audit/auditd.conf",
+        config_key  = "num_logs", config_val = "5",
+        config_apply= (
+            "sed -i 's/^num_logs *=.*/num_logs = 5/' /etc/audit/auditd.conf 2>/dev/null || "
+            "echo 'num_logs = 5' >> /etc/audit/auditd.conf; "
+            "sed -i 's/^max_log_file_action *=.*/max_log_file_action = ROTATE/' "
+            "/etc/audit/auditd.conf 2>/dev/null; "
+            "service auditd restart 2>/dev/null || systemctl restart auditd 2>/dev/null || true; "
+            "echo Done"
+        ),
+        lr_config = "", lr_path = "",
+    ),
+    "fail2ban": dict(
+        trim_cmd    = "find /var/log -name 'fail2ban.log.*' -mtime +14 -delete 2>&1; echo Done",
+        trim_days   = 14,
+        disable_cmd = "",
+        config_file = "", config_key = "", config_val = "", config_apply = "",
+        lr_path   = "/etc/logrotate.d/deflect-fail2ban",
+        lr_config = (
+            "/var/log/fail2ban.log {\n"
+            "  weekly\n  rotate 4\n  compress\n"
+            "  missingok\n  notifempty\n  copytruncate\n}\n"
+        ),
+    ),
+}
+
+
+def _dd_size(s: str) -> int:
+    """Parse human-readable size string (e.g. '8.2G', '994M', '1.4GB') to bytes."""
+    m = re.match(r"([\d.]+)\s*([KMGTP]?)", s.strip(), re.I)
+    if not m:
+        return 0
+    try:
+        v = float(m.group(1))
+    except ValueError:
+        return 0
+    return int(v * {"": 1, "K": 1024, "M": 1 << 20, "G": 1 << 30,
+                    "T": 1 << 40, "P": 1 << 50}.get(m.group(2).upper(), 1))
+
+
+def _dd_fmt(b: int) -> str:
+    for u, t in (("T", 1 << 40), ("G", 1 << 30), ("M", 1 << 20), ("K", 1024)):
+        if b >= t:
+            return f"{b / t:.1f}{u}"
+    return f"{b}B"
+
+
+def _dd_sections(raw: str) -> dict:
+    out: dict = {}
+    cur: list = []
+    key = None
+    for ln in raw.splitlines():
+        s = ln.strip()
+        if s.startswith("==") and s.endswith("==") and len(s) > 4:
+            if key is not None:
+                out[key] = "\n".join(cur).strip()
+            key, cur = s[2:-2], []
+        elif key is not None:
+            cur.append(ln)
+    if key is not None:
+        out[key] = "\n".join(cur).strip()
+    return out
+
+
+def _dd_lr_pattern(fpath: str) -> tuple:
+    """
+    Return (lr_pattern, lr_slug) for a logrotate rule covering a large log file.
+
+    Date-stamped files like /var/log/atop/atop_20260522 get a wildcard pattern
+    /var/log/atop/atop_* so one rule covers the whole file family.
+    Regular files like /var/log/nginx/access.log keep their exact path.
+    """
+    dirname, fname = fpath.rsplit("/", 1) if "/" in fpath else ("", fpath)
+    # Strip trailing date/numeric suffix: _20260522  -20240101  .20260524
+    base = re.sub(r'[_.-]\d{6,}$', '', fname)
+    if base and base != fname:
+        sep = fname[len(base)]  # the separator char: '_', '-', or '.'
+        pattern = f"{dirname}/{base}{sep}*" if dirname else f"{base}{sep}*"
+        # Config slug from directory name + base (avoids one-per-file proliferation)
+        slug = re.sub(r'[^a-zA-Z0-9-]', '-', f"{dirname.split('/')[-1]}-{base}")[:28]
+    else:
+        pattern = fpath
+        slug = re.sub(r'[^a-zA-Z0-9-]', '-', fname)[:28]
+    return pattern, slug.strip("-")
+
+
+@dataclass
+class _DDAct:
+    label: str
+    cmd: str
+    safe: bool = False
+    is_config: bool = False
+    config_file: str = ""
+    config_before: str = ""
+    config_after: str = ""
+    config_apply_cmd: str = ""
+
+
+@dataclass
+class _DDFinding:
+    severity: str   # "critical" | "warning" | "info"
+    title: str
+    size_bytes: int
+    actions: list   # list[_DDAct]
+
+
+def _dd_build(sections: dict) -> list:
+    """Build a list of _DDFinding from parsed scan sections."""
+    findings: list = []
+
+    # ── Journal logs ─────────────────────────────────────────────────────────
+    jraw = sections.get("JOURNAL", "")
+    jm = re.search(r"take up\s+([\d.]+\s*[KMGTP]?i?[Bb]?)\s+in", jraw)
+    jbytes = _dd_size(jm.group(1)) if jm else 0
+    if jbytes > 50 << 20:
+        jconf = sections.get("JOURNALDCONF", "")
+        cur_mc = re.search(r"^\s*SystemMaxUse\s*=\s*(\S+)", jconf, re.M)
+        cur_max = f"SystemMaxUse={cur_mc.group(1)}" if cur_mc else "(not set - unlimited)"
+        sev = "critical" if jbytes > 1 << 30 else "warning"
+        # Target is always smaller than current size so vacuum actually frees space
+        if jbytes > 2 << 30:
+            jtarget = "500M"
+        elif jbytes > 500 << 20:
+            jtarget = "200M"
+        elif jbytes > 200 << 20:
+            jtarget = "100M"
+        elif jbytes > 100 << 20:
+            jtarget = "50M"
+        else:
+            jtarget = "20M"
+        findings.append(_DDFinding(
+            severity=sev,
+            title=f"Journal logs: {_dd_fmt(jbytes)}",
+            size_bytes=jbytes,
+            actions=[
+                _DDAct(
+                    label=f"Vacuum to {jtarget}",
+                    cmd=f"journalctl --vacuum-size={jtarget} 2>&1 && echo Done",
+                    safe=True,
+                ),
+                _DDAct(
+                    label=f"Cap at {jtarget} (journald.conf)",
+                    cmd="",
+                    safe=False,
+                    is_config=True,
+                    config_file="/etc/systemd/journald.conf",
+                    config_before=cur_max,
+                    config_after=f"[Journal]\nSystemMaxUse={jtarget}",
+                    config_apply_cmd=(
+                        "sed -i '/^#*[[:space:]]*SystemMaxUse/d'"
+                        " /etc/systemd/journald.conf 2>/dev/null; "
+                        f"printf '\\nSystemMaxUse={jtarget}\\n'"
+                        " >> /etc/systemd/journald.conf; "
+                        "systemctl restart systemd-journald 2>/dev/null || true; "
+                        "echo Done"
+                    ),
+                ),
+            ],
+        ))
+
+    # ── Rotated / compressed log files ───────────────────────────────────────
+    rot_raw = sections.get("ROTATED", "0").split("\n")[0].strip()
+    try:
+        rot_bytes = int(rot_raw)
+    except ValueError:
+        rot_bytes = 0
+    if rot_bytes > 5 << 20:
+        findings.append(_DDFinding(
+            severity="warning",
+            title=f"Rotated logs (*.gz/*.1/*.2): {_dd_fmt(rot_bytes)}",
+            size_bytes=rot_bytes,
+            actions=[
+                _DDAct(
+                    label="Delete rotated logs",
+                    cmd=(
+                        "find /var/log -type f "
+                        r"\( -name '*.gz' -o -name '*.1' -o -name '*.2' -o -name '*.old' \)"
+                        " -delete 2>&1; echo Done"
+                    ),
+                    safe=True,
+                ),
+            ],
+        ))
+
+    # ── Large individual log files ────────────────────────────────────────────
+    def _trunc_path(p: str, n: int = 68) -> str:
+        if len(p) <= n:
+            return p
+        half = (n - 1) // 2
+        return p[:half] + "…" + p[-(n - half - 1):]
+
+    # Group files by known log-heavy service patterns
+    svc_bytes: dict = {}
+    svc_count: dict = {}
+    svc_dname: dict = {}
+    plain_files: list = []
+
+    for ln in sections.get("LARGELOGS", "").splitlines():
+        parts = ln.strip().split("\t", 1)
+        if len(parts) != 2:
+            continue
+        try:
+            fbytes = int(parts[0])
+        except ValueError:
+            continue
+        fpath = parts[1].strip()
+        if "/var/log/journal/" in fpath:
+            continue  # managed by journald; already shown in Journal finding
+        matched_svc = None
+        for prefix, svc_key, svc_label in _DD_LOG_SVCS:
+            if fpath.startswith(prefix):
+                matched_svc = svc_key
+                svc_dname.setdefault(svc_key, svc_label)
+                svc_bytes[svc_key] = svc_bytes.get(svc_key, 0) + fbytes
+                svc_count[svc_key] = svc_count.get(svc_key, 0) + 1
+                break
+        if matched_svc is None:
+            plain_files.append((fbytes, fpath))
+
+    # One finding per detected log-heavy service
+    for svc_key, total_bytes in sorted(svc_bytes.items(), key=lambda x: -x[1]):
+        label      = svc_dname.get(svc_key, svc_key)
+        count      = svc_count[svc_key]
+        acts       = _DD_SVC_ACTIONS.get(svc_key, {})
+        svc_actions = []
+        if acts.get("trim_cmd"):
+            trim_days = acts.get("trim_days", 7)
+            svc_actions.append(_DDAct(
+                label=f"Delete files >{trim_days} days",
+                cmd=acts["trim_cmd"],
+                safe=True,
+            ))
+        if acts.get("config_apply") and acts.get("config_file"):
+            svc_actions.append(_DDAct(
+                label=f"Set {acts['config_key']}={acts['config_val']} (config)",
+                cmd="",
+                safe=False,
+                is_config=True,
+                config_file=acts["config_file"],
+                config_before=f"(current {acts['config_file']} on server)",
+                config_after=f"{acts['config_key']}={acts['config_val']}",
+                config_apply_cmd=acts["config_apply"],
+            ))
+        if acts.get("lr_config") and acts.get("lr_path"):
+            lr_b64 = base64.b64encode(acts["lr_config"].encode()).decode()
+            svc_actions.append(_DDAct(
+                label="Fix logrotate",
+                cmd="",
+                safe=False,
+                is_config=True,
+                config_file=acts["lr_path"],
+                config_before=f"(no logrotate rule for {svc_key})",
+                config_after=acts["lr_config"],
+                config_apply_cmd=(
+                    f"echo '{lr_b64}' | base64 -d > {acts['lr_path']} && "
+                    f"(logrotate -f {acts['lr_path']} 2>&1 || true) && echo Done"
+                ),
+            ))
+        if acts.get("disable_cmd"):
+            svc_actions.append(_DDAct(
+                label=f"Disable {svc_key}",
+                cmd=acts["disable_cmd"],
+                safe=False,
+            ))
+        findings.append(_DDFinding(
+            severity="warning",
+            title=f"{label}: {_dd_fmt(total_bytes)} ({count} file{'s' if count != 1 else ''})",
+            size_bytes=total_bytes,
+            actions=svc_actions,
+        ))
+
+    # Individual findings for unrecognized large log files
+    for fbytes, fpath in plain_files:
+        lr_pattern, lr_slug = _dd_lr_pattern(fpath)
+        lr_file    = f"/etc/logrotate.d/deflect-{lr_slug}"
+        is_family  = lr_pattern != fpath
+        lr_content = (
+            f"{lr_pattern} {{\n  daily\n  rotate 7\n  compress\n"
+            f"  missingok\n  notifempty\n  copytruncate\n}}\n"
+        )
+        lr_b64   = base64.b64encode(lr_content.encode()).decode()
+        lr_before = (
+            f"(no logrotate rule for {lr_pattern})"
+            if is_family else "(no logrotate rule for this file)"
+        )
+        findings.append(_DDFinding(
+            severity="warning",
+            title=f"{_trunc_path(fpath)}: {_dd_fmt(fbytes)}",
+            size_bytes=fbytes,
+            actions=[
+                _DDAct(
+                    label="Truncate to 0",
+                    cmd=f'truncate -s 0 "{fpath}" 2>&1 && echo Done',
+                    safe=False,
+                ),
+                _DDAct(
+                    label="gzip compress",
+                    cmd=f'gzip -f "{fpath}" 2>&1 && echo Done',
+                    safe=False,
+                ),
+                _DDAct(
+                    label="Fix logrotate (all)" if is_family else "Fix logrotate",
+                    cmd="",
+                    safe=False,
+                    is_config=True,
+                    config_file=lr_file,
+                    config_before=lr_before,
+                    config_after=lr_content,
+                    config_apply_cmd=(
+                        f"echo '{lr_b64}' | base64 -d > {lr_file} && "
+                        f"(logrotate -f {lr_file} 2>&1 || true) && echo Done"
+                    ),
+                ),
+            ],
+        ))
+
+    # Log rotation system check — only shown when there are unmanaged large files
+    if plain_files:
+        findings.append(_DDFinding(
+            severity="info",
+            title="Log rotation (system-wide)",
+            size_bytes=0,
+            actions=[
+                _DDAct(
+                    label="Run logrotate now",
+                    cmd="logrotate -f /etc/logrotate.conf 2>&1; echo Done",
+                    safe=True,
+                ),
+                _DDAct(
+                    label="Enable logrotate timer",
+                    cmd="",
+                    safe=False,
+                    is_config=True,
+                    config_file="systemd: logrotate.timer",
+                    config_before="logrotate.timer disabled or inactive",
+                    config_after="logrotate.timer enabled + active (daily rotation)",
+                    config_apply_cmd=(
+                        "systemctl enable --now logrotate.timer 2>/dev/null || "
+                        "{ crontab -l 2>/dev/null | grep -q logrotate || "
+                        "{ crontab -l 2>/dev/null; "
+                        "echo '0 4 * * * /usr/sbin/logrotate /etc/logrotate.conf'; } "
+                        "| crontab -; }; echo Done"
+                    ),
+                ),
+            ],
+        ))
+
+    # ── Docker ────────────────────────────────────────────────────────────────
+    docker_raw = sections.get("DOCKER", "N/A")
+    if "TYPE" in docker_raw and docker_raw.strip() != "N/A":
+        rec = sum(
+            _dd_size(m.group(1))
+            for dl in docker_raw.splitlines()
+            for m in [re.search(r"([\d.]+\s*[KMGTP]?i?[Bb]?)\s*\(\d+%\)", dl)]
+            if m
+        )
+        if rec > 50 << 20:
+            findings.append(_DDFinding(
+                severity="info",
+                title=f"Docker reclaimable: {_dd_fmt(rec)}",
+                size_bytes=rec,
+                actions=[
+                    _DDAct(
+                        label="prune images+containers",
+                        cmd="docker system prune -af 2>&1 && echo Done",
+                        safe=False,
+                    ),
+                    _DDAct(
+                        label="prune +volumes",
+                        cmd="docker system prune -af --volumes 2>&1 && echo Done",
+                        safe=False,
+                    ),
+                ],
+            ))
+
+    # ── Package manager cache ─────────────────────────────────────────────────
+    pkg_lines = sections.get("PKG", "none\n0").strip().splitlines()
+    pkg_mgr = pkg_lines[0].strip() if pkg_lines else "none"
+    pkg_bytes = 0
+    if len(pkg_lines) > 1:
+        try:
+            pkg_bytes = int(pkg_lines[1].strip())
+        except ValueError:
+            pass
+    if pkg_bytes > 30 << 20 and pkg_mgr in _DD_PKG_CLEAN:
+        findings.append(_DDFinding(
+            severity="info",
+            title=f"{pkg_mgr} package cache: {_dd_fmt(pkg_bytes)}",
+            size_bytes=pkg_bytes,
+            actions=[
+                _DDAct(label=lbl, cmd=cmd, safe=safe)
+                for lbl, cmd, safe in _DD_PKG_CLEAN[pkg_mgr]
+            ],
+        ))
+
+    # ── /tmp / /var/tmp ───────────────────────────────────────────────────────
+    tmp_raw = sections.get("TMP", "0").split("\n")[0].strip()
+    try:
+        tmp_bytes = int(tmp_raw)
+    except ValueError:
+        tmp_bytes = 0
+    if tmp_bytes > 200 << 20:
+        findings.append(_DDFinding(
+            severity="info",
+            title=f"/tmp + /var/tmp: {_dd_fmt(tmp_bytes)}",
+            size_bytes=tmp_bytes,
+            actions=[
+                _DDAct(
+                    label="Delete files older than 7 days",
+                    cmd=(
+                        "find /tmp /var/tmp -maxdepth 3 -type f -mtime +7"
+                        " -delete 2>/dev/null; echo Done"
+                    ),
+                    safe=True,
+                ),
+            ],
+        ))
+
+    findings.sort(key=lambda f: f.size_bytes, reverse=True)
+    return findings
+
+
+class _ConfigPreviewScreen(ModalScreen):
+    """Confirm before writing a config file change on the remote host."""
+
+    DEFAULT_CSS = """
+    _ConfigPreviewScreen { align: center middle; }
+    #cp-box {
+        width: 62; height: 23;
+        border: round $warning;
+        background: $surface;
+        padding: 1 2;
+    }
+    #cp-box { border-title-color: $warning; border-title-style: bold; }
+    #cp-file   { height: 1; color: $accent; }
+    #cp-scroll { height: 10; border: solid $surface-lighten-1; padding: 0 1; margin-top: 1; }
+    #cp-note   { height: 2; color: $text-muted; margin-top: 1; }
+    #cp-btns   { height: 3; align: center middle; }
+    """
+
+    BINDINGS = [Binding("escape", "cancel", show=False)]
+
+    def __init__(self, action: _DDAct, **kwargs):
+        super().__init__(**kwargs)
+        self._action = action
+
+    def compose(self) -> ComposeResult:
+        a = self._action
+        diff = f"Before:  {a.config_before}\n\nAfter:\n{a.config_after}"
+        with Container(id="cp-box"):
+            yield Static(f"  {a.config_file}", id="cp-file")
+            with VerticalScroll(id="cp-scroll"):
+                yield Static(diff)
+            yield Static(
+                "  No backup is created automatically.\n"
+                "  Review the change before applying.",
+                id="cp-note",
+            )
+            with Horizontal(id="cp-btns"):
+                yield Button("Apply", id="cp-apply", variant="warning")
+                yield Button("Cancel", id="cp-cancel")
+
+    def on_mount(self) -> None:
+        self.query_one("#cp-box").border_title = "Confirm config change"
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        self.dismiss(self._action if event.button.id == "cp-apply" else None)
+
+    def action_cancel(self) -> None:
+        self.dismiss(None)
+
+
+class DiskDoctorScreen(ModalScreen):
+    """
+    Disk Doctor wizard (Ctrl+D from DiskScreen).
+
+    Phase 1 - scan: runs a batched SSH command to collect disk health data.
+    Phase 2 - results: shows ranked findings with one-click clean/config actions.
+
+    Actions marked (safe) can be run all at once via [Clean All Safe].
+    Config actions (amber) open a preview/confirm modal before executing.
+    """
+
+    DEFAULT_CSS = """
+    DiskDoctorScreen { align: center middle; }
+    #dd-box {
+        width: 90; height: 36;
+        border: double $accent;
+        background: $surface;
+        padding: 0 1;
+    }
+    #dd-box { border-title-color: $accent; border-title-style: bold; }
+    #dd-status  { height: 2; padding: 0 1; color: $text-muted; }
+    #dd-scroll  { height: 24; border: solid $surface-lighten-1; }
+    .dd-finding { height: 5; padding: 0 1; border-bottom: solid $surface-lighten-2; }
+    .dd-btns { height: 3; }
+    .dd-btn  { min-width: 22; margin-right: 1; height: 3; }
+    #dd-log    { height: 4; padding: 0 1; border: solid $surface-lighten-1; color: $text-muted; }
+    #dd-footer { height: 2; padding: 0 1; color: $text-muted; }
+    """
+
+    BINDINGS = [
+        Binding("escape", "close_dd", "Close",  show=False),
+        Binding("ctrl+d", "close_dd", "Close",  show=False),
+    ]
+
+    def __init__(self, pool, host_id: str, metrics=None, **kwargs):
+        super().__init__(**kwargs)
+        self._pool    = pool
+        self._host_id = host_id
+        self._metrics = metrics
+        self._actions: list = []
+        self._safe_acts: list = []
+
+    def compose(self) -> ComposeResult:
+        with Container(id="dd-box"):
+            yield Static("  Scanning disk health...", id="dd-status")
+            with VerticalScroll(id="dd-scroll"):
+                pass
+            yield Static("", id="dd-log")
+            yield Static(
+                "  Green buttons = safe to run.  Amber = edits a config file.\n"
+                "  Ctrl+D / Esc: close",
+                id="dd-footer",
+            )
+
+    def on_mount(self) -> None:
+        hs = self._pool.state(self._host_id)
+        label = hs.config.label if hs else self._host_id
+        self.query_one("#dd-box").border_title = f"  Disk Doctor — {label}"
+        m = self._metrics.get(self._host_id) if self._metrics else None
+        if m and m.disk_mounts:
+            worst = max(m.disk_mounts, key=lambda r: r.get("pct", 0))
+            pct  = worst.get("pct", 0)
+            mnt  = worst.get("mount", "/")
+            used = worst.get("used", "?")
+            size = worst.get("size", "?")
+            col  = CLR_ERROR if pct >= 90 else CLR_WARNING if pct >= 70 else CLR_TEXT_DIM
+            self._set_status(f"  {mnt}: {used}/{size} ({pct}%) — scanning...", col)
+        asyncio.create_task(self._scan())
+
+    async def _scan(self) -> None:
+        if not hasattr(self._pool, "run"):
+            self._set_status("  SSH run not available for this pool.", CLR_ERROR)
+            return
+        result = await self._pool.run(self._host_id, _DD_SCAN)
+        if result.error:
+            self._set_status(f"  SSH error: {result.error}", CLR_ERROR)
+            return
+        sections = _dd_sections(result.stdout)
+        findings = _dd_build(sections)
+        await self._show_findings(findings)
+
+    def _set_status(self, text: str, color: str = "") -> None:
+        try:
+            w = self.query_one("#dd-status", Static)
+            w.update(Text(text, style=color) if color else text)
+        except Exception:
+            pass
+
+    async def _show_findings(self, findings: list) -> None:
+        self._actions.clear()
+        self._safe_acts.clear()
+        scroll = self.query_one("#dd-scroll", VerticalScroll)
+
+        if not findings:
+            self._set_status("  All clear — no significant disk issues found.", CLR_SUCCESS)
+            await scroll.mount(Static("  Nothing to clean up.", classes="dd-sev-info"))
+            return
+
+        total = sum(f.size_bytes for f in findings)
+        sev   = "critical" if any(f.severity == "critical" for f in findings) else "warning"
+        self._set_status(
+            f"  {len(findings)} issue(s)  ·  ~{_dd_fmt(total)} recoverable  ·  "
+            "scroll for all findings",
+            CLR_ERROR if sev == "critical" else CLR_WARNING,
+        )
+
+        _sev_style = {"critical": "bold #f85149", "warning": "bold #d29922", "info": "#58a6ff"}
+        _sev_icon  = {"critical": "●", "warning": "⚠", "info": "○"}
+        widgets = []
+        for finding in findings:
+            icon  = _sev_icon.get(finding.severity, "○")
+            style = _sev_style.get(finding.severity, "")
+            t = Text()
+            t.append(f"  {icon}  ", style=style)
+            t.append(finding.title, style=style)   # plain text - no Rich markup parsing
+            title_w = Static(t)
+            btns = []
+            for act in finding.actions:
+                idx = len(self._actions)
+                self._actions.append(act)
+                if act.safe:
+                    self._safe_acts.append(act)
+                variant = "warning" if act.is_config else ("success" if act.safe else "default")
+                btns.append(Button(act.label, id=f"dda-{idx}",
+                                   classes="dd-btn", variant=variant))
+            children: list = [title_w]
+            if btns:
+                children.append(Horizontal(*btns, classes="dd-btns"))
+            widgets.append(Vertical(*children, classes="dd-finding"))
+
+        safe_n = len(self._safe_acts)
+        if safe_n:
+            widgets.append(Horizontal(
+                Button(
+                    f"  Clean All Safe  ({safe_n} action{'s' if safe_n != 1 else ''})",
+                    id="dda-all-safe",
+                    variant="success",
+                ),
+                classes="dd-btns",
+            ))
+
+        await scroll.mount(*widgets)
+
+    def on_button_pressed(self, event: Button.Pressed) -> None:
+        bid = event.button.id or ""
+        if bid == "dda-all-safe":
+            asyncio.create_task(self._run_all_safe())
+            return
+        if bid.startswith("dda-"):
+            try:
+                idx = int(bid[4:])
+                act = self._actions[idx]
+            except (ValueError, IndexError):
+                return
+            if act.is_config:
+                self.app.push_screen(_ConfigPreviewScreen(act), self._on_config_confirmed)
+            else:
+                asyncio.create_task(self._run_action(act))
+
+    def _on_config_confirmed(self, act) -> None:
+        if act:
+            asyncio.create_task(self._run_action(act, use_apply=True))
+
+    async def _run_action(self, act: _DDAct, use_apply: bool = False) -> None:
+        cmd = act.config_apply_cmd if use_apply else act.cmd
+        if not cmd:
+            return
+        self._log(f"  Running: {act.label}...")
+        result = await self._pool.run(self._host_id, cmd)
+        if result.error:
+            self._log(f"  Error: {result.error}", CLR_ERROR)
+        else:
+            out_lines = (result.stdout or "").strip().splitlines()
+            out = "\n  ".join(out_lines[-3:]) if out_lines else "Done"
+            self._log(f"  {out}", CLR_SUCCESS)
+            asyncio.create_task(self._refresh_disk())
+
+    async def _refresh_disk(self) -> None:
+        """Re-fetch disk metrics and update the status line with new free space."""
+        try:
+            if not hasattr(self._pool, "agent"):
+                return
+            agent = self._pool.agent(self._host_id)
+            if not agent:
+                return
+            await agent._fetch_disk_detail()
+            m = self._metrics.get(self._host_id) if self._metrics else None
+            if not (m and m.disk_mounts):
+                return
+            worst = max(m.disk_mounts, key=lambda r: r.get("pct", 0))
+            pct  = worst.get("pct", 0)
+            mnt  = worst.get("mount", "/")
+            used = worst.get("used", "?")
+            size = worst.get("size", "?")
+            col  = CLR_ERROR if pct >= 90 else CLR_WARNING if pct >= 70 else CLR_SUCCESS
+            self._set_status(f"  {mnt}: {used}/{size} ({pct}%) — refreshed", col)
+        except Exception as e:
+            _log.debug("DiskDoctor refresh: %s", e)
+
+    async def _run_all_safe(self) -> None:
+        for act in list(self._safe_acts):
+            if act.cmd:
+                await self._run_action(act)
+
+    def _log(self, text: str, color: str = "") -> None:
+        try:
+            w = self.query_one("#dd-log", Static)
+            w.update(Text(text, style=color) if color else text)
+        except Exception:
+            pass
+
+    def action_close_dd(self) -> None:
+        self.dismiss(None)
+
+
 class DiskScreen(ModalScreen):
     """
     F4 - Disk usage drill-down.
@@ -26623,10 +27829,11 @@ class DiskScreen(ModalScreen):
     """
 
     BINDINGS = [
-        Binding("escape", "close_disk",   "Close",       show=False),
-        Binding("r",      "refresh_disk", "Refresh",     show=False),
-        Binding("f2",     "open_ssh",     "SSH Shell",   show=False),
-        Binding("ctrl+f", "open_fm",      "File Manager",show=False),
+        Binding("escape", "close_disk",   "Close",        show=False),
+        Binding("r",      "refresh_disk", "Refresh",      show=False),
+        Binding("f2",     "open_ssh",     "SSH Shell",    show=False),
+        Binding("ctrl+f", "open_fm",      "File Manager", show=False),
+        Binding("ctrl+d", "disk_doctor",  "Disk Doctor",  show=False),
     ]
 
     def __init__(self, pool, metrics, **kwargs):
@@ -26652,7 +27859,7 @@ class DiskScreen(ModalScreen):
     def on_mount(self) -> None:
         box = self.query_one("#disk-box")
         box.border_title = "💾  Disk Usage"
-        box.border_subtitle = " Tab/←→:host  ↑↓:dir  F2:SSH  Ctrl+F:Files  r:refresh  Esc:close"
+        box.border_subtitle = " Tab/←→:host  ↑↓:dir  F2:SSH  Ctrl+F:Files  Ctrl+D:Doctor  r:refresh  Esc:close"
         self._redraw()
         self.action_refresh_disk()
         self.query_one("#disk-dirs", ListView).focus()
@@ -26722,6 +27929,13 @@ class DiskScreen(ModalScreen):
         self.app.push_screen(FileManagerScreen(self._pool,
                                                initial_host_id=self._sel_hid,
                                                initial_path=path))
+
+    def action_disk_doctor(self) -> None:
+        """Ctrl+D - open Disk Doctor wizard for the selected host."""
+        self.app.push_screen(
+            DiskDoctorScreen(self._pool, self._sel_hid, self._metrics),
+            lambda _: self._redraw(),
+        )
 
     def action_refresh_disk(self):
         """Trigger a live refresh on the selected host."""
