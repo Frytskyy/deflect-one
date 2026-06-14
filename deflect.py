@@ -209,6 +209,32 @@ No, if you:
   • Want 99.99% uptime guarantees → use managed services
   • Require audit-log compliance for every click → roll your own policy engine
 
+HOW DEFLECT ONE COMPARES
+========================
+
+  If you've used btop or glances to watch one server - Deflect One is that
+  same terminal experience scaled to your entire fleet simultaneously, plus
+  management, security response, and deployments on top.
+  If you've evaluated Zabbix, Wazuh, or Netdata and turned back because of
+  agent rollout or setup complexity - Deflect One starts with pip install.
+
+             Def1  Zbx  Wzuh  Ntdt  Ckpt  P+G  Trms  lzdk  btop
+             ----  ---  ----  ----  ----  ---  ----  ----  ----
+  No agent     +    -    -     -     ~     -    +     +     +
+  Terminal UI  +    -    -     -     -     -    +     +     +
+  Open-source  +    ~    +     +     +     +    -     +     +
+  Multi-host   +    +    +     ~     -     +    ~     -     -
+  Security     +    ~    +     -     -     -    -     -     -
+  File mgr     +    -    -     -     ~     -    ~     -     -
+  Docker       +    -    -     ~     ~     -    -     +     ~
+  AI           +    -    -     -     -     -    -     -     -
+  pip 10s      +    -    -     -     -     -    -     -     ~
+
+  Def1=Deflect One    Zbx=Zabbix/Checkmk   Wzuh=Wazuh
+  Ntdt=Netdata        Ckpt=Cockpit/Webmin   P+G=Prometheus+Grafana
+  Trms=Termius        lzdk=lazydocker       btop=btop/glances
+  + yes   ~ partial or paid tier   - no
+
 CONFIGURATION & SECRETS
 =======================
 
@@ -544,9 +570,11 @@ Sections inside Deflect One (order matters - dependencies go from top to bottom)
   #                                     run via SSH stdin, SFTP deploy, cron schedule
   #                                     + AI Generate: NL description → bash/python script
   # SECTION: disk_screen             ← DiskScreen (F4), _DiskDirActionScreen - mount points, top dirs, ETA,
-  #                                     DiskDoctorScreen (Ctrl+D) - wizard: scan, clean, fix configs
+  #                                     DiskDoctorScreen (D) - wizard: scan, clean, fix configs
+  #                                     DiskExpandScreen (E) - unallocated space detect + extend/create volumes
   #                                     _ConfigPreviewScreen - config change confirm modal
   #                                     _DDFinding / _DDAct / _dd_build() - cross-distro findings engine
+  #                                     _DE_SCAN / _de_parse() / DiskExpandScreen - LVM/partition expansion
   # SECTION: process_monitor_screen  ← ProcessScreen (Ctrl+P) - cross-host top, kill, OOM
   # SECTION: safety_guard            ← SafetyGuard - self-ban/lockout prevention
   # SECTION: ban_select_screen       ← BanSelectScreen (ModalScreen) - IP/subnet/host scope picker
@@ -963,11 +991,13 @@ Modal screens (open on top of the main screen):
                                       cron scheduling, env vars
                                       🤖 AI Generate: NL description → bash/python script
   DiskScreen               F4       - mount points with bar + ETA "disk full", top-10 dirs
-                            Ctrl+D   - open Disk Doctor wizard for selected host
+                            D        - open Disk Doctor wizard for selected host
+                            E        - open Disk Expansion wizard (detect + extend unallocated space)
                             F2       - SSH shell on selected dir
                             Ctrl+F   - file manager on selected dir
                             r        - refresh disk data
-  DiskDoctorScreen        (from DiskScreen, Ctrl+D) - scan + clean + fix configs
+  DiskDoctorScreen        (from DiskScreen, D) - scan + clean + fix configs
+  DiskExpandScreen        (from DiskScreen, E) - detect unallocated space; extend LVM/partitions
                                       Phase 1: batched SSH scan (journal, rotated logs, large
                                         files, docker, pkg cache, /tmp)
                                       Phase 2: ranked findings with one-click actions
@@ -1598,7 +1628,7 @@ v0.80 (current version, in progress...) <start current version changelog marker,
   · Lock errors (apt/dnf/yum/pacman/apk) now trigger a dialog instead of a dead
     status line. Detects stale vs live lock, offers cleanup or force-kill, retries.
 
-  ── DISK DOCTOR (Ctrl+D from DiskScreen) ─────────────────────────────────────
+  ── DISK DOCTOR (D from DiskScreen) ─────────────────────────────────────────
 
   · New DiskDoctorScreen wizard: scan + identify + clean + fix configs in one flow.
   · Phase 1: batched SSH scan collects journal size, rotated logs, large log files
@@ -1619,6 +1649,27 @@ v0.80 (current version, in progress...) <start current version changelog marker,
       pipe to avoid shell quoting issues. Runs logrotate -f to apply immediately.
   · Cross-distro: apt / dnf / yum / pacman / apk detected automatically; journal
     section skipped gracefully on Alpine/OpenRC (no systemd-journald).
+  · Known log-heavy services (atop, sysstat, nginx, apache2, mysql, postgresql,
+    mongodb, elasticsearch, rabbitmq, redis, auditd, fail2ban, sysdig, acct)
+    are grouped into one finding each with service-aware actions:
+    - Delete old files >N days (safe, green)
+    - Set retention config (ROTATE=7 / HISTORY=7 / num_logs=5 / logrotate config)
+    - Disable service (only for optional monitoring tools: atop, sysstat, sysdig, acct)
+
+  ── DISK EXPANSION (E from DiskScreen) ───────────────────────────────────────
+
+  · New DiskExpandScreen wizard: scans remote host for reclaimable disk space.
+  · Three detection signals: LVM VG free space; filesystem smaller than its block
+    device (resized disk/partition not yet grown); unpartitioned tail on a disk.
+  · Uses `parted -m print free` for authoritative on-disk ordering, so it only offers
+    a one-click extend when the free space sits directly after a growable filesystem.
+  · Safe one-click actions (green): grow fs to fill device (resize2fs / xfs_growfs,
+    auto-detected); growpart last partition + grow fs; lvextend +100%FREE + grow fs.
+  · Info-only findings (no button) when free space is trapped behind swap/extended
+    partitions - honestly flagged as needing manual repartition, never auto-touched.
+  · DiskScreen ⚡ indicator uses the same classifier, so both screens always agree;
+    when everything is allocated both say "✓ All disk space is allocated".
+  · Rescan button to verify changes without reopening the screen.
 
 ............ <end of current version changelog marker, don't remove, on new version move it to next current version>
 
@@ -1692,6 +1743,7 @@ CLR_ERROR     = "#f85149"   # red    - it's a trap. again. at 3am.
 CLR_WARNING   = "#d29922"   # amber  - I have a bad feeling about this
 CLR_ACCENT    = "#58a6ff"   # blue   - GitHub blue cosplay, very professional
 CLR_INFO      = "#0178d4"   # blue   - "helpful" info nobody reads. it's there. trust me.
+CLR_ATTENTION = "#e3b341"   # gold   - attention / expand opportunity. look here, padawan.
 
 # ── Interactive state colours ──────────────────────────────────────────────────
 CLR_CURSOR    = "#df8000"   # orange - YOU ARE HERE. hello there.
@@ -3083,6 +3135,8 @@ class HostMetrics:
     # top-10 dirs by size: list of dicts: {path, size_str, size_mb, prev_size_mb}
     disk_top_dirs: list = field(default_factory=list)
     disk_last_checked: float = 0.0
+    # unallocated space: list of dicts {type, name, free, ...} (updated alongside disk_mounts)
+    disk_unallocated: list = field(default_factory=list)
 
     # Cron jobs (updated by _cron_loop every 5 min)
     # list of dicts: {schedule, command, source} source = "crontab" | "timer"
@@ -5899,7 +5953,10 @@ class HostAgent:
             "{gsub(/%/,\"\",$6); print $7\"\\t\"$3\"\\t\"$4\"\\t\"$5\"\\t\"$6}' ;"
             "echo '---' ;"
             "du -sh /var/log /var/lib /home /opt /srv /tmp /root /etc "
-            "/usr/local/lib /usr/local/share 2>/dev/null | sort -rh | head -10"
+            "/usr/local/lib /usr/local/share 2>/dev/null | sort -rh | head -10 ;"
+            # Expansion scan: same command + classifier the DiskExpandScreen uses,
+            # so the DiskScreen ⚡ indicator matches the Expand screen exactly.
+            "echo '---EXPAND---' ;" + _DE_SCAN
         )
 
         def _run():
@@ -5915,9 +5972,12 @@ class HostAgent:
             _log.warning("fetch_disk_detail %s: %s", self._cfg.id, e)
             return
 
-        parts = raw.split("---\n", 1)
-        df_out = parts[0] if parts else ""
-        du_out = parts[1] if len(parts) > 1 else ""
+        raw_parts = raw.split("---\n", 1)
+        df_out = raw_parts[0] if raw_parts else ""
+        du_and_expand = raw_parts[1] if len(raw_parts) > 1 else ""
+        du_split = du_and_expand.split("---EXPAND---\n", 1)
+        du_out = du_split[0] if du_split else ""
+        expand_raw = du_split[1] if len(du_split) > 1 else ""
 
         # Parse df output
         old_mounts = {row["mount"]: row.get("pct", 0) for row in m.disk_mounts}
@@ -5965,6 +6025,14 @@ class HostAgent:
             })
         if new_dirs:
             m.disk_top_dirs = new_dirs
+
+        # Classify reclaimable space with the same engine DiskExpandScreen uses,
+        # so the ⚡ indicator and the E screen never disagree.
+        try:
+            m.disk_unallocated = _de_parse(expand_raw)
+        except Exception as e:
+            _log.debug("disk expand parse %s: %s", self._cfg.id, e)
+            m.disk_unallocated = []
 
         m.disk_last_checked = time.time()
 
@@ -27683,7 +27751,8 @@ class DiskDoctorScreen(ModalScreen):
             CLR_ERROR if sev == "critical" else CLR_WARNING,
         )
 
-        _sev_style = {"critical": "bold #f85149", "warning": "bold #d29922", "info": "#58a6ff"}
+        _sev_style = {"critical": f"bold {CLR_ERROR}", "warning": f"bold {CLR_WARNING}",
+                      "info": CLR_ACCENT}
         _sev_icon  = {"critical": "●", "warning": "⚠", "info": "○"}
         widgets = []
         for finding in findings:
@@ -27792,6 +27861,453 @@ class DiskDoctorScreen(ModalScreen):
         self.dismiss(None)
 
 
+# ── Disk Expansion ────────────────────────────────────────────────────────────
+
+_DE_SCAN = (
+    "echo ==LVM==; "
+    "if command -v vgs >/dev/null 2>&1; then "
+    "vgs --noheadings --units b --nosuffix -o vg_name,vg_size,vg_free 2>/dev/null | "
+    "awk '{if($3+0>0)print \"VG\\t\"$1\"\\t\"$2\"\\t\"$3}'; "
+    "lvs --noheadings --units b --nosuffix -o lv_path,vg_name,lv_size 2>/dev/null | "
+    "awk '{print \"LV\\t\"$1\"\\t\"$2\"\\t\"$3}'; "
+    "fi; "
+    # Block devices as key="value" pairs - robust to empty fields and spaces.
+    "echo ==BLK==; "
+    "lsblk -b -n -P -o NAME,PKNAME,SIZE,TYPE,FSTYPE,MOUNTPOINT 2>/dev/null; "
+    # Filesystem total size per mountpoint (bytes), POSIX df.
+    "echo ==DF==; "
+    "df -P -k 2>/dev/null | awk 'NR>1{print $1\"\\t\"($2*1024)\"\\t\"$6}'; "
+    # Per-disk partition + free-region layout in on-disk order (authoritative).
+    # parted -m gives machine output: number:start:end:size:type[:name:flags];
+    # Free regions appear as lines whose type field == 'free'.
+    "echo ==PARTED==; "
+    "if command -v parted >/dev/null 2>&1; then "
+    "for d in $(lsblk -dn -o NAME,TYPE 2>/dev/null | awk '$2==\"disk\"{print $1}'); do "
+    "echo \"PDISK $d\"; "
+    "parted -sm \"/dev/$d\" unit B print free 2>/dev/null; "
+    "done; "
+    "fi; "
+    "echo ==DE_DONE=="
+)
+
+# Filesystem can be grown when block device is at least this much bigger than its FS.
+# Percentage guard avoids false positives from normal ext4 metadata overhead (~1-2%).
+_DE_GB        = 1 << 30
+_DE_FSGAP_PCT = 0.05
+
+
+_DE_GROWABLE = ("ext2", "ext3", "ext4", "xfs")
+
+
+def _de_fs_grow(dev_name: str, fstype: str, mnt: str) -> tuple:
+    """Return (label, cmd, safe) to grow a filesystem to fill its device/partition."""
+    target = f"/dev/{dev_name}"
+    if fstype == "xfs":
+        # xfs_growfs operates on the mountpoint, not the device
+        grow = f"xfs_growfs {mnt} 2>&1" if mnt else f"xfs_growfs {target} 2>&1"
+    else:
+        grow = f"resize2fs {target} 2>&1"
+    return (f"Grow {fstype or 'fs'} on {dev_name}", f"{grow}; echo Done", True)
+
+
+def _de_partname(disk: str, num: str) -> str:
+    """Kernel device name for a partition number: sda+1 -> sda1, nvme0n1+1 -> nvme0n1p1."""
+    return f"{disk}p{num}" if disk[-1:].isdigit() else f"{disk}{num}"
+
+
+def _de_parse(raw: str) -> list:
+    """Parse _DE_SCAN output. Returns list of expansion opportunity dicts."""
+    # Split into ==SECTION== blocks
+    sections: dict = {}
+    cur, buf = None, []
+    for ln in raw.splitlines():
+        s = ln.strip()
+        if s.startswith("==") and s.endswith("==") and len(s) > 4:
+            if cur is not None:
+                sections[cur] = buf
+            cur, buf = s.strip("="), []
+        elif cur is not None:
+            buf.append(ln)
+    if cur is not None:
+        sections[cur] = buf
+
+    # ── LVM ──────────────────────────────────────────────────────────────────
+    lv_by_vg: dict = {}
+    vg_free:  dict = {}   # vg_name -> (vg_size, vg_free_bytes)
+    for ln in sections.get("LVM", []):
+        cols = ln.strip().split("\t")
+        if len(cols) < 4:
+            continue
+        if cols[0] == "LV":
+            try:
+                lv_by_vg.setdefault(cols[2].strip(), []).append((cols[1].strip(), int(cols[3])))
+            except ValueError:
+                pass
+        elif cols[0] == "VG":
+            try:
+                vg_size_b, vg_free_b = int(cols[2]), int(cols[3])
+            except ValueError:
+                continue
+            if vg_free_b > _DE_GB:
+                vg_free[cols[1].strip()] = (vg_size_b, vg_free_b)
+
+    # ── Block devices ────────────────────────────────────────────────────────
+    devs: list = []
+    for ln in sections.get("BLK", []):
+        kv = dict(re.findall(r'(\w+)="([^"]*)"', ln))
+        if not kv.get("NAME"):
+            continue
+        try:
+            size = int(kv.get("SIZE") or 0)
+        except ValueError:
+            size = 0
+        devs.append({
+            "name":   kv["NAME"],
+            "pkname": kv.get("PKNAME", ""),
+            "size":   size,
+            "type":   kv.get("TYPE", ""),
+            "fstype": kv.get("FSTYPE", ""),
+            "mnt":    kv.get("MOUNTPOINT", ""),
+        })
+
+    # ── df: mountpoint -> filesystem total bytes ─────────────────────────────
+    fs_by_mnt: dict = {}
+    for ln in sections.get("DF", []):
+        cols = ln.strip().split("\t")
+        if len(cols) < 3:
+            continue
+        try:
+            fs_by_mnt[cols[2]] = int(cols[1])
+        except ValueError:
+            pass
+
+    # children (partitions) grouped by parent disk
+    children: dict = {}
+    for d in devs:
+        if d["type"] == "part" and d["pkname"]:
+            children.setdefault(d["pkname"], []).append(d)
+
+    findings: list = []
+
+    # ── LVM findings ─────────────────────────────────────────────────────────
+    for vg_name, (vg_size_b, vg_free_b) in sorted(vg_free.items(), key=lambda x: -x[1][1]):
+        lvs_in_vg = sorted(lv_by_vg.get(vg_name, []), key=lambda x: -x[1])
+        actions = []
+        for lv_path, _lv_size in lvs_in_vg[:4]:
+            lv_short = lv_path.split("/")[-1]
+            actions.append((
+                f"Extend {lv_short} +100%FREE",
+                (f"lvextend -l +100%FREE {lv_path} 2>&1; "
+                 f"FSTYPE=$(blkid -o value -s TYPE {lv_path} 2>/dev/null); "
+                 f"if [ \"$FSTYPE\" = xfs ]; then xfs_growfs {lv_path} 2>&1; "
+                 f"else resize2fs {lv_path} 2>&1; fi; echo Done"),
+                True,
+            ))
+        actions.append((
+            f"New LV in {vg_name}",
+            (f"lvcreate -l 100%FREE -n lv_new {vg_name} 2>&1 && "
+             f"mkfs.ext4 /dev/{vg_name}/lv_new 2>&1 && echo Done"),
+            False,
+        ))
+        findings.append({
+            "title":   f"LVM {vg_name}: {_dd_fmt(vg_free_b)} free of {_dd_fmt(vg_size_b)}",
+            "free":    vg_free_b,
+            "actions": actions,
+        })
+
+    # ── parted layout: on-disk order of partitions and free regions ──────────
+    parted_disks: dict = {}   # disk_name -> list of region dicts
+    cur_disk = None
+    for ln in sections.get("PARTED", []):
+        s = ln.strip()
+        if s.startswith("PDISK "):
+            cur_disk = s[6:].strip()
+            parted_disks[cur_disk] = []
+            continue
+        if cur_disk is None or not s or s.startswith("BYT") or s.startswith("/dev/"):
+            continue
+        fld = s.rstrip(";").split(":")
+        if len(fld) < 5:
+            continue
+        def _b(x: str) -> int:
+            return int(re.sub(r"[^0-9]", "", x) or 0)
+        parted_disks[cur_disk].append({
+            "num":     fld[0],
+            "start":   _b(fld[1]),
+            "end":     _b(fld[2]),
+            "size":    _b(fld[3]),
+            "ptype":   fld[4],
+            "is_free": fld[4] == "free",
+        })
+
+    dev_by_name = {d["name"]: d for d in devs}
+
+    # ── Disks with a partition table: analyse free regions via parted order ──
+    for disk_name, regions in parted_disks.items():
+        disk_dev  = dev_by_name.get(disk_name)
+        disk_size = disk_dev["size"] if disk_dev else 0
+        dev_full  = f"/dev/{disk_name}"
+        for free in regions:
+            if not free["is_free"] or free["size"] <= _DE_GB:
+                continue
+            # Partition immediately before this free region (largest end <= free start)
+            befores = [r for r in regions
+                       if not r["is_free"] and r["end"] <= free["start"] + (1 << 20)]
+            prev = max(befores, key=lambda r: r["end"]) if befores else None
+            if prev is not None:
+                part_name = _de_partname(disk_name, prev["num"])
+                pdev      = dev_by_name.get(part_name)
+                pfs       = pdev["fstype"] if pdev else ""
+                pmnt      = pdev["mnt"] if pdev else ""
+                if pfs in _DE_GROWABLE:
+                    part_dev = f"/dev/{part_name}"
+                    grow = (f"xfs_growfs {pmnt} 2>&1" if pfs == "xfs" and pmnt
+                            else f"xfs_growfs {part_dev} 2>&1" if pfs == "xfs"
+                            else f"resize2fs {part_dev} 2>&1")
+                    findings.append({
+                        "title":   (f"{dev_full}: {_dd_fmt(free['size'])} free right after "
+                                    f"{part_name} ({pfs}) of {_dd_fmt(disk_size)}"),
+                        "free":    free["size"],
+                        "actions": [(
+                            f"Extend {part_name} +{_dd_fmt(free['size'])}",
+                            f"growpart {dev_full} {prev['num']} 2>&1; {grow}; echo Done",
+                            True,
+                        )],
+                    })
+                else:
+                    blocker = ("swap" if "swap" in prev["ptype"]
+                               else "extended partition" if not prev["ptype"]
+                               else f"{part_name} ({prev['ptype']})")
+                    findings.append({
+                        "title":   (f"{dev_full}: {_dd_fmt(free['size'])} free, but blocked "
+                                    f"by {blocker}"),
+                        "free":    free["size"],
+                        "actions": [],
+                        "info":    True,
+                        "note":    ("Free space is not adjacent to a growable filesystem. "
+                                    "Needs manual repartition (move/recreate swap, or add a "
+                                    "new partition) - run via F2 SSH."),
+                    })
+            else:
+                # Free space at the very start of the disk (no partition before it)
+                findings.append({
+                    "title":   f"{dev_full}: {_dd_fmt(free['size'])} unpartitioned",
+                    "free":    free["size"],
+                    "actions": [],
+                    "info":    True,
+                    "note":    "Create a new partition here manually via F2 SSH.",
+                })
+
+    # ── Disks without parted data (parted missing, or no partition table) ────
+    for d in devs:
+        if d["type"] != "disk":
+            continue
+        kids = children.get(d["name"], [])
+        if kids:
+            if d["name"] in parted_disks and parted_disks[d["name"]]:
+                continue  # already analysed authoritatively via parted
+            # Fallback: parted unavailable - can't determine order, so info-only
+            gap = d["size"] - sum(k["size"] for k in kids)
+            if gap > _DE_GB:
+                findings.append({
+                    "title":   f"/dev/{d['name']}: ~{_dd_fmt(gap)} unpartitioned of {_dd_fmt(d['size'])}",
+                    "free":    gap,
+                    "actions": [],
+                    "info":    True,
+                    "note":    ("Install 'parted' for safe one-click extension, or "
+                                "repartition manually via F2 SSH."),
+                })
+        elif d["fstype"] and d["mnt"]:
+            # Direct-mount disk (no partition table): filesystem may lag device size
+            fs_total = fs_by_mnt.get(d["mnt"], 0)
+            gap = d["size"] - fs_total
+            if fs_total and gap > max(_DE_GB, int(d["size"] * _DE_FSGAP_PCT)):
+                findings.append({
+                    "title":   (f"/dev/{d['name']}: filesystem {_dd_fmt(fs_total)} "
+                                f"on {_dd_fmt(d['size'])} device - {_dd_fmt(gap)} reclaimable"),
+                    "free":    gap,
+                    "actions": [_de_fs_grow(d["name"], d["fstype"], d["mnt"])],
+                })
+
+    # ── Partitions whose filesystem is smaller than the partition ────────────
+    # (e.g. growpart was run earlier but resize2fs/xfs_growfs was not)
+    for d in devs:
+        if d["type"] != "part" or not d["mnt"] or not d["fstype"]:
+            continue
+        fs_total = fs_by_mnt.get(d["mnt"], 0)
+        gap = d["size"] - fs_total
+        if fs_total and gap > max(_DE_GB, int(d["size"] * _DE_FSGAP_PCT)):
+            findings.append({
+                "title":   (f"/dev/{d['name']}: filesystem {_dd_fmt(fs_total)} "
+                            f"on {_dd_fmt(d['size'])} partition - {_dd_fmt(gap)} reclaimable"),
+                "free":    gap,
+                "actions": [_de_fs_grow(d["name"], d["fstype"], d["mnt"])],
+            })
+
+    findings.sort(key=lambda f: (f.get("info", False), -f["free"]))
+    return findings
+
+
+class DiskExpandScreen(ModalScreen):
+    """E - detect unallocated disk space and offer to extend or create volumes."""
+
+    DEFAULT_CSS = """
+    DiskExpandScreen { align: center middle; }
+    #de-box {
+        width: 82; height: 36;
+        border: double $accent;
+        background: $surface;
+        padding: 0 1;
+    }
+    #de-box { border-title-color: $accent; border-title-style: bold;
+              border-subtitle-color: $text-muted; border-subtitle-align: left; }
+    #de-scroll { height: 26; overflow-y: auto; }
+    .de-finding { height: 6; padding: 0 1; border-bottom: solid $surface-lighten-2; }
+    .de-btns  { height: 3; }
+    .de-btn   { min-width: 28; margin-right: 1; height: 3; }
+    #de-status { height: 1; }
+    #de-footer { height: 3; }
+    """
+
+    BINDINGS = [
+        Binding("escape", "close_de", "Close",  show=False),
+        Binding("r",      "rescan",   "Rescan", show=False),
+    ]
+
+    def __init__(self, pool, host_id, **kwargs):
+        super().__init__(**kwargs)
+        self._pool    = pool
+        self._host_id = host_id
+        self._findings: list = []
+
+    def compose(self) -> ComposeResult:
+        with Container(id="de-box"):
+            yield VerticalScroll(id="de-scroll")
+            yield Static("", id="de-status")
+            with Horizontal(id="de-footer"):
+                yield Button("Rescan  r", id="de-rescan")
+                yield Button("Close  Esc", id="de-close")
+
+    def on_mount(self) -> None:
+        box = self.query_one("#de-box")
+        box.border_title = "⚡  Disk Expansion"
+        box.border_subtitle = " r:rescan  Esc:close"
+        self._set_status("  Scanning…", CLR_INFO)
+        asyncio.create_task(self._scan())
+
+    def _set_status(self, msg: str, col: str = "") -> None:
+        try:
+            w = self.query_one("#de-status", Static)
+            w.update(Text(msg, style=col) if col else msg)
+        except Exception:
+            pass
+
+    async def _scan(self) -> None:
+        self._set_status("  Scanning remote disk layout…", CLR_INFO)
+        if not hasattr(self._pool, "run"):
+            self._set_status("  SSH run not available.", CLR_ERROR)
+            return
+        result = await self._pool.run(self._host_id, _DE_SCAN)
+        if result.error:
+            self._set_status(f"  SSH error: {result.error}", CLR_ERROR)
+            return
+        self._findings = _de_parse(result.stdout or "")
+        await self._show_findings()
+
+    async def _show_findings(self) -> None:
+        scroll = self.query_one("#de-scroll", VerticalScroll)
+        await scroll.remove_children()
+        if not self._findings:
+            ok = Text()
+            ok.append("  ✓  ", style=f"bold {CLR_SUCCESS}")
+            ok.append("All disk space is allocated — nothing to expand.\n\n",
+                      style=CLR_SUCCESS)
+            ok.append("     Every disk is fully partitioned and every filesystem fills\n"
+                      "     its device. No unallocated or reclaimable space was found.",
+                      style="grey50")
+            await scroll.mount(Static(ok))
+            self._set_status("  ✓ Disk fully allocated — nothing to do.", CLR_SUCCESS)
+            return
+
+        widgets = []
+        n_action = 0
+        for fi, finding in enumerate(self._findings):
+            is_info = finding.get("info", False)
+            t = Text()
+            if is_info:
+                t.append("  ℹ  ", style=f"bold {CLR_ACCENT}")
+                t.append(finding["title"], style=CLR_ACCENT)
+            else:
+                n_action += 1
+                t.append("  ⚡  ", style=f"bold {CLR_ATTENTION}")
+                t.append(finding["title"], style=f"bold {CLR_ATTENTION}")
+            if is_info:
+                body = Static(Text("     " + finding.get("note", ""), style="grey50"))
+            else:
+                body = Horizontal(*[
+                    Button(label, id=f"de-{fi}-{ai}",
+                           variant="success" if safe else "default", classes="de-btn")
+                    for ai, (label, _cmd, safe) in enumerate(finding["actions"])
+                ], classes="de-btns")
+            widgets.append(Vertical(Static(t), body, classes="de-finding"))
+        await scroll.mount(*widgets)
+        n_info = len(self._findings) - n_action
+        msg = f"  {n_action} action{'' if n_action == 1 else 's'} available"
+        if n_info:
+            msg += f", {n_info} info-only (manual)"
+        self._set_status(msg + ".", CLR_ATTENTION if n_action else CLR_ACCENT)
+
+    async def on_button_pressed(self, event: Button.Pressed) -> None:
+        bid = event.button.id or ""
+        if bid == "de-rescan":
+            asyncio.create_task(self._scan())
+            return
+        if bid == "de-close":
+            self.dismiss(None)
+            return
+        cols = bid.split("-")
+        if len(cols) >= 3 and cols[0] == "de":
+            try:
+                fi, ai = int(cols[1]), int(cols[2])
+            except ValueError:
+                return
+            if 0 <= fi < len(self._findings):
+                actions = self._findings[fi]["actions"]
+                if 0 <= ai < len(actions):
+                    label, cmd, _safe = actions[ai]
+                    await self._run_action(event.button, cmd, label)
+
+    async def _run_action(self, btn: Button, cmd: str, label: str) -> None:
+        orig = str(btn.label)
+        btn.label = "Running…"
+        btn.disabled = True
+        self._set_status(f"  Running: {label}…", CLR_INFO)
+        try:
+            result = await self._pool.run(self._host_id, cmd)
+            out = (result.stdout or "").strip()
+            if result.error:
+                self._set_status(f"  Error: {result.error}", CLR_ERROR)
+                btn.label = "Error"
+                btn.disabled = False
+            elif "Done" in out:
+                self._set_status(f"  Done. Press r to rescan and verify new space.", CLR_SUCCESS)
+                btn.label = "Done ✓"
+            else:
+                self._set_status(f"  {out[:80] or 'No output'}", CLR_WARNING)
+                btn.label = orig
+                btn.disabled = False
+        except Exception as e:
+            self._set_status(f"  Error: {e}", CLR_ERROR)
+            btn.label = orig
+            btn.disabled = False
+
+    def action_close_de(self) -> None:
+        self.dismiss(None)
+
+    def action_rescan(self) -> None:
+        asyncio.create_task(self._scan())
+
+
 class DiskScreen(ModalScreen):
     """
     F4 - Disk usage drill-down.
@@ -27833,7 +28349,8 @@ class DiskScreen(ModalScreen):
         Binding("r",      "refresh_disk", "Refresh",      show=False),
         Binding("f2",     "open_ssh",     "SSH Shell",    show=False),
         Binding("ctrl+f", "open_fm",      "File Manager", show=False),
-        Binding("ctrl+d", "disk_doctor",  "Disk Doctor",  show=False),
+        Binding("d",      "disk_doctor",  "Disk Doctor",  show=False),
+        Binding("e",      "disk_expand",  "Expand",       show=False),
     ]
 
     def __init__(self, pool, metrics, **kwargs):
@@ -27859,7 +28376,7 @@ class DiskScreen(ModalScreen):
     def on_mount(self) -> None:
         box = self.query_one("#disk-box")
         box.border_title = "💾  Disk Usage"
-        box.border_subtitle = " Tab/←→:host  ↑↓:dir  F2:SSH  Ctrl+F:Files  Ctrl+D:Doctor  r:refresh  Esc:close"
+        box.border_subtitle = " Tab/←→:host  ↑↓:dir  F2:SSH  Ctrl+F:Files  D:Doctor  E:Expand  r:refresh  Esc:close"
         self._redraw()
         self.action_refresh_disk()
         self.query_one("#disk-dirs", ListView).focus()
@@ -27931,9 +28448,16 @@ class DiskScreen(ModalScreen):
                                                initial_path=path))
 
     def action_disk_doctor(self) -> None:
-        """Ctrl+D - open Disk Doctor wizard for the selected host."""
+        """D - open Disk Doctor wizard for the selected host."""
         self.app.push_screen(
             DiskDoctorScreen(self._pool, self._sel_hid, self._metrics),
+            lambda _: self._redraw(),
+        )
+
+    def action_disk_expand(self) -> None:
+        """E - open Disk Expansion wizard for the selected host."""
+        self.app.push_screen(
+            DiskExpandScreen(self._pool, self._sel_hid),
             lambda _: self._redraw(),
         )
 
@@ -27996,6 +28520,23 @@ class DiskScreen(ModalScreen):
         else:
             mt.append("  No disk data yet - waiting for first poll (30s after connect)\n",
                        style="grey50")
+        if m.disk_unallocated:
+            mt.append("\n")
+            for ua in m.disk_unallocated:
+                is_info = ua.get("info", False)
+                title   = ua.get("title", "")
+                if is_info:
+                    mt.append("  ℹ  ", style=f"bold {CLR_ACCENT}")
+                    mt.append(title, style=CLR_ACCENT)
+                    mt.append("  — press E (manual)\n", style="grey50")
+                else:
+                    mt.append("  ⚡  ", style=f"bold {CLR_ATTENTION}")
+                    mt.append(title, style=f"bold {CLR_ATTENTION}")
+                    mt.append("  — press E to extend\n", style="grey50")
+        elif m.disk_mounts and m.disk_last_checked:
+            mt.append("\n")
+            mt.append("  ✓  All disk space is allocated — nothing to expand\n",
+                      style=CLR_SUCCESS)
         try:
             self.query_one("#disk-mounts", Static).update(mt)
         except Exception as e:
