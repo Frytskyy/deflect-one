@@ -149,6 +149,39 @@ But why not?
 
 ---
 
+## How Deflect One Compares
+
+If you've used **btop** or **glances** to watch a single server in the terminal - Deflect One is that experience scaled to your entire fleet simultaneously, with management, security response, and deployments on top.
+
+If you've evaluated **Zabbix**, **Checkmk**, or **Wazuh** and turned back because of agent rollout, a dedicated monitoring server, or a week of configuration - Deflect One is the open-source alternative that starts with `pip install deflect-one`.
+
+| | **Deflect One** | Zabbix / Checkmk | Wazuh | Netdata | Cockpit / Webmin | Prometheus + Grafana | Termius | lazydocker | btop / glances |
+|---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **No agent to install** | ✅ | ❌ | ❌ | ❌ | ⚠️ | ❌ | ✅ | ✅ | ✅ |
+| **Terminal UI - no browser** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ✅ |
+| **Open-source & free** | ✅ | ⚠️ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ |
+| **Multi-host fleet view** | ✅ | ✅ | ✅ | ⚠️ | ❌ | ✅ | ⚠️ | ❌ | ❌ |
+| **Attack detection & security** | ✅ | ⚠️ | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **File manager (SFTP)** | ✅ | ❌ | ❌ | ❌ | ⚠️ | ❌ | ⚠️ | ❌ | ❌ |
+| **Docker management** | ✅ | ❌ | ❌ | ⚠️ | ⚠️ | ❌ | ❌ | ✅ | ⚠️ |
+| **Built-in AI assistant** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **`pip install` - up in 10s** | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ⚠️ |
+
+> ⚠️ = partial support or paid tier required
+
+**Zabbix / Checkmk** - enterprise-grade monitoring, but requires an agent on every host, a dedicated server to run on, and days of setup before you see a single metric.  
+**Wazuh** - serious security SIEM with strong detection, but it's an enterprise deployment project, not a tool you run from your laptop.  
+**Netdata** - excellent real-time graphs on a single host, but can't manage, deploy to, or actively defend your servers.  
+**Cockpit / Webmin** - web panels that manage one host at a time through a browser tab, and must be installed on each managed server.  
+**Prometheus + Grafana** - the standard metrics stack, but a multi-component engineering project before you see your first dashboard; no management or security layer.  
+**Termius** - polished SSH client with multi-host bookmarks, but it's a paid SaaS product with no monitoring, no security, and no management beyond the shell.  
+**lazydocker** - great Docker TUI, but single-host only; exits the picture the moment you need anything beyond containers.  
+**btop / glances** - the best single-host terminal monitors available. Deflect One brings that same instant terminal visibility across your entire fleet at once - and adds management, active security response, file transfers, deployments, and AI.
+
+Deflect One is the only open-source tool that ships real-time monitoring, active attack defense, full system management, and AI in a single `pip install` - with no agents, no browser, and no separate infrastructure to maintain.
+
+---
+
 ## Installation
 
 ```bash
@@ -170,18 +203,28 @@ python deflect.py --demo
 
 ## Keyboard Shortcuts
 
+### Global Navigation
+
+| Key | Action |
+|-----|--------|
+| `Tab` / `Shift+Tab` | Next / previous panel |
+| `←` `→` | Switch between ServerCards |
+| `↑` `↓` | Select row (Attack Radar or Services panel) |
+| `q` / `F10` | Quit |
+
 ### Function Keys
 
 | Key | Screen | Notes |
 |-----|--------|-------|
 | `F1` | Help | All shortcuts, version, donate link |
-| `F2` | SSH Shell | Interactive paramiko shell · `F8` AI Hints · `F9` AI Command |
-| `F3` | Log Tail | Live journalctl/tail - 8 tabs: Journal · Auth · Nginx · Apache · Email · Fail2ban · UFW · Syslog |
-| `F4` | Disk Usage | Mount points with bar graphs + ETA to full, top-10 dirs |
-| `F5` | Port Forwards | SSH tunnel editor, live toggle per host ⚠️ |
-| `F6` | Settings | General · Notifications · Security · 🤖 AI (provider, models, defense mode) ⚠️ |
+| `F2` | SSH Shell | Interactive paramiko shell · `F8` AI Hints · `F9` AI Command · `Ctrl+F` File Manager |
+| `F3` | Log Tail | 8 sources: Journal · Auth · Nginx · Apache · Email · Fail2ban · UFW · Syslog · `Ctrl+←/→` switch source |
+| `F4` | Disk Usage | Drill-down: top-10 dirs, ETA to full |
+| `F5` | Port Forwards | SSH tunnel editor ⚠️ |
+| `F6` | Settings | General · Notifications · Security · 🤖 AI ⚠️ |
+| `F7` | Ban Last IP | Ban most recent attacker from any panel |
 | `F8` | APT Upgrades | Upgradable packages per host, OS/kernel info |
-| `F9` | Fleet Manager | All hosts, checkboxes, bulk ops, SSH key rotation, 🤖 AI Audit All |
+| `F9` | Fleet Manager | All hosts, checkboxes, bulk ops, 🤖 AI Audit All |
 
 > ⚠️ Windows Terminal intercepts `F5` and `F6` - disable its system shortcuts to use them.
 
@@ -190,31 +233,41 @@ python deflect.py --demo
 | Keys | Screen | Notes |
 |------|--------|-------|
 | `Ctrl+B` | Network Connections | `ss -tnp`, state filters, anomaly summary |
-| `Ctrl+D` | Docker | Containers, images, resource usage · rename · add as host |
-| `Ctrl+E` | Env / Config Audit | `.env` diff between hosts, SSH authorized_keys audit |
+| `Ctrl+D` | Docker | Containers, images, resource usage · RunWizard · PortEditor · RenameDialog |
+| `Ctrl+E` | Env / Config Audit | `.env` diff between hosts, SSH key audit |
 | `Ctrl+F` | File Manager | Dual-panel Local + SFTP (Midnight Commander style) - see below |
-| `Ctrl+G` | Git / Deployments | Repos status (behind/ahead/dirty), pull, restart service |
-| `Ctrl+L` | Log Aggregation | Cross-host regex grep, 5 presets, live results |
-| `Ctrl+M` | Email Monitor | MTA queue depth, bounce rate, postfix/dovecot/exim errors |
+| `Ctrl+G` | Git / Deploy | Repos status, pull, restart service, rollback |
+| `Ctrl+L` | Log Aggregation | Cross-host regex grep, 5 presets |
+| `Ctrl+M` | Email Security | DKIM · SPF · DMARC · DNSBL · Greylist · SMTP TLS · **[v0.81]** |
 | `Ctrl+P` | Process Monitor | Cross-host top, kill PID, OOM events |
-| `Ctrl+R` | Network Recon | nmap/dig/whois/traceroute/curl via SSH, 11 presets |
-| `Ctrl+S` | Script Runner | Library, inline editor, SSH/SFTP deploy, cron scheduling · 🤖 AI Generate |
+| `Ctrl+R` | Network Recon | nmap/dig/whois/traceroute/curl, 11 presets |
+| `Ctrl+S` | Script Runner | Library, inline editor, SFTP deploy, cron scheduling · 🤖 AI Generate |
 | `Ctrl+T` | Cron & Timers | crontab + systemd timers, CRUD, bulk add |
-| `Ctrl+U` | Backup Monitor | restic · borg · rclone · rsnapshot - last run, status |
+| `Ctrl+U` | Backup Jobs | Native tar.gz scheduler · **[v0.79]** |
 | `Ctrl+W` | Firewall | UFW/iptables rules, add/delete, toggle UFW · 🤖 AI Audit → hardening wizard |
-| `Ctrl+Y` | Databases | PostgreSQL · MySQL · Redis · MongoDB - connections, QPS, cache hit% |
+| `Ctrl+Y` | Databases | PostgreSQL · MySQL · Redis · MongoDB |
 | `Ctrl+N` | Add Host | New SSH host, per-host 🤖 AI instructions |
-| `Ctrl+O` | Edit Host | Security config, all settings, 🤖 AI instructions for focused host |
+| `Ctrl+O` | Edit Host | Security config, all settings, 🤖 AI instructions |
+| `Ctrl+Shift+D` | DNS Monitor | Service status, query logs, DNSSEC · DNSZoneEditor · **[v0.79]** |
+| `Ctrl+Shift+S` | SpamAssassin | Status, rules lint, Bayes DB, sa-update · **[v0.79]** |
+| `Ctrl+Shift+K` | DKIM Manager | Key list, generate, show public key, test · **[v0.81]** |
+| `Ctrl+Shift+B` | DNSBL Check | Spamhaus · SpamCop · SORBS · CBL · Barracuda · PSBL per host · **[v0.81]** |
+
+`Ctrl+M` tabs: `1` DKIM · `2` SPF · `3` DNSBL · `4` Greylist · `5` Relay · `6` SvcCtrl
+
+`Ctrl+U` keys: `Enter`/`r` run now · `t` toggle · `d` delete · `Esc` close · `Ctrl+F` File Manager · `K` FM with backup panel
+
+`Ctrl+Shift+D` sub-key: `z` DNS Zone Editor (BIND zones, records, `rndc reload`)
 
 ### Security & AI
 
 | Keys | Screen | Notes |
 |------|--------|-------|
-| `Ctrl+A` | 🤖 AI Chat | Streaming conversation with full host context, command proposals |
-| `Ctrl+H` | Auth Sentinel | Multi-protocol auth intelligence - SSH/sudo/DB/mail/FTP · **[v0.78]** |
+| `Ctrl+A` | 🤖 AI Chat | Streaming conversation with full host context · **[v0.75]** |
+| `Ctrl+H` | Auth Sentinel | Multi-protocol authentication intelligence · **[v0.78]** |
 | `Ctrl+I` | 🤖 AI Stats | Token usage by tier/day, provider info, 7-day breakdown |
-| `Ctrl+J` | User & Group Admin | Linux users, groups, SSH keys, active sessions, user details · **[v0.78]** |
-| `Ctrl+K` | Secrets Vault | View/edit encrypted secrets, export/import config with master password |
+| `Ctrl+J` | User & Group Admin | Linux users, groups, SSH keys, active sessions · **[v0.78+]** |
+| `Ctrl+K` | Secrets Vault | View/edit encrypted secrets, export/import with password |
 
 ### Auth Sentinel (`Ctrl+H`) - tabs & keys
 
@@ -222,23 +275,49 @@ python deflect.py --demo
 |-----|---------|
 | Tab 1 | Live auth event feed · Active sessions · Threat summary |
 | Tab 2 | Fleet auth stats · Protocol breakdown · 24h×7d heatmap |
-| Tab 3 | sshd_config hardening auditor (CIS L1, auto-fix) |
+| Tab 3 | sshd_config hardening auditor (CIS Benchmark) |
 | Tab 4 | Mail abuse monitor (queue flood, bounce spike) |
 
-`v` SessionActivityInspector · `c` Containment workflow · `t` Incident timeline · `b` ban IP · `a` 🤖 AI Intel · `l` raw logs · `s`/`f` filter · `h` cycle hosts · `r` back to Attack Radar
+`v` SessionActivityInspector · `c` ContainmentDialog · `t` IncidentTimeline · `b` ban IP fleet-wide · `a` 🤖 AI Auth Intel · `l` raw logs · `s`/`f` filter success/failed · `r` back to Attack Radar
+
+### User & Group Admin (`Ctrl+J`) - tabs & keys
+
+| Tab | Keys |
+|-----|------|
+| Users | `a` add · `e` edit · `l` lock/unlock · `K` SSH keys · `h` shell · `c` contain |
+| Groups | `a` add · `e` edit · `Del` delete |
+| Keys | `g` generate · `a` append · `o` full rotation · `Del` remove |
+
+`←`/`→` switch host · Tabs: Users · Groups · Keys · Watched Sessions · Details
 
 ### File Manager (`Ctrl+F`) - keys
 
 `Tab` switch panel · `Ctrl+U` swap panels · `Alt+C` quick CD · `Ins`/`Space` toggle select · `^A` select all · `\` deselect all  
 `F2` rename · `F3` view · `F4` edit · `F5` copy · `F6` move · `F7` mkdir · `F8` delete  
-`s` create/edit symlink · `Ctrl+Z` attributes (chmod/chown/touch) · `^1`/`^2`/`^3` sort by name/size/date  
-`Ctrl+D` favourite locations · Transfer queue: `P` pause/resume · `C` cancel · `Del` clear done
+`s` create/edit symlink · `Ctrl+Z` attributes (chmod/chown/touch) · `^1`/`^2`/`^3` sort by name/size/date (again to reverse)  
+`Ctrl+D` favourite locations · `K` create backup job (left=src, right=dst)  
+Transfer queue: `P` pause/resume · `C` cancel · `Del` clear done
 
 ### Server Card shortcuts (when a card is focused) - [v0.78]
 
-`p` Process monitor · `d` Docker container navigation (↑↓ select · `Enter` open · `Esc` exit)  
-`o` edit host · `a` toggle AI-controlled · `m` toggle maintenance · `F2` SSH shell · `f` File Manager  
-Single-click focus · Double-click open Docker/Process · `Ctrl+←/→/↑/↓` reposition card in grid
+`Click` focus · `Double-click` open Docker/Process · `o` edit host · `a` toggle AI-controlled · `m` toggle maintenance  
+`p` Process monitor · `d` Docker navigation (↑↓ select · `Enter` open · `Esc` exit) · `F2` SSH shell · `f`/`Ctrl+F` File Manager  
+`Ctrl+←/→/↑/↓` reposition card in grid
+
+### Attack Radar (when focused)
+
+`↑`/`↓` select IP row · `Enter`/`b` ban selected IP · `a` 🤖 AI analysis of selected event **[v0.75]**
+
+### Services Panel (when focused)
+
+`↑`/`↓` select service row · `r` restart selected service
+
+### Top Menu & Layout (v0.79)
+
+`Click` menu or `Alt+F`/`V`/`H`/`T`/`S` open dropdown · `←`/`→` walk menus · `Esc` close  
+`Alt+←/→` resize vertical split (grid ⟷ radar) · `Alt+↑/↓` resize horizontal split (main ⟷ services) · drag splitter  
+View menu: toggle Stats / F-Key / Radar / Services panels · force grid columns (1/2/3/Auto) · Compact mode  
+All layout preferences saved in `deflect.json` under `"ui"`
 
 ---
 
